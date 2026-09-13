@@ -3,400 +3,400 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>DXY Desk — News &amp; ICT Signals</title>
-<meta name="theme-color" content="#05070C">
+<title>PipX Ledger — DXY Desk</title>
+<meta name="theme-color" content="#0E1512">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500;1,9..144,600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500;1,6..72,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#05070C;
-    --bg-2:#080B12;
-    --panel:rgba(255,255,255,0.035);
-    --panel-solid:#10121B;
-    --panel-raised:rgba(255,255,255,0.055);
-    --hairline:rgba(255,255,255,0.09);
-    --edge-soft:rgba(255,255,255,0.045);
-    --text:#F3F1EA;
-    --muted:#8D97AC;
-    --faint:#4B5468;
-    --gold:#F0B65E;
-    --gold-dim:rgba(240,182,94,0.13);
-    --violet:#8B7CF6;
-    --cyan:#45D9C9;
-    --bull:#34D399;
-    --bull-dim:rgba(52,211,153,0.14);
-    --bear:#FB7185;
-    --bear-dim:rgba(251,113,133,0.14);
-    --mono:'JetBrains Mono', ui-monospace, monospace;
-    --sans:'Space Grotesk', system-ui, sans-serif;
-    --display:'Fraunces', Georgia, serif;
+    --ink:#0E1512;
+    --ink-2:#131C18;
+    --panel:#182420;
+    --panel-raised:#1E2C27;
+    --line:rgba(233,227,210,0.11);
+    --line-strong:rgba(233,227,210,0.22);
+    --paper:#EDE7D6;
+    --paper-dim:#9CA69C;
+    --paper-faint:#5C6A61;
+    --brass:#CC9C44;
+    --brass-dim:rgba(204,156,68,0.14);
+    --rust:#C1613F;
+    --rust-dim:rgba(193,97,63,0.15);
+    --moss:#7BA46E;
+    --moss-dim:rgba(123,164,110,0.15);
+    --serif:'Newsreader', Georgia, serif;
+    --sans:'IBM Plex Sans', system-ui, sans-serif;
+    --mono:'IBM Plex Mono', ui-monospace, monospace;
     --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-top: env(safe-area-inset-top, 0px);
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-  html,body{margin:0; padding:0; background:var(--bg); color:var(--text); font-family:var(--sans); height:100%;}
-  body{overscroll-behavior-y:none; position:relative;}
-  ::selection{background:var(--gold); color:#05070C;}
+  html,body{margin:0; padding:0; background:var(--ink); color:var(--paper); font-family:var(--sans); height:100%;}
+  body{overscroll-behavior-y:none;}
+  ::selection{background:var(--brass); color:var(--ink);}
   a{color:inherit;}
-  button{font-family:inherit; cursor:pointer;}
+  button{font-family:inherit; cursor:pointer; color:inherit;}
+  input,select{font-family:inherit;}
+  @media (prefers-reduced-motion: reduce){ *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;} }
 
-  /* ---------- Ambient cinematic backdrop ---------- */
   body::before{
-    content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
-    background:
-      radial-gradient(720px 480px at 12% -8%, rgba(139,124,246,0.16), transparent 60%),
-      radial-gradient(640px 520px at 108% 18%, rgba(69,217,201,0.12), transparent 60%),
-      radial-gradient(900px 700px at 50% 118%, rgba(240,182,94,0.05), transparent 60%);
-  }
-  body::after{
-    content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.035; mix-blend-mode:overlay;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.05; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   #app{max-width:1180px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; position:relative; z-index:1;}
 
-  /* ---------- Top bar ---------- */
-  .topbar{
-    position:sticky; top:0; z-index:20;
-    background:rgba(5,7,12,0.72); backdrop-filter:blur(16px) saturate(140%);
-    border-bottom:1px solid var(--hairline);
-    padding:16px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px;
+  /* ---------- Masthead ---------- */
+  .masthead{
+    position:sticky; top:0; z-index:20; padding-top:var(--safe-top);
+    background:rgba(14,21,18,0.88); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
   }
-  .brand{display:flex; align-items:center; gap:8px;}
-  .brand-logo{height:26px; width:auto; display:block;}
-  .brand-mark{font-family:var(--display); font-style:italic; font-weight:600; font-size:19px; letter-spacing:0.01em;}
-  .brand-mark span{color:var(--gold); font-style:normal;}
-  .brand-sub{font-family:var(--mono); font-size:11px; color:var(--muted);}
-  .clock-cluster{display:flex; align-items:center; gap:10px; font-family:var(--mono); font-size:12px; color:var(--muted);}
-  .clock-time{color:var(--text); font-weight:500;}
-  .sessions{display:flex; gap:6px;}
-  .session-dot{width:6px; height:6px; border-radius:50%; background:var(--faint); transition:box-shadow .3s, background .3s;}
-  .session-dot.live{background:var(--cyan); box-shadow:0 0 0 3px rgba(69,217,201,0.16), 0 0 8px rgba(69,217,201,0.5);}
+  .masthead-row{display:flex; align-items:baseline; justify-content:space-between; gap:14px; padding:14px 18px 10px;}
+  .masthead-brand{display:flex; align-items:baseline; gap:9px;}
+  .masthead-logo{height:20px; width:auto; display:block; filter:grayscale(1) brightness(1.6);}
+  .masthead-title{font-family:var(--serif); font-size:21px; font-weight:600; letter-spacing:0.005em;}
+  .masthead-title em{color:var(--brass); font-style:normal;}
+  .masthead-edition{font-family:var(--mono); font-size:10.5px; color:var(--paper-faint); padding-left:9px; border-left:1px solid var(--line-strong);}
+  .masthead-right{display:flex; align-items:center; gap:12px; font-family:var(--mono); font-size:11.5px; color:var(--paper-dim);}
+  .status-dot{width:6px; height:6px; border-radius:50%; background:var(--paper-faint); display:inline-block; margin-right:5px; position:relative; top:-1px;}
+  .status-dot.live{background:var(--moss);}
+  .status-dot.warm{background:var(--brass);}
+  .refresh-btn{background:none; border:1px solid var(--line-strong); border-radius:5px; padding:5px 9px; font-family:var(--mono); font-size:10.5px; color:var(--paper-dim); display:flex; align-items:center; gap:5px;}
+  .refresh-btn:active{border-color:var(--brass); color:var(--brass);}
+  .refresh-btn svg{width:11px; height:11px; transition:transform .5s;}
+  .refresh-btn.spinning svg{animation:spin 0.8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
 
-  /* ---------- Layout shell ---------- */
-  .shell{flex:1; display:flex; flex-direction:column; padding-bottom:calc(84px + var(--safe-bottom));}
-  main{flex:1; padding:18px; padding-bottom:24px;}
-  .screen{display:none; animation:fadein .35s cubic-bezier(.2,.7,.3,1);}
+  .ticker-strip{
+    display:flex; overflow:hidden; border-top:1px solid var(--line); white-space:nowrap;
+    font-family:var(--mono); font-size:11px; color:var(--paper-dim); background:var(--ink-2);
+  }
+  .ticker-track{display:flex; gap:0; animation:ticker 38s linear infinite;}
+  .ticker-strip:hover .ticker-track{animation-play-state:paused;}
+  @keyframes ticker{from{transform:translateX(0);} to{transform:translateX(-50%);}}
+  .ticker-item{padding:6px 16px; border-right:1px solid var(--line); flex-shrink:0;}
+  .ticker-item b{color:var(--paper); font-weight:500;}
+  .ticker-item .up{color:var(--moss);} .ticker-item .down{color:var(--rust);}
+
+  /* ---------- Layout ---------- */
+  .shell{flex:1; display:flex; flex-direction:column; padding-bottom:calc(78px + var(--safe-bottom));}
+  main{flex:1; padding:20px 18px 8px; max-width:680px; width:100%; margin:0 auto;}
+  .screen{display:none; animation:reveal .3s ease;}
   .screen.active{display:block;}
-  @keyframes fadein{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
-  @keyframes breathe{0%,100%{opacity:0.55; transform:scale(1);} 50%{opacity:1; transform:scale(1.035);}}
+  @keyframes reveal{from{opacity:0;} to{opacity:1;}}
 
-  h1.page-title{font-family:var(--display); font-style:italic; font-size:26px; margin:2px 0 18px; font-weight:500; letter-spacing:0.002em;}
-  .section-label{font-family:var(--sans); font-size:12px; font-weight:500; color:var(--muted); margin:26px 0 12px;}
-  .section-label:first-child{margin-top:0;}
+  .page-head{display:flex; align-items:baseline; justify-content:space-between; margin:2px 0 20px; gap:10px;}
+  h1.page-title{font-family:var(--serif); font-style:italic; font-size:25px; font-weight:600; margin:0;}
+  .page-note{font-family:var(--mono); font-size:11px; color:var(--paper-faint);}
+  .rule-label{font-family:var(--sans); font-size:12.5px; font-weight:500; color:var(--paper-dim); margin:28px 0 10px; padding-bottom:8px; border-bottom:1px solid var(--line);}
+  .rule-label:first-of-type{margin-top:0;}
 
-  /* ---------- Glass panel base ---------- */
-  .glass{
-    position:relative; background:var(--panel); border:1px solid var(--hairline); border-radius:16px;
-    backdrop-filter:blur(18px);
-  }
-  .glass::before{
-    content:""; position:absolute; inset:0; border-radius:inherit; padding:1px; pointer-events:none;
-    background:linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0) 40%);
-    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite:xor; mask-composite:exclude;
-  }
+  /* ---------- Panel base (ledger card, not glass) ---------- */
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:8px;}
 
-  /* ---------- DXY hero gauge ---------- */
-  .dxy-hero{
-    position:relative; overflow:hidden;
-    background:var(--panel); border:1px solid var(--hairline); border-radius:22px; padding:26px 22px;
-    display:flex; align-items:center; gap:20px; backdrop-filter:blur(20px);
-  }
-  .dxy-hero::before{
-    content:""; position:absolute; inset:-40%; z-index:0; pointer-events:none;
-    background:radial-gradient(closest-side, rgba(139,124,246,0.22), rgba(69,217,201,0.10) 55%, transparent 75%);
-    animation:breathe 6s ease-in-out infinite;
-  }
-  .dxy-hero > *{position:relative; z-index:1;}
-  .dxy-hero .gauge{flex-shrink:0;}
-  .dxy-hero-info{flex:1; min-width:0;}
-  .dxy-bias-word{font-family:var(--display); font-style:italic; font-size:32px; font-weight:600; letter-spacing:0.002em;}
-  .dxy-bias-word.bullish{color:var(--bull);}
-  .dxy-bias-word.bearish{color:var(--bear);}
-  .dxy-meta{font-size:13px; color:var(--muted); margin-top:6px; line-height:1.5;}
-  .dxy-meta b{color:var(--text); font-weight:500;}
-  .conf-pill{display:inline-block; font-family:var(--mono); font-size:10px; padding:3px 10px; border-radius:20px; border:1px solid var(--hairline); background:rgba(255,255,255,0.03); color:var(--muted); margin-top:10px;}
+  /* ---------- DXY hero ---------- */
+  .dxy-hero{padding:20px; display:flex; flex-direction:column; gap:16px;}
+  .dxy-hero-top{display:flex; align-items:center; justify-content:space-between; gap:16px;}
+  .dxy-bias-word{font-family:var(--serif); font-style:italic; font-size:34px; font-weight:600; line-height:1;}
+  .dxy-bias-word.bullish{color:var(--moss);}
+  .dxy-bias-word.bearish{color:var(--rust);}
+  .dxy-bias-sub{font-family:var(--mono); font-size:11px; color:var(--paper-faint); margin-top:5px;}
+  .spark{flex-shrink:0;}
+  .dxy-ledger-rows{border-top:1px solid var(--line);}
+  .ledger-row{display:flex; align-items:center; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--line); font-size:13px;}
+  .ledger-row:last-child{border-bottom:none;}
+  .ledger-row .k{color:var(--paper-dim);}
+  .ledger-row .v{font-family:var(--mono); font-weight:500;}
 
-  /* ---------- News strip ---------- */
-  .news-strip{display:flex; gap:10px; overflow-x:auto; padding-bottom:6px; margin:0 -18px; padding-left:18px; padding-right:18px; scrollbar-width:none;}
+  /* ---------- Ticker/news chips ---------- */
+  .news-strip{display:flex; gap:0; overflow-x:auto; scrollbar-width:none; border:1px solid var(--line); border-radius:8px;}
   .news-strip::-webkit-scrollbar{display:none;}
-  .news-chip{
-    flex:0 0 auto; min-width:172px; background:var(--panel); border:1px solid var(--hairline);
-    border-radius:14px; padding:14px 15px; cursor:pointer; transition:border-color .2s, transform .2s; backdrop-filter:blur(14px);
-  }
-  .news-chip:active{border-color:var(--violet); transform:scale(0.98);}
-  .news-chip .impact{font-family:var(--mono); font-size:9px; letter-spacing:0.03em; padding:3px 7px; border-radius:5px; display:inline-block;}
-  .impact.critical{background:var(--bear-dim); color:var(--bear);}
-  .impact.high{background:var(--gold-dim); color:var(--gold);}
-  .impact.medium{background:rgba(255,255,255,0.06); color:var(--muted);}
-  .news-chip .label{font-size:13px; font-weight:500; margin:9px 0 5px; line-height:1.35;}
-  .news-chip .countdown{font-family:var(--mono); font-size:12px; color:var(--muted);}
+  .news-chip{flex:0 0 auto; min-width:180px; padding:13px 16px; cursor:pointer; border-right:1px solid var(--line);}
+  .news-chip:last-child{border-right:none;}
+  .news-chip .impact{font-family:var(--mono); font-size:9.5px; color:var(--paper-faint);}
+  .impact.critical{color:var(--rust);}
+  .impact.high{color:var(--brass);}
+  .news-chip .label{font-size:13px; font-weight:500; margin:7px 0 5px; line-height:1.35;}
+  .news-chip .countdown{font-family:var(--mono); font-size:11.5px; color:var(--paper-dim);}
+
+  /* ---------- Filter bar ---------- */
+  .filter-bar{display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:2px;}
+  .filter-group{display:flex; gap:2px; border:1px solid var(--line); border-radius:6px; padding:2px; }
+  .filter-chip{background:none; border:none; padding:6px 11px; font-size:12px; color:var(--paper-dim); border-radius:4px;}
+  .filter-chip.active{background:var(--panel-raised); color:var(--paper);}
+  .sort-select{background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:6px 9px; font-size:12px; color:var(--paper-dim); margin-left:auto;}
 
   /* ---------- Signal rows ---------- */
-  .signal-row{
-    display:flex; align-items:center; gap:12px; padding:15px 12px 15px 2px;
-    border-bottom:1px solid var(--hairline); cursor:pointer; position:relative; transition:background .2s;
-  }
-  .signal-row:active{background:rgba(255,255,255,0.02);}
-  .signal-row:last-child{border-bottom:none;}
-  .dir-bar{width:3px; align-self:stretch; border-radius:3px; flex-shrink:0;}
-  .dir-bar.bullish{background:var(--bull); box-shadow:0 0 8px rgba(52,211,153,0.5);}
-  .dir-bar.bearish{background:var(--bear); box-shadow:0 0 8px rgba(251,113,133,0.5);}
+  .signal-list{border-top:1px solid var(--line);}
+  .signal-row{display:flex; align-items:center; gap:12px; padding:14px 2px; border-bottom:1px solid var(--line); cursor:pointer;}
+  .star-btn{background:none; border:none; font-size:15px; color:var(--paper-faint); flex-shrink:0; padding:2px; line-height:1;}
+  .star-btn.on{color:var(--brass);}
+  .dir-mark{font-family:var(--serif); font-style:italic; font-size:15px; width:16px; text-align:center; flex-shrink:0;}
+  .dir-mark.bullish{color:var(--moss);} .dir-mark.bearish{color:var(--rust);}
   .signal-main{flex:1; min-width:0;}
   .signal-top{display:flex; align-items:center; gap:8px;}
-  .signal-symbol{font-family:var(--mono); font-weight:600; font-size:15px;}
-  .signal-dir-icon{font-size:11px;}
-  .signal-dir-icon.bullish{color:var(--bull);}
-  .signal-dir-icon.bearish{color:var(--bear);}
-  .veto-tag{font-family:var(--mono); font-size:9px; color:var(--bear); border:1px solid rgba(251,113,133,0.4); border-radius:5px; padding:2px 6px;}
-  .signal-sub{font-size:12px; color:var(--muted); margin-top:4px;}
+  .signal-symbol{font-family:var(--mono); font-weight:600; font-size:14.5px;}
+  .veto-tag{font-family:var(--mono); font-size:9px; color:var(--rust); border:1px solid var(--rust); border-radius:4px; padding:2px 6px;}
+  .signal-sub{font-size:12px; color:var(--paper-faint); margin-top:3px;}
   .signal-score{text-align:right; flex-shrink:0;}
-  .score-num{font-family:var(--mono); font-weight:600; font-size:19px;}
-  .grade-label{font-family:var(--mono); font-size:10px; margin-top:2px;}
-  .grade-sniper{color:var(--gold);}
-  .grade-high{color:var(--bull);}
-  .grade-moderate{color:var(--muted);}
-  .grade-low{color:var(--faint);}
+  .score-num{font-family:var(--mono); font-weight:600; font-size:18px;}
+  .grade-label{font-family:var(--mono); font-size:9.5px; margin-top:1px; color:var(--paper-faint);}
+  .grade-sniper{color:var(--brass);}
+  .grade-high{color:var(--moss);}
 
-  .signal-detail{
-    max-height:0; overflow:hidden; transition:max-height .3s ease; background:rgba(255,255,255,0.02);
-    border-radius:14px;
-  }
-  .signal-detail.open{max-height:420px; margin:-4px 0 14px;}
-  .signal-detail-inner{padding:16px 18px;}
-  .reason-row{display:flex; gap:9px; font-size:13px; color:var(--muted); padding:6px 0; line-height:1.45;}
-  .reason-row::before{content:"·"; color:var(--cyan); flex-shrink:0; font-size:18px; line-height:1;}
-  .fund-note{font-size:12px; color:var(--muted); margin-top:10px; padding-top:10px; border-top:1px solid var(--hairline);}
+  .signal-detail{max-height:0; overflow:hidden; transition:max-height .3s ease;}
+  .signal-detail.open{max-height:460px; padding-bottom:14px;}
+  .signal-detail-inner{padding:4px 2px 0 30px; border-left:1px solid var(--line); margin-left:8px;}
+  .reason-row{font-size:13px; color:var(--paper-dim); padding:5px 0; line-height:1.45;}
+  .reason-row::before{content:"▸ "; color:var(--brass);}
+  .fund-note{font-size:12px; color:var(--paper-faint); margin-top:8px; padding-top:8px; border-top:1px solid var(--line); font-style:italic;}
 
-  /* ---------- News list (News tab) ---------- */
-  .news-item{border:1px solid var(--hairline); border-radius:16px; padding:16px; margin-bottom:12px; background:var(--panel); backdrop-filter:blur(14px);}
+  /* ---------- News list ---------- */
+  .news-item{border-bottom:1px solid var(--line); padding:16px 2px;}
+  .news-item:first-child{border-top:1px solid var(--line);}
   .news-item-head{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
-  .news-item-title{font-weight:500; font-size:14px;}
-  .news-item-time{font-family:var(--mono); font-size:11px; color:var(--muted); margin-top:3px;}
-  .news-figures{display:flex; gap:20px; margin-top:12px; font-family:var(--mono); font-size:13px;}
+  .news-item-title{font-weight:500; font-size:14.5px;}
+  .news-item-time{font-family:var(--mono); font-size:11px; color:var(--paper-faint); margin-top:3px;}
+  .bell-btn{background:none; border:1px solid var(--line-strong); border-radius:5px; padding:4px 8px; font-size:10.5px; font-family:var(--mono); color:var(--paper-dim); flex-shrink:0;}
+  .bell-btn.on{border-color:var(--brass); color:var(--brass);}
+  .news-figures{display:flex; gap:22px; margin-top:12px; font-family:var(--mono); font-size:13px;}
   .fig{display:flex; flex-direction:column;}
-  .fig-label{font-size:9px; color:var(--faint); letter-spacing:0.02em;}
+  .fig-label{font-size:9px; color:var(--paper-faint);}
   .fig-val{font-weight:600; margin-top:3px;}
-  .surprise-beat{color:var(--bull);} .surprise-miss{color:var(--bear);} .surprise-inline{color:var(--muted);} .surprise-pending{color:var(--faint);}
-  .usd-read{font-size:13px; color:var(--muted); margin-top:12px; padding-top:12px; border-top:1px solid var(--hairline); line-height:1.55;}
+  .surprise-beat{color:var(--moss);} .surprise-miss{color:var(--rust);} .surprise-inline,.surprise-pending{color:var(--paper-dim);}
+  .usd-read{font-size:13px; color:var(--paper-dim); margin-top:12px; padding-top:12px; border-top:1px solid var(--line); line-height:1.55;}
 
   /* ---------- DXY tab ---------- */
-  .dxy-detail-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:18px;}
-  .stat-box{background:var(--panel); border:1px solid var(--hairline); border-radius:14px; padding:14px; backdrop-filter:blur(14px);}
-  .stat-label{font-family:var(--sans); font-size:11px; color:var(--muted);}
-  .stat-val{font-family:var(--mono); font-size:18px; font-weight:600; margin-top:5px;}
-  .narrative-box{background:var(--panel); border:1px solid var(--hairline); border-radius:16px; padding:18px; margin-top:18px; font-size:14px; line-height:1.65; color:var(--muted); backdrop-filter:blur(14px);}
+  .dxy-grid{display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--line); border-radius:8px; margin-top:18px; overflow:hidden;}
+  .dxy-cell{padding:13px 15px; border-right:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .dxy-cell:nth-child(2n){border-right:none;}
+  .dxy-cell:nth-last-child(-n+2){border-bottom:none;}
+  .dxy-cell .l{font-size:11px; color:var(--paper-faint);}
+  .dxy-cell .v{font-family:var(--mono); font-size:17px; font-weight:600; margin-top:5px;}
+  .narrative{padding:18px; margin-top:18px; font-size:16px; line-height:1.65; color:var(--paper-dim); font-family:var(--serif);}
 
-  /* ---------- Profile ---------- */
-  .profile-card{background:var(--panel); border:1px solid var(--hairline); border-radius:18px; padding:20px; backdrop-filter:blur(16px);}
-  .profile-name{font-family:var(--display); font-style:italic; font-size:20px; font-weight:600;}
-  .profile-row{display:flex; justify-content:space-between; padding:11px 0; border-top:1px solid var(--hairline); font-size:13px;}
-  .profile-row .k{color:var(--muted);}
+  /* ---------- Desk / profile ---------- */
+  .desk-name{font-family:var(--serif); font-style:italic; font-size:21px; font-weight:600;}
+  .desk-sub{font-family:var(--mono); font-size:11px; color:var(--paper-faint); margin-top:3px;}
   .chip-row{display:flex; flex-wrap:wrap; gap:7px; margin-top:8px;}
-  .chip{font-family:var(--mono); font-size:11px; background:rgba(255,255,255,0.05); border:1px solid var(--hairline); padding:4px 9px; border-radius:8px; color:var(--text);}
-  .btn{
-    display:inline-block; font-family:var(--sans); font-weight:500; font-size:14px;
-    padding:12px 18px; border-radius:12px; border:1px solid var(--hairline); background:var(--panel-raised);
-    color:var(--text); text-align:center; transition:transform .15s, border-color .15s;
-  }
-  .btn:active{transform:scale(0.98);}
-  .btn-primary{background:linear-gradient(135deg, var(--gold), #E39A3E); border-color:transparent; color:#1A1206; font-weight:600;}
-  .btn-block{display:block; width:100%; margin-top:18px;}
+  .chip{font-family:var(--mono); font-size:11px; border:1px solid var(--line-strong); padding:4px 9px; border-radius:5px; color:var(--paper);}
+
+  /* ---------- Buttons / inputs ---------- */
+  .btn{display:inline-flex; align-items:center; justify-content:center; gap:6px; font-family:var(--sans); font-weight:500; font-size:14px; padding:12px 18px; border-radius:7px; border:1px solid var(--line-strong); background:var(--panel-raised); color:var(--paper); text-align:center;}
+  .btn:active{opacity:0.85;}
+  .btn-primary{background:var(--brass); border-color:var(--brass); color:#20160A; font-weight:600;}
+  .btn-ghost{background:none;}
+  .btn-block{display:flex; width:100%; margin-top:16px;}
+  .btn[disabled]{opacity:0.55; pointer-events:none;}
+  .text-input{width:100%; background:var(--ink-2); border:1px solid var(--line-strong); border-radius:7px; padding:12px 14px; color:var(--paper); font-size:15px;}
+  .text-input:focus{outline:none; border-color:var(--brass);}
+  .field-label{font-size:12px; color:var(--paper-dim); margin:16px 0 7px; display:block;}
+  .field-label:first-of-type{margin-top:0;}
+  .form-error{font-size:12.5px; color:var(--rust); margin-top:10px; line-height:1.4;}
+  .form-note{font-size:12.5px; color:var(--paper-faint); margin-top:14px; line-height:1.5;}
+  .link-btn{background:none; border:none; color:var(--brass); text-decoration:underline; font-size:inherit; padding:0;}
+  .option-grid{display:flex; flex-wrap:wrap; gap:8px;}
+  .option-pill{padding:9px 14px; border-radius:6px; border:1px solid var(--line-strong); background:var(--ink-2); font-size:13px; color:var(--paper-dim);}
+  .option-pill.selected{border-color:var(--brass); color:var(--brass); background:var(--brass-dim);}
+  .search-status{font-family:var(--mono); font-size:12px; color:var(--paper-faint); padding:10px 0;}
+  .search-empty{font-size:13px; color:var(--paper-dim); line-height:1.5; padding:14px 0 20px; border-bottom:1px solid var(--line); margin-bottom:4px;}
 
   /* ---------- Bottom nav ---------- */
   .bottom-nav{
-    position:fixed; bottom:14px; left:14px; right:14px; z-index:30;
-    background:rgba(12,14,22,0.72); backdrop-filter:blur(20px) saturate(140%); border:1px solid var(--hairline);
-    border-radius:20px;
-    display:flex; padding:7px; gap:2px;
-    max-width:520px; margin:0 auto;
-    box-shadow:0 10px 40px rgba(0,0,0,0.4);
+    position:fixed; bottom:0; left:0; right:0; z-index:30; padding-bottom:var(--safe-bottom);
+    background:rgba(14,21,18,0.92); backdrop-filter:blur(10px); border-top:1px solid var(--line);
+    display:flex;
   }
-  .nav-btn{
-    flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none;
-    color:var(--muted); font-size:10.5px; font-family:var(--sans); font-weight:500; padding:9px 0; border-radius:14px;
-    transition:color .2s, background .2s;
-  }
-  .nav-btn.active{color:var(--bg); background:linear-gradient(135deg, var(--cyan), var(--violet));}
-  .nav-icon{width:19px; height:19px;}
+  .nav-btn{flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none; color:var(--paper-faint); font-size:10px; font-weight:500; padding:11px 0 9px; position:relative;}
+  .nav-btn.active{color:var(--brass);}
+  .nav-btn.active::before{content:""; position:absolute; top:0; left:30%; right:30%; height:2px; background:var(--brass);}
+  .nav-icon{width:18px; height:18px;}
 
-  /* ---------- Onboarding overlay ---------- */
-  .overlay{
-    position:fixed; inset:0; background:var(--bg); z-index:100; display:flex; flex-direction:column;
-    overflow-y:auto; padding:28px 22px calc(28px + var(--safe-bottom));
-  }
+  /* ---------- Overlays (auth / onboarding) ---------- */
+  .overlay{position:fixed; inset:0; background:var(--ink); z-index:100; display:flex; flex-direction:column; overflow-y:auto; padding:calc(30px + var(--safe-top)) 22px calc(30px + var(--safe-bottom));}
   .overlay-hidden{display:none;}
+  .overlay-inner{max-width:400px; width:100%; margin:auto;}
+  .overlay-wordmark{font-family:var(--serif); font-style:italic; font-size:15px; color:var(--brass); margin-bottom:26px; text-align:center;}
   .ob-step{display:none;}
-  .ob-step.active{display:block; animation:fadein .35s cubic-bezier(.2,.7,.3,1);}
-  .ob-eyebrow{font-family:var(--mono); font-size:11px; color:var(--cyan);}
-  .ob-title{font-family:var(--display); font-style:italic; font-size:28px; font-weight:600; margin:10px 0 8px; line-height:1.22;}
-  .ob-sub{color:var(--muted); font-size:14px; margin-bottom:26px; line-height:1.55;}
-  .field-label{font-size:12px; color:var(--muted); margin:20px 0 9px; display:block;}
-  .field-label:first-of-type{margin-top:0;}
-  .text-input{
-    width:100%; background:var(--panel); border:1px solid var(--hairline); border-radius:12px;
-    padding:13px 15px; color:var(--text); font-family:var(--sans); font-size:15px;
-  }
-  .text-input:focus{outline:none; border-color:var(--cyan); box-shadow:0 0 0 3px rgba(69,217,201,0.13);}
-  .option-grid{display:flex; flex-wrap:wrap; gap:8px;}
-  .option-pill{
-    padding:10px 15px; border-radius:12px; border:1px solid var(--hairline); background:var(--panel);
-    font-size:13px; color:var(--muted); transition:all .15s;
-  }
-  .option-pill.selected{border-color:var(--cyan); color:var(--text); background:rgba(69,217,201,0.1); box-shadow:0 0 0 1px rgba(69,217,201,0.2) inset;}
-  .ob-progress{display:flex; gap:6px; margin-bottom:30px;}
-  .ob-progress div{height:3px; flex:1; background:var(--hairline); border-radius:2px; overflow:hidden;}
-  .ob-progress div.done{background:linear-gradient(90deg, var(--violet), var(--cyan));}
-  .ob-actions{display:flex; gap:10px; margin-top:30px;}
+  .ob-step.active{display:block; animation:reveal .3s ease;}
+  .ob-count{font-family:var(--mono); font-size:11px; color:var(--paper-faint);}
+  .ob-title{font-family:var(--serif); font-style:italic; font-size:26px; font-weight:600; margin:8px 0 8px; line-height:1.25;}
+  .ob-sub{color:var(--paper-dim); font-size:14px; margin-bottom:22px; line-height:1.55;}
+  .ob-actions{display:flex; gap:10px; margin-top:26px;}
   .ob-actions .btn{flex:1;}
-  .symbol-search{display:flex; gap:8px; margin-bottom:16px;}
-  .symbol-search .text-input{margin:0;}
-  .symbol-search .btn{flex-shrink:0; padding-left:18px; padding-right:18px;}
-  .search-status{font-family:var(--mono); font-size:12px; color:var(--muted); padding:10px 0;}
-  .search-empty{font-size:13px; color:var(--muted); line-height:1.5; padding:14px 0 22px; border-bottom:1px solid var(--hairline); margin-bottom:6px;}
-  .search-empty b{color:var(--text);}
+  .auth-tabs{display:flex; border-bottom:1px solid var(--line); margin-bottom:22px;}
+  .auth-tab{flex:1; background:none; border:none; padding:0 0 12px; font-size:14px; color:var(--paper-faint); border-bottom:2px solid transparent;}
+  .auth-tab.active{color:var(--paper); border-bottom-color:var(--brass);}
+
+  /* ---------- Toast ---------- */
+  .toast-wrap{position:fixed; left:0; right:0; bottom:calc(88px + var(--safe-bottom)); z-index:60; display:flex; justify-content:center; pointer-events:none; padding:0 18px;}
+  .toast{background:var(--panel-raised); border:1px solid var(--line-strong); border-radius:7px; padding:10px 16px; font-size:12.5px; color:var(--paper-dim); max-width:420px; box-shadow:0 8px 24px rgba(0,0,0,0.4);}
 
   /* ---------- Desktop ---------- */
   @media (min-width:960px){
-    .shell{flex-direction:row; padding-bottom:0;}
-    .bottom-nav{
-      position:sticky; top:80px; left:auto; right:auto; flex-direction:column; width:190px; height:fit-content;
-      background:transparent; backdrop-filter:none; border:none; box-shadow:none; padding:20px 8px; border-radius:0;
-    }
-    .nav-btn{flex-direction:row; justify-content:flex-start; gap:11px; padding:11px 14px; font-size:12.5px; border-radius:12px;}
-    .nav-btn.active{background:linear-gradient(135deg, rgba(69,217,201,0.16), rgba(139,124,246,0.16)); color:var(--text);}
-    main{padding:24px 28px;}
-    .dxy-hero{padding:32px 34px;}
+    .shell{flex-direction:row; padding-bottom:0; max-width:1180px; margin:0 auto;}
+    .bottom-nav{position:sticky; top:calc(66px + var(--safe-top)); left:auto; right:auto; bottom:auto; flex-direction:column; width:180px; height:fit-content; background:none; backdrop-filter:none; border-top:none; padding:22px 6px;}
+    .nav-btn{flex-direction:row; justify-content:flex-start; gap:11px; padding:10px 12px; font-size:12.5px;}
+    .nav-btn.active::before{content:none;}
+    .nav-btn.active{background:var(--brass-dim); border-radius:6px;}
+    main{padding:24px 30px; max-width:640px;}
   }
 </style>
 </head>
 <body>
 <div id="app">
 
-  <!-- ================= ONBOARDING ================= -->
-  <div class="overlay overlay-hidden" id="onboarding">
-    <div class="ob-progress" id="obProgress"></div>
-
-    <div class="ob-step active" data-step="0">
-      <div class="ob-eyebrow">Step 1 of 6</div>
-      <div class="ob-title">Set up your desk.</div>
-      <div class="ob-sub">A few questions so the signal feed matches how you actually trade. Takes about 30 seconds.</div>
-      <label class="field-label">What should we call you?</label>
-      <input class="text-input" id="obName" placeholder="First name" maxlength="30">
-      <div class="ob-actions"><button class="btn btn-primary btn-block" onclick="obNext(0)">Continue</button></div>
-    </div>
-
-    <div class="ob-step" data-step="1">
-      <div class="ob-eyebrow">Step 2 of 6</div>
-      <div class="ob-title">Where are you trading from?</div>
-      <div class="ob-sub">So the clock and session windows show your local time, not just UTC.</div>
-      <label class="field-label">Country</label>
-      <select class="text-input" id="obCountry">
-        <option value="" disabled selected>Select your country</option>
-        <option value="Africa/Johannesburg">South Africa</option>
-        <option value="Africa/Lagos">Nigeria</option>
-        <option value="Africa/Nairobi">Kenya</option>
-        <option value="Africa/Cairo">Egypt</option>
-        <option value="Europe/London">United Kingdom</option>
-        <option value="Europe/Berlin">Germany / Central Europe</option>
-        <option value="America/New_York">United States (Eastern)</option>
-        <option value="America/Chicago">United States (Central)</option>
-        <option value="America/Denver">United States (Mountain)</option>
-        <option value="America/Los_Angeles">United States (Pacific)</option>
-        <option value="America/Toronto">Canada (Eastern)</option>
-        <option value="America/Sao_Paulo">Brazil</option>
-        <option value="Asia/Dubai">United Arab Emirates</option>
-        <option value="Asia/Kolkata">India</option>
-        <option value="Asia/Singapore">Singapore</option>
-        <option value="Asia/Tokyo">Japan</option>
-        <option value="Asia/Shanghai">China</option>
-        <option value="Asia/Manila">Philippines</option>
-        <option value="Australia/Sydney">Australia (Sydney)</option>
-        <option value="Pacific/Auckland">New Zealand</option>
-        <option value="UTC">Other / UTC</option>
-      </select>
-      <div class="ob-actions"><button class="btn" onclick="obBack(1)">Back</button><button class="btn btn-primary" style="flex:2" onclick="obNext(1)">Continue</button></div>
-    </div>
-
-    <div class="ob-step" data-step="2">
-      <div class="ob-eyebrow">Step 3 of 6</div>
-      <div class="ob-title">How long have you been trading?</div>
-      <div class="ob-sub">This tunes how much detail shows up in each signal breakdown.</div>
-      <div class="option-grid" id="obExperience">
-        <div class="option-pill" data-val="new">New (&lt;1 year)</div>
-        <div class="option-pill" data-val="intermediate">Intermediate (1–3 years)</div>
-        <div class="option-pill" data-val="experienced">Experienced (3+ years)</div>
+  <!-- ================= AUTH ================= -->
+  <div class="overlay overlay-hidden" id="authScreen">
+    <div class="overlay-inner">
+      <div class="overlay-wordmark">PipX Ledger</div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabLogin" onclick="setAuthTab('login')">Sign in</button>
+        <button class="auth-tab" id="tabRegister" onclick="setAuthTab('register')">Create account</button>
       </div>
-      <div class="ob-actions"><button class="btn" onclick="obBack(2)">Back</button><button class="btn btn-primary" style="flex:2" onclick="obNext(2)">Continue</button></div>
-    </div>
 
-    <div class="ob-step" data-step="3">
-      <div class="ob-eyebrow">Step 4 of 6</div>
-      <div class="ob-title">What's your risk appetite?</div>
-      <div class="ob-sub">Affects which confluence grade we highlight first — sniper-only vs everything worth watching.</div>
-      <div class="option-grid" id="obRisk">
-        <div class="option-pill" data-val="conservative">Conservative</div>
-        <div class="option-pill" data-val="balanced">Balanced</div>
-        <div class="option-pill" data-val="aggressive">Aggressive</div>
+      <div id="authLoginPane">
+        <label class="field-label">Email</label>
+        <input class="text-input" id="loginEmail" type="email" placeholder="you@example.com" autocomplete="email">
+        <label class="field-label">Password</label>
+        <input class="text-input" id="loginPassword" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter') doLogin();">
+        <div class="form-error" id="loginError" style="display:none"></div>
+        <button class="btn btn-primary btn-block" id="loginSubmit" onclick="doLogin()">Sign in</button>
       </div>
-      <div class="ob-actions"><button class="btn" onclick="obBack(3)">Back</button><button class="btn btn-primary" style="flex:2" onclick="obNext(3)">Continue</button></div>
-    </div>
 
-    <div class="ob-step" data-step="4">
-      <div class="ob-eyebrow">Step 5 of 6</div>
-      <div class="ob-title">Which pairs do you actually watch?</div>
-      <div class="ob-sub">Pick as many as you like — this becomes your default scan. You can still search any symbol later.</div>
-      <div class="option-grid" id="obPairs">
-        <div class="option-pill" data-val="EURUSD">EURUSD</div>
-        <div class="option-pill" data-val="GBPUSD">GBPUSD</div>
-        <div class="option-pill" data-val="USDJPY">USDJPY</div>
-        <div class="option-pill" data-val="AUDUSD">AUDUSD</div>
-        <div class="option-pill" data-val="USDCAD">USDCAD</div>
-        <div class="option-pill" data-val="XAUUSD">XAUUSD</div>
-        <div class="option-pill" data-val="BTCUSD">BTCUSD</div>
+      <div id="authRegisterPane" style="display:none">
+        <label class="field-label">What should we call you?</label>
+        <input class="text-input" id="regName" placeholder="First name" maxlength="30">
+        <label class="field-label">Email</label>
+        <input class="text-input" id="regEmail" type="email" placeholder="you@example.com" autocomplete="email">
+        <label class="field-label">Password</label>
+        <input class="text-input" id="regPassword" type="password" placeholder="At least 8 characters" autocomplete="new-password" onkeydown="if(event.key==='Enter') doRegister();">
+        <div class="form-error" id="regError" style="display:none"></div>
+        <button class="btn btn-primary btn-block" id="regSubmit" onclick="doRegister()">Create account</button>
       </div>
-      <div class="ob-actions"><button class="btn" onclick="obBack(4)">Back</button><button class="btn btn-primary" style="flex:2" onclick="obNext(4)">Continue</button></div>
-    </div>
 
-    <div class="ob-step" data-step="5">
-      <div class="ob-eyebrow">Step 6 of 6</div>
-      <div class="ob-title">Which sessions do you trade?</div>
-      <div class="ob-sub">We'll flag when your sessions are live in the header clock.</div>
-      <div class="option-grid" id="obSessions">
-        <div class="option-pill" data-val="asia">Asia</div>
-        <div class="option-pill" data-val="london">London</div>
-        <div class="option-pill" data-val="new_york">New York</div>
+      <div class="form-note" id="authBackendNote"></div>
+      <div class="form-note" style="text-align:center; margin-top:20px;">
+        <button class="link-btn" onclick="continueAsGuest()">Skip for now — explore as a guest</button>
       </div>
-      <div class="ob-actions"><button class="btn" onclick="obBack(5)">Back</button><button class="btn btn-primary" style="flex:2" onclick="finishOnboarding()">Enter the desk</button></div>
     </div>
   </div>
 
-  <!-- ================= TOP BAR ================= -->
-  <div class="topbar">
-    <div class="brand">
-      <img src="pipx-header.png" alt="PipX" class="brand-logo">
-      <div class="brand-mark">DXY <span>Desk</span></div>
-      <span class="data-badge" id="dataBadge">demo</span>
-    </div>
-    <div class="clock-cluster">
-      <div class="sessions" id="sessionDots">
-        <div class="session-dot" data-s="asia" title="Asia"></div>
-        <div class="session-dot" data-s="london" title="London"></div>
-        <div class="session-dot" data-s="new_york" title="New York"></div>
+  <!-- ================= ONBOARDING ================= -->
+  <div class="overlay overlay-hidden" id="onboarding">
+    <div class="overlay-inner">
+      <div class="ob-step active" data-step="0">
+        <div class="ob-count">Step 1 of 5</div>
+        <div class="ob-title">Where are you trading from?</div>
+        <div class="ob-sub">So the clock and session windows show your local time, not just UTC.</div>
+        <label class="field-label">Country</label>
+        <select class="text-input" id="obCountry">
+          <option value="" disabled selected>Select your country</option>
+          <option value="Africa/Johannesburg">South Africa</option>
+          <option value="Africa/Lagos">Nigeria</option>
+          <option value="Africa/Nairobi">Kenya</option>
+          <option value="Africa/Cairo">Egypt</option>
+          <option value="Europe/London">United Kingdom</option>
+          <option value="Europe/Berlin">Germany / Central Europe</option>
+          <option value="America/New_York">United States (Eastern)</option>
+          <option value="America/Chicago">United States (Central)</option>
+          <option value="America/Denver">United States (Mountain)</option>
+          <option value="America/Los_Angeles">United States (Pacific)</option>
+          <option value="America/Toronto">Canada (Eastern)</option>
+          <option value="America/Sao_Paulo">Brazil</option>
+          <option value="Asia/Dubai">UAE</option>
+          <option value="Asia/Kolkata">India</option>
+          <option value="Asia/Singapore">Singapore</option>
+          <option value="Asia/Tokyo">Japan</option>
+          <option value="Australia/Sydney">Australia (Eastern)</option>
+          <option value="UTC">Other / UTC</option>
+        </select>
+        <div class="ob-actions"><button class="btn btn-primary btn-block" onclick="obNext(0)">Continue</button></div>
       </div>
-      <span class="clock-time" id="clockTime">--:--</span>
-      <span>UTC</span>
-      <span id="localTimeWrap" style="display:none"><span class="clock-sep">·</span><span class="clock-time" id="localTime">--:--</span><span id="localTimeLabel">local</span></span>
+
+      <div class="ob-step" data-step="1">
+        <div class="ob-count">Step 2 of 5</div>
+        <div class="ob-title">How long have you been trading?</div>
+        <div class="ob-sub">This tunes how much detail shows up in each signal breakdown.</div>
+        <div class="option-grid" id="obExperience">
+          <div class="option-pill" data-val="new">New (&lt;1 year)</div>
+          <div class="option-pill" data-val="intermediate">Intermediate (1–3 years)</div>
+          <div class="option-pill" data-val="experienced">Experienced (3+ years)</div>
+        </div>
+        <div class="ob-actions"><button class="btn" onclick="obBack(1)">Back</button><button class="btn btn-primary" style="flex:2" onclick="obNext(1)">Continue</button></div>
+      </div>
+
+      <div class="ob-step" data-step="2">
+        <div class="ob-count">Step 3 of 5</div>
+        <div class="ob-title">What's your risk appetite?</div>
+        <div class="ob-sub">Affects which confluence grade we highlight first — sniper-only vs everything worth watching.</div>
+        <div class="option-grid" id="obRisk">
+          <div class="option-pill" data-val="conservative">Conservative</div>
+          <div class="option-pill" data-val="balanced">Balanced</div>
+          <div class="option-pill" data-val="aggressive">Aggressive</div>
+        </div>
+        <div class="ob-actions"><button class="btn" onclick="obBack(2)">Back</button><button class="btn btn-primary" style="flex:2" onclick="obNext(2)">Continue</button></div>
+      </div>
+
+      <div class="ob-step" data-step="3">
+        <div class="ob-count">Step 4 of 5</div>
+        <div class="ob-title">Which pairs do you actually watch?</div>
+        <div class="ob-sub">Pick as many as you like — you can star or unstar any symbol later from the Signals tab.</div>
+        <div class="option-grid" id="obPairs">
+          <div class="option-pill" data-val="EURUSD">EURUSD</div>
+          <div class="option-pill" data-val="GBPUSD">GBPUSD</div>
+          <div class="option-pill" data-val="USDJPY">USDJPY</div>
+          <div class="option-pill" data-val="AUDUSD">AUDUSD</div>
+          <div class="option-pill" data-val="USDCAD">USDCAD</div>
+          <div class="option-pill" data-val="XAUUSD">XAUUSD</div>
+          <div class="option-pill" data-val="BTCUSD">BTCUSD</div>
+        </div>
+        <div class="ob-actions"><button class="btn" onclick="obBack(3)">Back</button><button class="btn btn-primary" style="flex:2" onclick="obNext(3)">Continue</button></div>
+      </div>
+
+      <div class="ob-step" data-step="4">
+        <div class="ob-count">Step 5 of 5</div>
+        <div class="ob-title">Which sessions do you trade?</div>
+        <div class="ob-sub">We'll flag when your sessions are live in the header clock.</div>
+        <div class="option-grid" id="obSessions">
+          <div class="option-pill" data-val="asia">Asia</div>
+          <div class="option-pill" data-val="london">London</div>
+          <div class="option-pill" data-val="new_york">New York</div>
+        </div>
+        <div class="ob-actions"><button class="btn" onclick="obBack(4)">Back</button><button class="btn btn-primary" style="flex:2" onclick="finishOnboarding()">Enter the desk</button></div>
+      </div>
     </div>
+  </div>
+
+  <!-- ================= MASTHEAD ================= -->
+  <div class="masthead">
+    <div class="masthead-row">
+      <div class="masthead-brand">
+        <img src="pipx-header.png" alt="" class="masthead-logo">
+        <div class="masthead-title">PipX <em>Ledger</em></div>
+        <div class="masthead-edition" id="editionLine">DXY Desk</div>
+      </div>
+      <div class="masthead-right">
+        <span><span class="status-dot" id="statusDot"></span><span id="dataBadge">demo</span></span>
+        <span id="clockTime">--:--</span>
+        <span>UTC</span>
+        <span id="localTimeWrap" style="display:none">· <span id="localTime">--:--</span> <span id="localTimeLabel">local</span></span>
+        <button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
+          <span id="refreshLabel">refresh</span>
+        </button>
+      </div>
+    </div>
+    <div class="ticker-strip"><div class="ticker-track" id="tickerTrack"></div></div>
   </div>
 
   <div class="shell">
-    <!-- ================= NAV ================= -->
     <nav class="bottom-nav" id="bottomNav">
       <button class="nav-btn active" data-screen="signals" onclick="showScreen('signals')">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 17l5-6 4 4 8-9"/></svg>
@@ -410,129 +410,145 @@
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12a9 9 0 1 1 9 9"/><path d="M3 12h6l3-8 4 16 3-8h2"/></svg>
         DXY
       </button>
-      <button class="nav-btn" data-screen="profile" onclick="showScreen('profile')">
+      <button class="nav-btn" data-screen="desk" onclick="showScreen('desk')">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
-        Profile
+        Desk
       </button>
     </nav>
 
     <main>
       <!-- ================= SIGNALS SCREEN ================= -->
       <section class="screen active" id="screen-signals">
-        <h1 class="page-title" id="greeting">Signals</h1>
+        <div class="page-head">
+          <h1 class="page-title" id="greeting">Signals</h1>
+          <span class="page-note" id="lastUpdatedNote"></span>
+        </div>
 
-        <div class="dxy-hero" id="dxyHero"></div>
+        <div class="panel dxy-hero" id="dxyHero"></div>
 
-        <div class="section-label">Search a symbol</div>
-        <div class="symbol-search">
+        <div class="rule-label">Search a symbol</div>
+        <div style="display:flex; gap:8px; margin-bottom:16px;">
           <input class="text-input" id="symbolSearchInput" placeholder="e.g. USDCHF, XAUUSD, USOIL" autocapitalize="characters" onkeydown="if(event.key==='Enter') searchSymbol();">
           <button class="btn btn-primary" onclick="searchSymbol()">Search</button>
         </div>
         <div id="symbolSearchResult"></div>
 
-        <div class="section-label">Next high-impact release</div>
+        <div class="rule-label">Next high-impact release</div>
         <div class="news-strip" id="newsStripMini"></div>
 
-        <div class="section-label">Watchlist confluence</div>
-        <div id="signalsList"></div>
+        <div class="rule-label">Watchlist confluence</div>
+        <div class="filter-bar">
+          <div class="filter-group" id="dirFilter">
+            <button class="filter-chip active" data-val="all">All</button>
+            <button class="filter-chip" data-val="bullish">Bullish</button>
+            <button class="filter-chip" data-val="bearish">Bearish</button>
+            <button class="filter-chip" data-val="starred">Starred</button>
+          </div>
+          <select class="sort-select" id="sortSelect" onchange="renderSignals()">
+            <option value="score">Sort: score</option>
+            <option value="symbol">Sort: symbol</option>
+            <option value="grade">Sort: grade</option>
+          </select>
+        </div>
+        <div class="signal-list" id="signalsList"></div>
       </section>
 
       <!-- ================= NEWS SCREEN ================= -->
       <section class="screen" id="screen-news">
         <h1 class="page-title">Economic Calendar</h1>
-        <div class="section-label">Upcoming</div>
+        <div class="rule-label">Upcoming</div>
         <div id="newsFullList"></div>
       </section>
 
       <!-- ================= DXY SCREEN ================= -->
       <section class="screen" id="screen-dxy">
         <h1 class="page-title">Dollar Index</h1>
-        <div class="dxy-hero" id="dxyHero2"></div>
-        <div class="dxy-detail-grid" id="dxyStats"></div>
-        <div class="section-label">AI dollar-sentiment read</div>
-        <div class="narrative-box" id="dxyNarrative">Loading…</div>
+        <div class="panel dxy-hero" id="dxyHero2"></div>
+        <div class="dxy-grid" id="dxyStats"></div>
+        <div class="rule-label">AI dollar-sentiment read</div>
+        <div class="panel narrative" id="dxyNarrative">Loading…</div>
       </section>
 
-      <!-- ================= PROFILE SCREEN ================= -->
-      <section class="screen" id="screen-profile">
+      <!-- ================= DESK SCREEN ================= -->
+      <section class="screen" id="screen-desk">
         <h1 class="page-title">Your desk</h1>
-        <div class="profile-card" id="profileCard"></div>
-        <button class="btn btn-block" onclick="resetProfile()">Edit setup</button>
+        <div class="panel" style="padding:20px;" id="deskCard"></div>
+        <button class="btn btn-block" onclick="editSetup()">Edit setup</button>
+        <button class="btn btn-block btn-ghost" id="logoutBtn" onclick="doLogout()" style="display:none">Sign out</button>
       </section>
     </main>
   </div>
 </div>
 
+<div class="toast-wrap" id="toastWrap"></div>
+
 <script>
 /* ============================================================
-   CONFIG — point this at your deployed backend to go live.
-   Empty string = demo mode using realistic mock data below,
-   so the UI is fully explorable before the backend is hosted.
+   CONFIG
    ============================================================ */
 const API_BASE = "https://dxy-news-signals.onrender.com";
+const AUTH_ENABLED = true; // set false to skip the login screen entirely and always run in guest mode
 
-/* ---------------- Storage (profile persistence) ---------------- */
+/* ---------------- Storage (session + local fallback profile) ---------------- */
 const hasWidgetStorage = typeof window.storage !== "undefined";
-let memoryProfile = null;
+let memoryStore = {};
 
-async function saveProfile(profile){
-  if(hasWidgetStorage){
-    try{ await window.storage.set('trader_profile', JSON.stringify(profile), false); return; }catch(e){}
-  }
-  memoryProfile = profile;
-  try{ localStorage.setItem('trader_profile_fallback', JSON.stringify(profile)); }catch(e){}
+async function storeSet(key, value){
+  if(hasWidgetStorage){ try{ await window.storage.set(key, JSON.stringify(value), false); return; }catch(e){} }
+  memoryStore[key] = value;
+  try{ localStorage.setItem('pipx_' + key, JSON.stringify(value)); }catch(e){}
 }
-async function loadProfile(){
+async function storeGet(key){
   if(hasWidgetStorage){
-    try{
-      const r = await window.storage.get('trader_profile', false);
-      if(r && r.value) return JSON.parse(r.value);
-    }catch(e){ /* key not found */ }
+    try{ const r = await window.storage.get(key, false); if(r && r.value) return JSON.parse(r.value); }catch(e){}
   }
-  if(memoryProfile) return memoryProfile;
-  try{
-    const raw = localStorage.getItem('trader_profile_fallback');
-    if(raw) return JSON.parse(raw);
-  }catch(e){}
+  if(key in memoryStore) return memoryStore[key];
+  try{ const raw = localStorage.getItem('pipx_' + key); if(raw) return JSON.parse(raw); }catch(e){}
   return null;
 }
-async function clearProfile(){
-  if(hasWidgetStorage){ try{ await window.storage.delete('trader_profile', false); }catch(e){} }
-  memoryProfile = null;
-  try{ localStorage.removeItem('trader_profile_fallback'); }catch(e){}
+async function storeDelete(key){
+  if(hasWidgetStorage){ try{ await window.storage.delete(key, false); }catch(e){} }
+  delete memoryStore[key];
+  try{ localStorage.removeItem('pipx_' + key); }catch(e){}
 }
 
-/* ---------------- Mock data (mirrors backend JSON shapes exactly) ---------------- */
-const MOCK_DXY = {
-  bias: "bullish", confidence: "moderate", htf_bias: "bullish", mtf_bias: "bullish",
-  momentum_pct: 0.284, source: "synthetic"
+/* ---------------- App state ---------------- */
+const State = {
+  mode: null,          // 'account' | 'guest'
+  token: null,
+  user: null,
+  profile: null,
+  dxy: null,
+  news: [],
+  signals: [],
+  history: [],
+  favorites: [],       // symbols starred beyond the onboarding watchlist
+  dirFilter: 'all',
+  lastUpdated: null,
+  reminders: {},        // eventId -> timeout handle
 };
 
+/* ---------------- Mock data (mirrors backend JSON shapes) ---------------- */
+const MOCK_DXY = { bias:"bullish", confidence:"moderate", htf_bias:"bullish", mtf_bias:"bullish", momentum_pct:0.284, source:"synthetic" };
+const MOCK_HISTORY = { closes:[103.1,103.3,103.2,103.5,103.7,103.6,103.9,104.0,103.85,104.1,104.3,104.2,104.4,104.6,104.5], source:"synthetic" };
+
 const MOCK_NEWS = [
-  {
-    id: "FOMC-2026-09-16", category: "FOMC", label: "FOMC Rate Decision", impact: "critical",
-    utc: "2026-09-16T18:00:00+00:00", local_et: "2026-09-16 14:00 ET", seconds_until: 3600*24*3,
-    enrichment: { forecast: "Hold at 4.00–4.25%", previous: "4.00–4.25%", actual: null, surprise: "pending",
-      usd_read: "Markets are pricing near-certain odds of a hold; the statement language on 2027 cuts is the real driver." }
-  },
-  {
-    id: "NFP-2026-10-02", category: "NFP", label: "Employment Situation (NFP)", impact: "high",
-    utc: "2026-10-02T12:30:00+00:00", local_et: "2026-10-02 08:30 ET", seconds_until: 3600*24*19,
-    enrichment: { forecast: "+165K", previous: "+142K", actual: null, surprise: "pending",
-      usd_read: "A beat here would reinforce the dollar's bullish structure; a soft print risks a sharp mean-reversion." }
-  },
-  {
-    id: "CPI-2026-10-14", category: "CPI", label: "Consumer Price Index (CPI)", impact: "high",
-    utc: "2026-10-14T12:30:00+00:00", local_et: "2026-10-14 08:30 ET", seconds_until: 3600*24*31,
-    enrichment: { forecast: "+0.3% m/m", previous: "+0.2% m/m", actual: null, surprise: "pending",
-      usd_read: "Core CPI has been sticky above target — another firm print keeps the Fed cautious and USD supported." }
-  },
-  {
-    id: "PPI-2026-10-15", category: "PPI", label: "Producer Price Index (PPI)", impact: "medium",
-    utc: "2026-10-15T12:30:00+00:00", local_et: "2026-10-15 08:30 ET", seconds_until: 3600*24*32,
-    enrichment: { forecast: "+0.2% m/m", previous: "+0.1% m/m", actual: null, surprise: "pending",
-      usd_read: "Usually overshadowed by CPI the day before, but a hot print can extend the same dollar move." }
-  }
+  { id:"FOMC-2026-09-16", category:"FOMC", label:"FOMC Rate Decision", impact:"critical",
+    utc:"2026-09-16T18:00:00+00:00", local_et:"2026-09-16 14:00 ET", seconds_until:3600*24*3,
+    enrichment:{ forecast:"Hold at 4.00–4.25%", previous:"4.00–4.25%", actual:null, surprise:"pending",
+      usd_read:"Markets are pricing near-certain odds of a hold; the statement language on 2027 cuts is the real driver." } },
+  { id:"NFP-2026-10-02", category:"NFP", label:"Employment Situation (NFP)", impact:"high",
+    utc:"2026-10-02T12:30:00+00:00", local_et:"2026-10-02 08:30 ET", seconds_until:3600*24*19,
+    enrichment:{ forecast:"+165K", previous:"+142K", actual:null, surprise:"pending",
+      usd_read:"A beat here would reinforce the dollar's bullish structure; a soft print risks a sharp mean-reversion." } },
+  { id:"CPI-2026-10-14", category:"CPI", label:"Consumer Price Index (CPI)", impact:"high",
+    utc:"2026-10-14T12:30:00+00:00", local_et:"2026-10-14 08:30 ET", seconds_until:3600*24*31,
+    enrichment:{ forecast:"+0.3% m/m", previous:"+0.2% m/m", actual:null, surprise:"pending",
+      usd_read:"Core CPI has been sticky above target — another firm print keeps the Fed cautious and USD supported." } },
+  { id:"PPI-2026-10-15", category:"PPI", label:"Producer Price Index (PPI)", impact:"medium",
+    utc:"2026-10-15T12:30:00+00:00", local_et:"2026-10-15 08:30 ET", seconds_until:3600*24*32,
+    enrichment:{ forecast:"+0.2% m/m", previous:"+0.1% m/m", actual:null, surprise:"pending",
+      usd_read:"Usually overshadowed by CPI the day before, but a hot print can extend the same dollar move." } }
 ];
 
 const MOCK_SIGNALS = [
@@ -565,242 +581,135 @@ const MOCK_SIGNALS = [
     has_liquidity_sweep:true, has_choch:false, has_fvg:false, veto:false,
     fundamental:{expected_bias:null, agrees:null, confidence:"weak", note:"No DXY correlation mapping for this symbol — fundamental read skipped."},
     news_note:"No high-impact news in range.",
-    reasons:["HTF and MTF structure agree.","Liquidity sweep just triggered in this direction.","No DXY correlation mapping for this symbol — fundamental read skipped."] },
+    reasons:["HTF and MTF structure agree.","Liquidity sweep just triggered in this direction.","No DXY correlation mapping for this symbol — fundamental read skipped."] }
 ];
 
 const MOCK_NARRATIVE = "The dollar's own structure has flipped bullish on both the hourly and 15-minute reads, with momentum accelerating into the FOMC decision. Sticky core inflation and a resilient labor market are keeping rate-cut bets modest, which lines up with the structural read — but positioning looks stretched heading into Wednesday's statement, so a dovish surprise could unwind this quickly.";
 
-/* ---------------- API wrappers (real fetches if API_BASE is set) ---------------- */
-async function apiGet(path, mockValue){
-  if(!API_BASE) return mockValue;
+/* ---------------- API wrappers ---------------- */
+function authHeaders(){
+  return State.token ? { 'Authorization': 'Bearer ' + State.token } : {};
+}
+
+async function apiCall(method, path, body, mockValue, useAuth){
+  if(!API_BASE) return { ok:false, data:mockValue, isMock:true };
+  let coldStartTimer = setTimeout(() => showToast("Waking up the server — the free-tier backend naps after 15 minutes idle, first load can take up to a minute."), 4000);
   try{
-    const res = await fetch(API_BASE + path);
-    if(!res.ok) throw new Error('bad response');
-    return await res.json();
+    const opts = { method, headers:{ 'Content-Type':'application/json', ...(useAuth ? authHeaders() : {}) } };
+    if(body !== undefined) opts.body = JSON.stringify(body);
+    const res = await fetch(API_BASE + path, opts);
+    clearTimeout(coldStartTimer);
+    const data = await res.json().catch(() => null);
+    return { ok: res.ok, status: res.status, data: res.ok ? data : (data || mockValue), isMock:false };
   }catch(e){
+    clearTimeout(coldStartTimer);
     console.warn('API unavailable, falling back to mock:', path, e);
-    return mockValue;
+    return { ok:false, data:mockValue, isMock:true, networkError:true };
   }
 }
+const apiGet = (path, mock, useAuth) => apiCall('GET', path, undefined, mock, useAuth);
+const apiPost = (path, body, mock, useAuth) => apiCall('POST', path, body, mock, useAuth);
+const apiPut = (path, body, mock, useAuth) => apiCall('PUT', path, body, mock, useAuth);
 
-/* ---------------- Rendering ---------------- */
-function fmtCountdown(seconds){
-  if(seconds < 0) return "released";
-  const d = Math.floor(seconds/86400);
-  const h = Math.floor((seconds%86400)/3600);
-  const m = Math.floor((seconds%3600)/60);
-  if(d > 0) return `${d}d ${h}h`;
-  if(h > 0) return `${h}h ${m}m`;
-  return `${m}m`;
+/* ---------------- Toasts ---------------- */
+let toastTimer = null;
+function showToast(msg, ms){
+  const wrap = document.getElementById('toastWrap');
+  wrap.innerHTML = `<div class="toast">${msg}</div>`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { wrap.innerHTML = ''; }, ms || 6000);
 }
 
-function gaugeSvg(score, biasColorClass){
-  // score 0-100 mapped to a semicircle arc
-  const r = 46, cx = 60, cy = 60;
-  const pct = Math.max(0, Math.min(100, score)) / 100;
-  const angle = Math.PI * (1 - pct); // 180deg (0) -> 0deg (100)
-  const x = cx + r * Math.cos(angle);
-  const y = cy - r * Math.sin(angle) + 6;
-  const largeArc = pct > 0.5 ? 1 : 0;
-  const color = biasColorClass === 'bullish' ? 'var(--bull)' : (biasColorClass === 'bearish' ? 'var(--bear)' : 'var(--muted)');
-  return `<svg class="gauge" width="120" height="76" viewBox="0 0 120 76">
-    <path d="M 14 66 A 46 46 0 0 1 106 66" stroke="var(--hairline)" stroke-width="8" fill="none" stroke-linecap="round"/>
-    <path d="M 14 66 A 46 46 0 ${largeArc} 1 ${x} ${y}" stroke="${color}" stroke-width="8" fill="none" stroke-linecap="round"/>
-  </svg>`;
+/* ---------------- Auth screens ---------------- */
+function setAuthTab(which){
+  document.getElementById('tabLogin').classList.toggle('active', which === 'login');
+  document.getElementById('tabRegister').classList.toggle('active', which === 'register');
+  document.getElementById('authLoginPane').style.display = which === 'login' ? '' : 'none';
+  document.getElementById('authRegisterPane').style.display = which === 'register' ? '' : 'none';
 }
 
-function renderDxyHero(targetId, dxy){
-  const el = document.getElementById(targetId);
-  const cls = dxy.bias === 'bullish' ? 'bullish' : (dxy.bias === 'bearish' ? 'bearish' : '');
-  const momentumSign = dxy.momentum_pct >= 0 ? '+' : '';
-  el.innerHTML = `
-    ${gaugeSvg(dxy.bias === 'bearish' ? 100 - 65 : 65, cls)}
-    <div class="dxy-hero-info">
-      <div class="dxy-bias-word ${cls}">${dxy.bias}</div>
-      <div class="dxy-meta">HTF <b>${dxy.htf_bias || '—'}</b> · MTF <b>${dxy.mtf_bias || '—'}</b> · momentum <b>${momentumSign}${dxy.momentum_pct}%</b></div>
-      <div class="conf-pill">${dxy.confidence} confidence · ${dxy.source}</div>
-    </div>`;
+function showAuthError(id, msg){
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.style.display = msg ? '' : 'none';
 }
 
-function renderNewsStripMini(events){
-  const el = document.getElementById('newsStripMini');
-  el.innerHTML = events.slice(0,4).map(e => `
-    <div class="news-chip" onclick="showScreen('news')">
-      <span class="impact ${e.impact}">${e.impact}</span>
-      <div class="label">${e.label}</div>
-      <div class="countdown">in ${fmtCountdown(e.seconds_until)}</div>
-    </div>`).join('');
+async function doLogin(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  showAuthError('loginError', '');
+  if(!email || !password){ showAuthError('loginError', 'Enter your email and password.'); return; }
+  const btn = document.getElementById('loginSubmit');
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  const r = await apiPost('/api/auth/login', { email, password }, null, false);
+  btn.disabled = false; btn.textContent = 'Sign in';
+  if(r.networkError){ showAuthError('loginError', "Can't reach the backend right now — try again, or continue as a guest below."); return; }
+  if(!r.ok){ showAuthError('loginError', (r.data && r.data.detail) || 'Incorrect email or password.'); return; }
+  await enterAccountSession(r.data);
 }
 
-function renderNewsFullList(events){
-  const el = document.getElementById('newsFullList');
-  el.innerHTML = events.map(e => {
-    const en = e.enrichment || {};
-    const surpriseClass = 'surprise-' + (en.surprise || 'pending');
-    return `
-    <div class="news-item">
-      <div class="news-item-head">
-        <div>
-          <div class="news-item-title">${e.label}</div>
-          <div class="news-item-time">${e.local_et} · in ${fmtCountdown(e.seconds_until)}</div>
-        </div>
-        <span class="impact ${e.impact}">${e.impact}</span>
-      </div>
-      <div class="news-figures">
-        <div class="fig"><span class="fig-label">Forecast</span><span class="fig-val">${en.forecast ?? '—'}</span></div>
-        <div class="fig"><span class="fig-label">Previous</span><span class="fig-val">${en.previous ?? '—'}</span></div>
-        <div class="fig"><span class="fig-label">Actual</span><span class="fig-val ${surpriseClass}">${en.actual ?? 'pending'}</span></div>
-      </div>
-      <div class="usd-read">${en.usd_read || ''}</div>
-    </div>`;
-  }).join('');
+async function doRegister(){
+  const name = document.getElementById('regName').value.trim() || 'Trader';
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value;
+  showAuthError('regError', '');
+  if(!email || !password){ showAuthError('regError', 'Enter an email and password.'); return; }
+  if(password.length < 8){ showAuthError('regError', 'Password must be at least 8 characters.'); return; }
+  const btn = document.getElementById('regSubmit');
+  btn.disabled = true; btn.textContent = 'Creating account…';
+  const r = await apiPost('/api/auth/register', { email, password, name }, null, false);
+  btn.disabled = false; btn.textContent = 'Create account';
+  if(r.networkError){ showAuthError('regError', "Can't reach the backend right now — try again, or continue as a guest below."); return; }
+  if(!r.ok){ showAuthError('regError', (r.data && r.data.detail) || 'Could not create that account.'); return; }
+  await enterAccountSession(r.data);
 }
 
-function signalRowHtml(s, detailId){
-  const dirIcon = s.direction === 'bullish' ? '▲' : '▼';
-  return `
-    <div>
-      <div class="signal-row" onclick="toggleDetail('${detailId}')">
-        <div class="dir-bar ${s.direction}"></div>
-        <div class="signal-main">
-          <div class="signal-top">
-            <span class="signal-symbol">${s.symbol}</span>
-            <span class="signal-dir-icon ${s.direction}">${dirIcon}</span>
-            ${s.veto ? '<span class="veto-tag">Blackout</span>' : ''}
-          </div>
-          <div class="signal-sub">${s.has_choch ? 'CHoCH · ' : ''}${s.has_liquidity_sweep ? 'Sweep · ' : ''}${s.has_fvg ? 'FVG' : 'No fresh FVG'}</div>
-        </div>
-        <div class="signal-score">
-          <div class="score-num">${s.score}</div>
-          <div class="grade-label grade-${s.grade}">${s.grade}</div>
-        </div>
-      </div>
-      <div class="signal-detail" id="detail-${detailId}">
-        <div class="signal-detail-inner">
-          ${s.reasons.map(r => `<div class="reason-row">${r}</div>`).join('')}
-          <div class="fund-note">${s.news_note}</div>
-        </div>
-      </div>
-    </div>`;
-}
-
-function renderSignals(signals, profile){
-  const el = document.getElementById('signalsList');
-  const watch = profile && profile.pairs && profile.pairs.length ? profile.pairs : null;
-  const filtered = watch ? signals.filter(s => watch.includes(s.symbol)) : signals;
-  const list = filtered.length ? filtered : signals;
-  el.innerHTML = list.map((s, i) => signalRowHtml(s, 'list-' + i)).join('');
-}
-
-function toggleDetail(id){
-  const el = document.getElementById('detail-' + id);
-  document.querySelectorAll('.signal-detail.open').forEach(d => { if(d !== el) d.classList.remove('open'); });
-  el.classList.toggle('open');
-}
-
-/* ---------------- Symbol search (live lookup on any symbol, not just the watchlist) ---------------- */
-async function searchSymbol(){
-  const raw = document.getElementById('symbolSearchInput').value.trim().toUpperCase();
-  const resultEl = document.getElementById('symbolSearchResult');
-  if(!raw){ resultEl.innerHTML = ''; return; }
-
-  resultEl.innerHTML = `<div class="search-status">Scanning ${raw}…</div>`;
-
-  const resp = await apiGet(`/api/signals?symbols=${encodeURIComponent(raw)}`, 'DEMO_LOOKUP');
-
-  let signal = null;
-  if(resp === 'DEMO_LOOKUP' || !API_BASE){
-    // Demo mode: only symbols already in the mock set have a signal.
-    signal = MOCK_SIGNALS.find(s => s.symbol === raw) || null;
-  } else if(resp && Array.isArray(resp.signals)){
-    signal = resp.signals.find(s => s.symbol === raw) || null;
-  }
-
-  if(!signal){
-    resultEl.innerHTML = `<div class="search-empty">No active signal for <b>${raw}</b> right now — either it isn't a tracked symbol or confluence hasn't lined up on any timeframe.</div>`;
-    return;
-  }
-  resultEl.innerHTML = signalRowHtml(signal, 'search-0');
-}
-
-function renderDxyStats(dxy){
-  const el = document.getElementById('dxyStats');
-  el.innerHTML = `
-    <div class="stat-box"><div class="stat-label">HTF bias</div><div class="stat-val">${dxy.htf_bias || '—'}</div></div>
-    <div class="stat-box"><div class="stat-label">MTF bias</div><div class="stat-val">${dxy.mtf_bias || '—'}</div></div>
-    <div class="stat-box"><div class="stat-label">Momentum</div><div class="stat-val">${dxy.momentum_pct >= 0 ? '+' : ''}${dxy.momentum_pct}%</div></div>
-    <div class="stat-box"><div class="stat-label">Source</div><div class="stat-val">${dxy.source}</div></div>`;
-}
-
-function renderProfile(p){
-  const el = document.getElementById('profileCard');
-  if(!p){ el.innerHTML = '<div style="color:var(--muted)">No profile yet.</div>'; return; }
-  el.innerHTML = `
-    <div class="profile-name">${p.name}</div>
-    <div class="profile-row"><span class="k">Experience</span><span>${p.experience}</span></div>
-    <div class="profile-row"><span class="k">Risk appetite</span><span>${p.risk_appetite}</span></div>
-    <div class="profile-row"><span class="k">Watchlist</span></div>
-    <div class="chip-row">${(p.pairs||[]).map(x => `<span class="chip">${x}</span>`).join('')}</div>
-    <div class="profile-row" style="border-top:none; padding-top:14px"><span class="k">Sessions</span></div>
-    <div class="chip-row">${(p.sessions||[]).map(x => `<span class="chip">${x.replace('_',' ')}</span>`).join('')}</div>
-  `;
-}
-
-/* ---------------- Screen switching ---------------- */
-function showScreen(name){
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-' + name).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.screen === name));
-}
-
-/* ---------------- Clock + sessions ---------------- */
-let currentProfile = null;
-
-function updateClock(){
-  const now = new Date();
-  const hh = String(now.getUTCHours()).padStart(2,'0');
-  const mm = String(now.getUTCMinutes()).padStart(2,'0');
-  document.getElementById('clockTime').textContent = `${hh}:${mm}`;
-
-  const wrap = document.getElementById('localTimeWrap');
-  const tz = currentProfile && currentProfile.timezone;
-  if(tz && tz !== 'UTC'){
-    try{
-      const fmt = new Intl.DateTimeFormat('en-GB', {
-        timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false,
-      });
-      document.getElementById('localTime').textContent = fmt.format(now);
-      const city = tz.split('/').pop().replace(/_/g, ' ');
-      document.getElementById('localTimeLabel').textContent = city;
-      wrap.style.display = '';
-    }catch(e){
-      wrap.style.display = 'none';
-    }
+async function enterAccountSession(sessionData){
+  State.mode = 'account';
+  State.token = sessionData.token;
+  State.user = sessionData.user;
+  State.profile = sessionData.profile;
+  await storeSet('session', { token: State.token, mode: 'account' });
+  document.getElementById('authScreen').classList.add('overlay-hidden');
+  const needsOnboarding = !State.profile || ((!State.profile.pairs || !State.profile.pairs.length) && (!State.profile.sessions || !State.profile.sessions.length));
+  if(needsOnboarding){
+    document.getElementById('onboarding').classList.remove('overlay-hidden');
+    obGoTo(0);
   } else {
-    wrap.style.display = 'none';
+    await boot();
   }
+}
 
-  // rough session windows in UTC (absolute, same for every viewer regardless of local time)
-  const h = now.getUTCHours();
-  const live = {
-    asia: h >= 0 && h < 9,
-    london: h >= 7 && h < 16,
-    new_york: h >= 12 && h < 21,
-  };
-  document.querySelectorAll('.session-dot').forEach(dot => {
-    dot.classList.toggle('live', !!live[dot.dataset.s]);
-  });
+async function continueAsGuest(){
+  State.mode = 'guest';
+  State.token = null;
+  State.user = null;
+  await storeSet('session', { mode: 'guest' });
+  document.getElementById('authScreen').classList.add('overlay-hidden');
+  const localProfile = await storeGet('guest_profile');
+  if(localProfile){
+    State.profile = localProfile;
+    await boot();
+  } else {
+    document.getElementById('onboarding').classList.remove('overlay-hidden');
+    obGoTo(0);
+  }
+}
+
+async function doLogout(){
+  await storeDelete('session');
+  location.reload();
+}
+
+function editSetup(){
+  document.getElementById('onboarding').classList.remove('overlay-hidden');
+  obGoTo(0);
 }
 
 /* ---------------- Onboarding logic ---------------- */
-const obSelections = { timezone:null, experience:null, risk_appetite:null, pairs:[], sessions:[] };
+const obSelections = { experience:null, risk_appetite:null, pairs:[], sessions:[] };
+let obTimezone = null;
 let obStepIndex = 0;
-const OB_STEPS = 5;
-
-function renderObProgress(){
-  const el = document.getElementById('obProgress');
-  el.innerHTML = Array.from({length:OB_STEPS}).map((_,i) => `<div class="${i <= obStepIndex ? 'done' : ''}"></div>`).join('');
-}
 
 function setupOptionGrid(id, key, multi){
   document.querySelectorAll(`#${id} .option-pill`).forEach(pill => {
@@ -828,85 +737,388 @@ function obGoTo(i){
   document.querySelectorAll('.ob-step').forEach(s => s.classList.remove('active'));
   document.querySelector(`.ob-step[data-step="${i}"]`).classList.add('active');
   obStepIndex = i;
-  renderObProgress();
 }
 function obNext(current){
-  if(current === 0 && !document.getElementById('obName').value.trim()){
-    document.getElementById('obName').focus(); return;
-  }
-  if(current === 1){
+  if(current === 0){
     const tz = document.getElementById('obCountry').value;
-    if(!tz){ return; }
-    obSelections.timezone = tz;
+    if(!tz) return;
+    obTimezone = tz;
   }
-  if(current === 2 && !obSelections.experience){ return; }
-  if(current === 3 && !obSelections.risk_appetite){ return; }
-  if(current === 4 && obSelections.pairs.length === 0){ return; }
+  if(current === 1 && !obSelections.experience) return;
+  if(current === 2 && !obSelections.risk_appetite) return;
+  if(current === 3 && obSelections.pairs.length === 0) return;
   obGoTo(current + 1);
 }
 function obBack(current){ obGoTo(current - 1); }
 
 async function finishOnboarding(){
-  if(obSelections.sessions.length === 0){ return; }
+  if(obSelections.sessions.length === 0) return;
+  const name = (State.user && State.user.email ? State.user.email.split('@')[0] : null) || (State.profile && State.profile.name) || 'Trader';
   const profile = {
-    name: document.getElementById('obName').value.trim() || 'Trader',
-    timezone: obSelections.timezone || 'UTC',
-    experience: obSelections.experience,
-    risk_appetite: obSelections.risk_appetite,
-    pairs: obSelections.pairs,
-    sessions: obSelections.sessions,
+    name, timezone: obTimezone || 'UTC',
+    experience: obSelections.experience, risk_appetite: obSelections.risk_appetite,
+    pairs: obSelections.pairs, sessions: obSelections.sessions, account_size: ""
   };
-  await saveProfile(profile);
   document.getElementById('onboarding').classList.add('overlay-hidden');
-  await boot(profile);
+  if(State.mode === 'account' && State.token){
+    const r = await apiPut('/api/profile/me', profile, profile, true);
+    State.profile = r.ok ? r.data : profile;
+  } else {
+    State.profile = profile;
+    await storeSet('guest_profile', profile);
+  }
+  await boot();
 }
 
-async function resetProfile(){
-  await clearProfile();
-  location.reload();
+/* ---------------- Clock + sessions ---------------- */
+function updateClock(){
+  const now = new Date();
+  const hh = String(now.getUTCHours()).padStart(2,'0');
+  const mm = String(now.getUTCMinutes()).padStart(2,'0');
+  document.getElementById('clockTime').textContent = `${hh}:${mm}`;
+
+  const wrap = document.getElementById('localTimeWrap');
+  const tz = State.profile && State.profile.timezone;
+  if(tz && tz !== 'UTC'){
+    try{
+      const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour:'2-digit', minute:'2-digit', hour12:false });
+      document.getElementById('localTime').textContent = fmt.format(now);
+      document.getElementById('localTimeLabel').textContent = tz.split('/').pop().replace(/_/g,' ');
+      wrap.style.display = '';
+    }catch(e){ wrap.style.display = 'none'; }
+  } else { wrap.style.display = 'none'; }
 }
 
-/* ---------------- Boot ---------------- */
-async function boot(profile){
-  currentProfile = profile;
-  updateClock();
-  document.getElementById('greeting').textContent = profile ? `${profile.name}'s signals` : 'Signals';
+function updateLastUpdatedNote(){
+  const el = document.getElementById('lastUpdatedNote');
+  if(!State.lastUpdated){ el.textContent = ''; return; }
+  const secs = Math.floor((Date.now() - State.lastUpdated) / 1000);
+  el.textContent = secs < 5 ? 'updated just now' : `updated ${secs}s ago`;
+}
 
-  const [dxy, news, signalsResp] = await Promise.all([
-    apiGet('/api/dxy/bias', MOCK_DXY),
-    apiGet('/api/news/upcoming?within_hours=720', { events: MOCK_NEWS }),
-    apiGet('/api/signals', { dxy: MOCK_DXY, signals: MOCK_SIGNALS }),
+/* ---------------- Sparkline ---------------- */
+function sparklineSvg(closes, w, h){
+  w = w || 108; h = h || 40;
+  if(!closes || closes.length < 2) return `<svg class="spark" width="${w}" height="${h}"></svg>`;
+  const min = Math.min(...closes), max = Math.max(...closes);
+  const range = (max - min) || 1;
+  const step = w / (closes.length - 1);
+  const pts = closes.map((c,i) => `${(i*step).toFixed(1)},${(h - ((c-min)/range) * (h-4) - 2).toFixed(1)}`).join(' ');
+  const up = closes[closes.length-1] >= closes[0];
+  const color = up ? 'var(--moss)' : 'var(--rust)';
+  return `<svg class="spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+  </svg>`;
+}
+
+/* ---------------- Rendering ---------------- */
+function fmtCountdown(seconds){
+  if(seconds < 0) return "released";
+  const d = Math.floor(seconds/86400), h = Math.floor((seconds%86400)/3600), m = Math.floor((seconds%3600)/60);
+  if(d > 0) return `${d}d ${h}h`;
+  if(h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
+}
+
+function renderDxyHero(targetId, dxy, history){
+  const el = document.getElementById(targetId);
+  const cls = dxy.bias === 'bullish' ? 'bullish' : (dxy.bias === 'bearish' ? 'bearish' : '');
+  const momentumSign = dxy.momentum_pct >= 0 ? '+' : '';
+  el.innerHTML = `
+    <div class="dxy-hero-top">
+      <div>
+        <div class="dxy-bias-word ${cls}">${dxy.bias}</div>
+        <div class="dxy-bias-sub">${dxy.confidence} confidence · ${dxy.source}</div>
+      </div>
+      ${sparklineSvg(history)}
+    </div>
+    <div class="dxy-ledger-rows">
+      <div class="ledger-row"><span class="k">HTF bias</span><span class="v">${dxy.htf_bias || '—'}</span></div>
+      <div class="ledger-row"><span class="k">MTF bias</span><span class="v">${dxy.mtf_bias || '—'}</span></div>
+      <div class="ledger-row"><span class="k">Momentum</span><span class="v">${momentumSign}${dxy.momentum_pct}%</span></div>
+    </div>`;
+}
+
+function renderNewsStripMini(events){
+  document.getElementById('newsStripMini').innerHTML = events.slice(0,4).map(e => `
+    <div class="news-chip" onclick="showScreen('news')">
+      <span class="impact ${e.impact}">${e.impact}</span>
+      <div class="label">${e.label}</div>
+      <div class="countdown">in ${fmtCountdown(e.seconds_until)}</div>
+    </div>`).join('');
+}
+
+function renderNewsFullList(events){
+  document.getElementById('newsFullList').innerHTML = events.map(e => {
+    const en = e.enrichment || {};
+    const surpriseClass = 'surprise-' + (en.surprise || 'pending');
+    const reminded = !!State.reminders[e.id];
+    return `
+    <div class="news-item">
+      <div class="news-item-head">
+        <div>
+          <div class="news-item-title">${e.label}</div>
+          <div class="news-item-time">${e.local_et} · in ${fmtCountdown(e.seconds_until)}</div>
+        </div>
+        <button class="bell-btn ${reminded ? 'on' : ''}" onclick="toggleReminder('${e.id}', '${e.label.replace(/'/g,"")}', ${e.seconds_until})">${reminded ? 'reminding' : 'remind me'}</button>
+      </div>
+      <div class="news-figures">
+        <div class="fig"><span class="fig-label">forecast</span><span class="fig-val">${en.forecast ?? '—'}</span></div>
+        <div class="fig"><span class="fig-label">previous</span><span class="fig-val">${en.previous ?? '—'}</span></div>
+        <div class="fig"><span class="fig-label">actual</span><span class="fig-val ${surpriseClass}">${en.actual ?? 'pending'}</span></div>
+      </div>
+      <div class="usd-read">${en.usd_read || ''}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleReminder(id, label, secondsUntil){
+  if(State.reminders[id]){
+    clearTimeout(State.reminders[id]);
+    delete State.reminders[id];
+  } else {
+    const fireIn = Math.max(0, (secondsUntil - 600)) * 1000; // 10 min before, best-effort while tab stays open
+    if(secondsUntil <= 600){
+      showToast(`${label} is inside 10 minutes already — set reminders earlier next time.`);
+    } else if('Notification' in window){
+      Notification.requestPermission().then(perm => {
+        State.reminders[id] = setTimeout(() => {
+          if(perm === 'granted') new Notification('PipX Ledger', { body: `${label} releases in 10 minutes.` });
+          else showToast(`${label} releases in 10 minutes.`);
+        }, fireIn);
+      });
+      showToast(`Reminder set for 10 minutes before ${label}. Keep this tab open — reminders only fire while PipX Ledger is loaded.`);
+    } else {
+      State.reminders[id] = setTimeout(() => showToast(`${label} releases in 10 minutes.`), fireIn);
+    }
+  }
+  renderNewsFullList(State.news);
+}
+
+function signalRowHtml(s, detailId){
+  const dirIcon = s.direction === 'bullish' ? '▲' : '▼';
+  const starred = State.favorites.includes(s.symbol);
+  return `
+    <div>
+      <div class="signal-row">
+        <button class="star-btn ${starred ? 'on' : ''}" onclick="event.stopPropagation(); toggleFavorite('${s.symbol}')">${starred ? '★' : '☆'}</button>
+        <div style="flex:1; display:flex; align-items:center; gap:12px; min-width:0;" onclick="toggleDetail('${detailId}')">
+          <div class="dir-mark ${s.direction}">${dirIcon}</div>
+          <div class="signal-main">
+            <div class="signal-top">
+              <span class="signal-symbol">${s.symbol}</span>
+              ${s.veto ? '<span class="veto-tag">blackout</span>' : ''}
+            </div>
+            <div class="signal-sub">${s.has_choch ? 'CHoCH · ' : ''}${s.has_liquidity_sweep ? 'Sweep · ' : ''}${s.has_fvg ? 'FVG' : 'No fresh FVG'}</div>
+          </div>
+          <div class="signal-score">
+            <div class="score-num">${s.score}</div>
+            <div class="grade-label grade-${s.grade}">${s.grade}</div>
+          </div>
+        </div>
+      </div>
+      <div class="signal-detail" id="detail-${detailId}">
+        <div class="signal-detail-inner">
+          ${s.reasons.map(r => `<div class="reason-row">${r}</div>`).join('')}
+          <div class="fund-note">${s.news_note}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderSignals(){
+  const el = document.getElementById('signalsList');
+  let list = State.signals.slice();
+
+  if(State.dirFilter === 'bullish') list = list.filter(s => s.direction === 'bullish');
+  else if(State.dirFilter === 'bearish') list = list.filter(s => s.direction === 'bearish');
+  else if(State.dirFilter === 'starred') list = list.filter(s => State.favorites.includes(s.symbol));
+
+  const sortBy = document.getElementById('sortSelect').value;
+  const gradeOrder = { sniper:3, high:2, moderate:1, low:0 };
+  if(sortBy === 'symbol') list.sort((a,b) => a.symbol.localeCompare(b.symbol));
+  else if(sortBy === 'grade') list.sort((a,b) => (gradeOrder[b.grade]||0) - (gradeOrder[a.grade]||0) || b.score - a.score);
+  else list.sort((a,b) => b.score - a.score);
+
+  if(!list.length){
+    el.innerHTML = `<div class="search-empty">Nothing matches this filter right now.</div>`;
+    return;
+  }
+  el.innerHTML = list.map((s,i) => signalRowHtml(s, 'list-' + i)).join('');
+}
+
+function toggleDetail(id){
+  const el = document.getElementById('detail-' + id);
+  document.querySelectorAll('.signal-detail.open').forEach(d => { if(d !== el) d.classList.remove('open'); });
+  el.classList.toggle('open');
+}
+
+async function toggleFavorite(symbol){
+  const idx = State.favorites.indexOf(symbol);
+  if(idx === -1) State.favorites.push(symbol); else State.favorites.splice(idx,1);
+  renderSignals();
+  renderTicker();
+  if(State.profile){
+    State.profile.pairs = State.favorites.slice();
+    if(State.mode === 'account' && State.token){
+      apiPut('/api/profile/me', State.profile, State.profile, true);
+    } else {
+      await storeSet('guest_profile', State.profile);
+    }
+  }
+}
+
+document.querySelectorAll('#dirFilter .filter-chip').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#dirFilter .filter-chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    State.dirFilter = btn.dataset.val;
+    renderSignals();
+  });
+});
+
+async function searchSymbol(){
+  const raw = document.getElementById('symbolSearchInput').value.trim().toUpperCase();
+  const resultEl = document.getElementById('symbolSearchResult');
+  if(!raw){ resultEl.innerHTML = ''; return; }
+  resultEl.innerHTML = `<div class="search-status">Scanning ${raw}…</div>`;
+  let signal = State.signals.find(s => s.symbol === raw) || null;
+  if(!signal){
+    const r = await apiGet(`/api/signals?symbols=${encodeURIComponent(raw)}`, null, false);
+    if(r.ok && r.data && Array.isArray(r.data.signals)) signal = r.data.signals.find(s => s.symbol === raw) || null;
+    else signal = MOCK_SIGNALS.find(s => s.symbol === raw) || null;
+  }
+  if(!signal){
+    resultEl.innerHTML = `<div class="search-empty">No active signal for <b>${raw}</b> right now — either it isn't a tracked symbol or confluence hasn't lined up on any timeframe.</div>`;
+    return;
+  }
+  resultEl.innerHTML = signalRowHtml(signal, 'search-0');
+}
+
+function renderDxyStats(dxy){
+  document.getElementById('dxyStats').innerHTML = `
+    <div class="dxy-cell"><div class="l">HTF bias</div><div class="v">${dxy.htf_bias || '—'}</div></div>
+    <div class="dxy-cell"><div class="l">MTF bias</div><div class="v">${dxy.mtf_bias || '—'}</div></div>
+    <div class="dxy-cell"><div class="l">Momentum</div><div class="v">${dxy.momentum_pct >= 0 ? '+' : ''}${dxy.momentum_pct}%</div></div>
+    <div class="dxy-cell"><div class="l">Source</div><div class="v">${dxy.source}</div></div>`;
+}
+
+function renderTicker(){
+  const el = document.getElementById('tickerTrack');
+  if(!State.signals.length){ el.innerHTML = ''; return; }
+  const items = State.signals.map(s => `<div class="ticker-item"><b>${s.symbol}</b> <span class="${s.direction === 'bullish' ? 'up' : 'down'}">${s.direction === 'bullish' ? '▲' : '▼'} ${s.score}</span></div>`).join('');
+  el.innerHTML = items + items; // duplicate for seamless loop
+}
+
+function renderDesk(){
+  const el = document.getElementById('deskCard');
+  const p = State.profile;
+  if(!p){ el.innerHTML = '<div style="color:var(--paper-dim)">No profile yet.</div>'; return; }
+  const emailLine = State.user ? State.user.email : 'Guest session (not saved to an account)';
+  el.innerHTML = `
+    <div class="desk-name">${p.name || 'Trader'}</div>
+    <div class="desk-sub">${emailLine}</div>
+    <div class="ledger-row" style="margin-top:14px;"><span class="k">Experience</span><span class="v">${p.experience || '—'}</span></div>
+    <div class="ledger-row"><span class="k">Risk appetite</span><span class="v">${p.risk_appetite || '—'}</span></div>
+    <div class="ledger-row" style="border-bottom:none; padding-bottom:2px;"><span class="k">Watchlist</span></div>
+    <div class="chip-row">${(State.favorites||[]).map(x => `<span class="chip">${x}</span>`).join('') || '<span class="desk-sub">none starred yet</span>'}</div>
+    <div class="ledger-row" style="border-top:1px solid var(--line); margin-top:12px; padding-top:12px; border-bottom:none;"><span class="k">Sessions</span></div>
+    <div class="chip-row">${(p.sessions||[]).map(x => `<span class="chip">${x.replace('_',' ')}</span>`).join('')}</div>`;
+  document.getElementById('logoutBtn').style.display = State.mode === 'account' ? '' : 'none';
+}
+
+/* ---------------- Screen switching ---------------- */
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.screen === name));
+}
+
+/* ---------------- Boot / refresh ---------------- */
+async function loadData(){
+  const [dxyR, newsR, signalsR, histR] = await Promise.all([
+    apiGet('/api/dxy/bias', MOCK_DXY, false),
+    apiGet('/api/news/upcoming?within_hours=720', { events: MOCK_NEWS }, false),
+    apiGet('/api/signals', { dxy: MOCK_DXY, signals: MOCK_SIGNALS }, false),
+    apiGet('/api/dxy/history?points=48', MOCK_HISTORY, false),
   ]);
 
-  document.getElementById('dataBadge').textContent = (API_BASE && dxy !== MOCK_DXY) ? 'live' : 'demo';
+  State.dxy = dxyR.data;
+  State.news = newsR.data.events || MOCK_NEWS;
+  State.signals = signalsR.data.signals || MOCK_SIGNALS;
+  State.history = (histR.data && histR.data.closes && histR.data.closes.length) ? histR.data.closes : MOCK_HISTORY.closes;
+  State.lastUpdated = Date.now();
 
-  renderDxyHero('dxyHero', dxy);
-  renderDxyHero('dxyHero2', dxy);
-  renderDxyStats(dxy);
-  renderNewsStripMini(news.events);
-  renderNewsFullList(news.events);
-  renderSignals(signalsResp.signals, profile);
-  renderProfile(profile);
+  const live = !!(API_BASE && !dxyR.isMock);
+  document.getElementById('dataBadge').textContent = live ? 'live' : 'demo';
+  document.getElementById('statusDot').className = 'status-dot ' + (live ? 'live' : '');
 
-  const sentiment = await apiGet(
-    `/api/news/sentiment?dxy_bias=${dxy.bias}&confidence=${dxy.confidence}`,
-    { summary: MOCK_NARRATIVE }
-  );
-  document.getElementById('dxyNarrative').textContent = sentiment.summary;
+  renderDxyHero('dxyHero', State.dxy, State.history);
+  renderDxyHero('dxyHero2', State.dxy, State.history);
+  renderDxyStats(State.dxy);
+  renderNewsStripMini(State.news);
+  renderNewsFullList(State.news);
+  renderSignals();
+  renderTicker();
+  updateLastUpdatedNote();
+
+  const sentR = await apiGet(`/api/news/sentiment?dxy_bias=${State.dxy.bias}&confidence=${State.dxy.confidence}`, { summary: MOCK_NARRATIVE }, false);
+  document.getElementById('dxyNarrative').textContent = (sentR.data && sentR.data.summary) || MOCK_NARRATIVE;
+}
+
+async function manualRefresh(){
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+  document.getElementById('refreshLabel').textContent = 'refreshing';
+  await loadData();
+  btn.classList.remove('spinning');
+  document.getElementById('refreshLabel').textContent = 'refresh';
+}
+
+async function boot(){
+  State.favorites = (State.profile && State.profile.pairs) ? State.profile.pairs.slice() : [];
+  document.getElementById('greeting').textContent = State.profile ? `${State.profile.name}'s signals` : 'Signals';
+  document.getElementById('editionLine').textContent = State.mode === 'account' ? 'DXY Desk · signed in' : 'DXY Desk · guest';
+  renderDesk();
+  await loadData();
+  setInterval(loadData, 60000);
+  setInterval(updateLastUpdatedNote, 5000);
 }
 
 (async function init(){
   updateClock();
   setInterval(updateClock, 15000);
 
-  const profile = await loadProfile();
-  currentProfile = profile;
-  if(!profile){
-    document.getElementById('onboarding').classList.remove('overlay-hidden');
-    renderObProgress();
-  } else {
-    await boot(profile);
+  const session = await storeGet('session');
+  if(!AUTH_ENABLED){
+    State.mode = 'guest';
+    const localProfile = await storeGet('guest_profile');
+    if(localProfile){ State.profile = localProfile; await boot(); }
+    else { document.getElementById('onboarding').classList.remove('overlay-hidden'); obGoTo(0); }
+    return;
   }
+
+  if(session && session.mode === 'account' && session.token){
+    State.token = session.token;
+    const r = await apiGet('/api/auth/me', null, true);
+    if(r.ok){
+      State.mode = 'account';
+      State.user = r.data.user;
+      State.profile = r.data.profile;
+      const needsOnboarding = !State.profile || ((!State.profile.pairs || !State.profile.pairs.length) && (!State.profile.sessions || !State.profile.sessions.length));
+      if(needsOnboarding){ document.getElementById('onboarding').classList.remove('overlay-hidden'); obGoTo(0); }
+      else await boot();
+      return;
+    }
+    // token invalid/expired — clear and fall through to auth screen
+    await storeDelete('session');
+  } else if(session && session.mode === 'guest'){
+    State.mode = 'guest';
+    const localProfile = await storeGet('guest_profile');
+    if(localProfile){ State.profile = localProfile; await boot(); return; }
+  }
+
+  document.getElementById('authScreen').classList.remove('overlay-hidden');
 })();
 </script>
 </body>
