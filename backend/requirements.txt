@@ -6,3 +6,4 @@ yfinance>=0.2.40
 google-genai>=0.3.0
 python-dotenv>=1.0
 PyJWT>=2.8
+psycopg[binary]>=3.1

@@ -1,39 +1,33 @@
 """
-Trader profiles. One trader = one row. SQLite, zero external services.
+Trader profiles. One trader = one row.
 
-The onboarding flow (see routers/profile.py) collects just enough to
-personalize the feed: experience level, the pairs they actually watch,
-risk appetite, and which sessions they trade -- nothing that needs a
-broker connection to answer.
+Storage: Postgres if DATABASE_URL is set (see db.py), otherwise a local
+SQLite file for zero-setup local dev. Same public API as before, so
+routers/profile.py and routers/auth.py need no changes.
 """
 
 from __future__ import annotations
 
 import json
-import sqlite3
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from pathlib import Path
 
-DB_PATH = Path(__file__).parent.parent / "data" / "app.db"
-DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+from . import db
 
 
-def _conn() -> sqlite3.Connection:
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
-
-
-def _ensure_column(conn: sqlite3.Connection, table: str, column: str, coltype: str) -> None:
-    cols = [r["name"] for r in conn.execute(f"PRAGMA table_info({table})")]
+def _ensure_column(conn, table: str, column: str, coltype: str) -> None:
+    if db.is_postgres():
+        conn.execute(f"ALTER TABLE {table} ADD COLUMN IF NOT EXISTS {column} {coltype}")
+        return
+    # SQLite has no "ADD COLUMN IF NOT EXISTS" -- check PRAGMA first.
+    cols = [r["name"] for r in conn.execute(f"PRAGMA table_info({table})").fetchall()]
     if column not in cols:
         conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {coltype}")
 
 
 def init_db() -> None:
-    with _conn() as conn:
+    with db.get_conn() as conn:
         conn.execute("""
             CREATE TABLE IF NOT EXISTS profiles (
                 id TEXT PRIMARY KEY,
@@ -49,7 +43,6 @@ def init_db() -> None:
         """)
         # Added for account-based auth: links a profile to a signed-up user,
         # and persists the timezone onboarding already collects client-side.
-        # Uses ALTER TABLE so this also migrates an existing deployed DB.
         _ensure_column(conn, "profiles", "user_id", "TEXT")
         _ensure_column(conn, "profiles", "timezone", "TEXT")
         conn.execute(
@@ -82,7 +75,7 @@ class TraderProfile:
         }
 
     @staticmethod
-    def _from_row(row: sqlite3.Row) -> "TraderProfile":
+    def _from_row(row) -> "TraderProfile":
         keys = row.keys()
         return TraderProfile(
             id=row["id"], name=row["name"], experience=row["experience"],
@@ -99,7 +92,7 @@ def create_profile(p: TraderProfile) -> TraderProfile:
     now = datetime.now(timezone.utc).isoformat()
     p.created_at = p.created_at or now
     p.updated_at = now
-    with _conn() as conn:
+    with db.get_conn() as conn:
         conn.execute(
             """INSERT INTO profiles
                (id, name, experience, risk_appetite, pairs, sessions, account_size, timezone, user_id, created_at, updated_at)
@@ -112,13 +105,13 @@ def create_profile(p: TraderProfile) -> TraderProfile:
 
 
 def get_profile(profile_id: str) -> TraderProfile | None:
-    with _conn() as conn:
+    with db.get_conn() as conn:
         row = conn.execute("SELECT * FROM profiles WHERE id = ?", (profile_id,)).fetchone()
     return TraderProfile._from_row(row) if row else None
 
 
 def get_profile_by_user(user_id: str) -> TraderProfile | None:
-    with _conn() as conn:
+    with db.get_conn() as conn:
         row = conn.execute("SELECT * FROM profiles WHERE user_id = ?", (user_id,)).fetchone()
     return TraderProfile._from_row(row) if row else None
 
@@ -131,7 +124,7 @@ def update_profile(profile_id: str, **fields) -> TraderProfile | None:
         if hasattr(existing, k) and v is not None:
             setattr(existing, k, v)
     existing.updated_at = datetime.now(timezone.utc).isoformat()
-    with _conn() as conn:
+    with db.get_conn() as conn:
         conn.execute(
             """UPDATE profiles SET name=?, experience=?, risk_appetite=?,
                pairs=?, sessions=?, account_size=?, timezone=?, updated_at=? WHERE id=?""",

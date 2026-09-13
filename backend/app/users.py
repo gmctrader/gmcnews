@@ -1,27 +1,22 @@
 """
-Trader accounts: email + password. SQLite, same pattern as profiles.py --
-shares the same app.db file, just a different table.
+Trader accounts: email + password.
+
+Storage: Postgres if DATABASE_URL is set (recommended for production --
+see db.py), otherwise falls back to a local SQLite file for zero-setup
+local dev. Same public API as before (create_user, get_user_by_email,
+get_user_by_id, init_db, User), so routers/auth.py needs no changes.
 """
 from __future__ import annotations
 
-import sqlite3
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from pathlib import Path
 
-DB_PATH = Path(__file__).parent.parent / "data" / "app.db"
-DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-
-
-def _conn() -> sqlite3.Connection:
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
+from . import db
 
 
 def init_db() -> None:
-    with _conn() as conn:
+    with db.get_conn() as conn:
         conn.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 id TEXT PRIMARY KEY,
@@ -54,7 +49,7 @@ def create_user(email: str, password_hash: str, name: str) -> User:
         name=name.strip() or "Trader",
         created_at=datetime.now(timezone.utc).isoformat(),
     )
-    with _conn() as conn:
+    with db.get_conn() as conn:
         conn.execute(
             "INSERT INTO users (id, email, password_hash, name, created_at) VALUES (?, ?, ?, ?, ?)",
             (user.id, user.email, user.password_hash, user.name, user.created_at),
@@ -63,12 +58,12 @@ def create_user(email: str, password_hash: str, name: str) -> User:
 
 
 def get_user_by_email(email: str) -> User | None:
-    with _conn() as conn:
+    with db.get_conn() as conn:
         row = conn.execute("SELECT * FROM users WHERE email = ?", (email.strip().lower(),)).fetchone()
     return User(**dict(row)) if row else None
 
 
 def get_user_by_id(user_id: str) -> User | None:
-    with _conn() as conn:
+    with db.get_conn() as conn:
         row = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
     return User(**dict(row)) if row else None
