@@ -4,7 +4,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from . import profiles as db
-from .routers import profile, news, dxy, signals
+from . import users as user_db
+from .routers import auth, profile, news, dxy, signals
 
 app = FastAPI(title="DXY News Signals", version="0.1.0")
 
@@ -19,8 +20,10 @@ app.add_middleware(
 @app.on_event("startup")
 def _startup():
     db.init_db()
+    user_db.init_db()
 
 
+app.include_router(auth.router)
 app.include_router(profile.router)
 app.include_router(news.router)
 app.include_router(dxy.router)
