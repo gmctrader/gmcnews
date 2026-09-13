@@ -47,6 +47,15 @@ _DXY_BASKET = {
 
 
 def _normalize(df: pd.DataFrame) -> pd.DataFrame:
+    # Recent yfinance versions return MultiIndex columns like
+    # ("High", "DX-Y.NYB") even for a single ticker. Flatten to the
+    # plain field name first, or the rename below silently no-ops and
+    # df["high"] ends up returning a DataFrame instead of a Series --
+    # which is what produces "truth value of a Series is ambiguous"
+    # several layers downstream in market_structure.py.
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = df.columns.get_level_values(0)
+
     df = df.reset_index()
     time_col = "Datetime" if "Datetime" in df.columns else "Date"
     df = df.rename(columns={
