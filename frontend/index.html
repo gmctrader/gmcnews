@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>DXY Desk — News &amp; ICT Signals</title>
 <meta name="theme-color" content="#05070C">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -63,7 +66,8 @@
     border-bottom:1px solid var(--hairline);
     padding:16px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px;
   }
-  .brand{display:flex; align-items:baseline; gap:8px;}
+  .brand{display:flex; align-items:center; gap:8px;}
+  .brand-logo{height:26px; width:auto; display:block;}
   .brand-mark{font-family:var(--display); font-style:italic; font-weight:600; font-size:19px; letter-spacing:0.01em;}
   .brand-mark span{color:var(--gold); font-style:normal;}
   .brand-sub{font-family:var(--mono); font-size:11px; color:var(--muted);}
@@ -250,6 +254,12 @@
   .ob-progress div.done{background:linear-gradient(90deg, var(--violet), var(--cyan));}
   .ob-actions{display:flex; gap:10px; margin-top:30px;}
   .ob-actions .btn{flex:1;}
+  .symbol-search{display:flex; gap:8px; margin-bottom:16px;}
+  .symbol-search .text-input{margin:0;}
+  .symbol-search .btn{flex-shrink:0; padding-left:18px; padding-right:18px;}
+  .search-status{font-family:var(--mono); font-size:12px; color:var(--muted); padding:10px 0;}
+  .search-empty{font-size:13px; color:var(--muted); line-height:1.5; padding:14px 0 22px; border-bottom:1px solid var(--hairline); margin-bottom:6px;}
+  .search-empty b{color:var(--text);}
 
   /* ---------- Desktop ---------- */
   @media (min-width:960px){
@@ -369,6 +379,7 @@
   <!-- ================= TOP BAR ================= -->
   <div class="topbar">
     <div class="brand">
+      <img src="pipx-header.png" alt="PipX" class="brand-logo">
       <div class="brand-mark">DXY <span>Desk</span></div>
       <span class="data-badge" id="dataBadge">demo</span>
     </div>
@@ -411,6 +422,13 @@
         <h1 class="page-title" id="greeting">Signals</h1>
 
         <div class="dxy-hero" id="dxyHero"></div>
+
+        <div class="section-label">Search a symbol</div>
+        <div class="symbol-search">
+          <input class="text-input" id="symbolSearchInput" placeholder="e.g. USDCHF, XAUUSD, USOIL" autocapitalize="characters" onkeydown="if(event.key==='Enter') searchSymbol();">
+          <button class="btn btn-primary" onclick="searchSymbol()">Search</button>
+        </div>
+        <div id="symbolSearchResult"></div>
 
         <div class="section-label">Next high-impact release</div>
         <div class="news-strip" id="newsStripMini"></div>
@@ -638,17 +656,11 @@ function renderNewsFullList(events){
   }).join('');
 }
 
-function renderSignals(signals, profile){
-  const el = document.getElementById('signalsList');
-  const watch = profile && profile.pairs && profile.pairs.length ? profile.pairs : null;
-  const filtered = watch ? signals.filter(s => watch.includes(s.symbol)) : signals;
-  const list = filtered.length ? filtered : signals;
-
-  el.innerHTML = list.map((s, i) => {
-    const dirIcon = s.direction === 'bullish' ? '▲' : '▼';
-    return `
+function signalRowHtml(s, detailId){
+  const dirIcon = s.direction === 'bullish' ? '▲' : '▼';
+  return `
     <div>
-      <div class="signal-row" onclick="toggleDetail(${i})">
+      <div class="signal-row" onclick="toggleDetail('${detailId}')">
         <div class="dir-bar ${s.direction}"></div>
         <div class="signal-main">
           <div class="signal-top">
@@ -663,20 +675,52 @@ function renderSignals(signals, profile){
           <div class="grade-label grade-${s.grade}">${s.grade}</div>
         </div>
       </div>
-      <div class="signal-detail" id="detail-${i}">
+      <div class="signal-detail" id="detail-${detailId}">
         <div class="signal-detail-inner">
           ${s.reasons.map(r => `<div class="reason-row">${r}</div>`).join('')}
           <div class="fund-note">${s.news_note}</div>
         </div>
       </div>
     </div>`;
-  }).join('');
 }
 
-function toggleDetail(i){
-  const el = document.getElementById('detail-' + i);
+function renderSignals(signals, profile){
+  const el = document.getElementById('signalsList');
+  const watch = profile && profile.pairs && profile.pairs.length ? profile.pairs : null;
+  const filtered = watch ? signals.filter(s => watch.includes(s.symbol)) : signals;
+  const list = filtered.length ? filtered : signals;
+  el.innerHTML = list.map((s, i) => signalRowHtml(s, 'list-' + i)).join('');
+}
+
+function toggleDetail(id){
+  const el = document.getElementById('detail-' + id);
   document.querySelectorAll('.signal-detail.open').forEach(d => { if(d !== el) d.classList.remove('open'); });
   el.classList.toggle('open');
+}
+
+/* ---------------- Symbol search (live lookup on any symbol, not just the watchlist) ---------------- */
+async function searchSymbol(){
+  const raw = document.getElementById('symbolSearchInput').value.trim().toUpperCase();
+  const resultEl = document.getElementById('symbolSearchResult');
+  if(!raw){ resultEl.innerHTML = ''; return; }
+
+  resultEl.innerHTML = `<div class="search-status">Scanning ${raw}…</div>`;
+
+  const resp = await apiGet(`/api/signals?symbols=${encodeURIComponent(raw)}`, 'DEMO_LOOKUP');
+
+  let signal = null;
+  if(resp === 'DEMO_LOOKUP' || !API_BASE){
+    // Demo mode: only symbols already in the mock set have a signal.
+    signal = MOCK_SIGNALS.find(s => s.symbol === raw) || null;
+  } else if(resp && Array.isArray(resp.signals)){
+    signal = resp.signals.find(s => s.symbol === raw) || null;
+  }
+
+  if(!signal){
+    resultEl.innerHTML = `<div class="search-empty">No active signal for <b>${raw}</b> right now — either it isn't a tracked symbol or confluence hasn't lined up on any timeframe.</div>`;
+    return;
+  }
+  resultEl.innerHTML = signalRowHtml(signal, 'search-0');
 }
 
 function renderDxyStats(dxy){
@@ -710,13 +754,33 @@ function showScreen(name){
 }
 
 /* ---------------- Clock + sessions ---------------- */
+let currentProfile = null;
+
 function updateClock(){
   const now = new Date();
   const hh = String(now.getUTCHours()).padStart(2,'0');
   const mm = String(now.getUTCMinutes()).padStart(2,'0');
   document.getElementById('clockTime').textContent = `${hh}:${mm}`;
 
-  // rough session windows in UTC
+  const wrap = document.getElementById('localTimeWrap');
+  const tz = currentProfile && currentProfile.timezone;
+  if(tz && tz !== 'UTC'){
+    try{
+      const fmt = new Intl.DateTimeFormat('en-GB', {
+        timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false,
+      });
+      document.getElementById('localTime').textContent = fmt.format(now);
+      const city = tz.split('/').pop().replace(/_/g, ' ');
+      document.getElementById('localTimeLabel').textContent = city;
+      wrap.style.display = '';
+    }catch(e){
+      wrap.style.display = 'none';
+    }
+  } else {
+    wrap.style.display = 'none';
+  }
+
+  // rough session windows in UTC (absolute, same for every viewer regardless of local time)
   const h = now.getUTCHours();
   const live = {
     asia: h >= 0 && h < 9,
@@ -729,7 +793,7 @@ function updateClock(){
 }
 
 /* ---------------- Onboarding logic ---------------- */
-const obSelections = { experience:null, risk_appetite:null, pairs:[], sessions:[] };
+const obSelections = { timezone:null, experience:null, risk_appetite:null, pairs:[], sessions:[] };
 let obStepIndex = 0;
 const OB_STEPS = 5;
 
@@ -770,9 +834,14 @@ function obNext(current){
   if(current === 0 && !document.getElementById('obName').value.trim()){
     document.getElementById('obName').focus(); return;
   }
-  if(current === 1 && !obSelections.experience){ return; }
-  if(current === 2 && !obSelections.risk_appetite){ return; }
-  if(current === 3 && obSelections.pairs.length === 0){ return; }
+  if(current === 1){
+    const tz = document.getElementById('obCountry').value;
+    if(!tz){ return; }
+    obSelections.timezone = tz;
+  }
+  if(current === 2 && !obSelections.experience){ return; }
+  if(current === 3 && !obSelections.risk_appetite){ return; }
+  if(current === 4 && obSelections.pairs.length === 0){ return; }
   obGoTo(current + 1);
 }
 function obBack(current){ obGoTo(current - 1); }
@@ -781,6 +850,7 @@ async function finishOnboarding(){
   if(obSelections.sessions.length === 0){ return; }
   const profile = {
     name: document.getElementById('obName').value.trim() || 'Trader',
+    timezone: obSelections.timezone || 'UTC',
     experience: obSelections.experience,
     risk_appetite: obSelections.risk_appetite,
     pairs: obSelections.pairs,
@@ -798,6 +868,8 @@ async function resetProfile(){
 
 /* ---------------- Boot ---------------- */
 async function boot(profile){
+  currentProfile = profile;
+  updateClock();
   document.getElementById('greeting').textContent = profile ? `${profile.name}'s signals` : 'Signals';
 
   const [dxy, news, signalsResp] = await Promise.all([
@@ -805,6 +877,8 @@ async function boot(profile){
     apiGet('/api/news/upcoming?within_hours=720', { events: MOCK_NEWS }),
     apiGet('/api/signals', { dxy: MOCK_DXY, signals: MOCK_SIGNALS }),
   ]);
+
+  document.getElementById('dataBadge').textContent = (API_BASE && dxy !== MOCK_DXY) ? 'live' : 'demo';
 
   renderDxyHero('dxyHero', dxy);
   renderDxyHero('dxyHero2', dxy);
@@ -826,6 +900,7 @@ async function boot(profile){
   setInterval(updateClock, 15000);
 
   const profile = await loadProfile();
+  currentProfile = profile;
   if(!profile){
     document.getElementById('onboarding').classList.remove('overlay-hidden');
     renderObProgress();
