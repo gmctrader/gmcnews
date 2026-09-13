@@ -685,16 +685,13 @@ function authHeaders(){
 
 async function apiCall(method, path, body, mockValue, useAuth){
   if(!API_BASE) return { ok:false, data:mockValue, isMock:true };
-  let coldStartTimer = setTimeout(() => showToast("Waking up the server — the free-tier backend naps after 15 minutes idle, first load can take up to a minute."), 4000);
   try{
     const opts = { method, headers:{ 'Content-Type':'application/json', ...(useAuth ? authHeaders() : {}) } };
     if(body !== undefined) opts.body = JSON.stringify(body);
     const res = await fetch(API_BASE + path, opts);
-    clearTimeout(coldStartTimer);
     const data = await res.json().catch(() => null);
     return { ok: res.ok, status: res.status, data: res.ok ? data : (data || mockValue), isMock:false };
   }catch(e){
-    clearTimeout(coldStartTimer);
     console.warn('API unavailable, falling back to mock:', path, e);
     return { ok:false, data:mockValue, isMock:true, networkError:true };
   }
