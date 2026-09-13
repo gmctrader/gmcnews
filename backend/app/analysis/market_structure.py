@@ -41,12 +41,18 @@ def find_swings(df, lookback: int = 3) -> list[SwingPoint]:
     for i in range(lookback, n - lookback):
         window_high = df["high"].iloc[i - lookback: i + lookback + 1]
         window_low = df["low"].iloc[i - lookback: i + lookback + 1]
-        hi = df["high"].iloc[i]
-        lo = df["low"].iloc[i]
-        if hi == window_high.max():
+        # Coerce to plain floats defensively: if the source dataframe
+        # ever ends up with duplicate/MultiIndex columns upstream,
+        # df["high"] silently becomes a DataFrame instead of a Series
+        # and .iloc[i] returns a Series instead of a scalar -- which
+        # makes `==` raise "truth value of a Series is ambiguous"
+        # instead of comparing two numbers like it's supposed to.
+        hi = float(df["high"].iloc[i])
+        lo = float(df["low"].iloc[i])
+        if hi == float(window_high.max()):
             swings.append(SwingPoint(index=i, price=hi, kind="high",
                                       time=df["time"].iloc[i] if "time" in df else None))
-        if lo == window_low.min():
+        if lo == float(window_low.min()):
             swings.append(SwingPoint(index=i, price=lo, kind="low",
                                       time=df["time"].iloc[i] if "time" in df else None))
     return swings
