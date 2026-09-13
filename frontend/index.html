@@ -248,6 +248,13 @@
 
   /* ---------- Overlays (auth / onboarding) ---------- */
   .overlay{position:fixed; inset:0; background:var(--ink); z-index:100; display:flex; flex-direction:column; overflow-y:auto; padding:calc(30px + var(--safe-top)) 22px calc(30px + var(--safe-bottom));}
+  .frame-overlay{position:fixed; inset:0; background:var(--ink); z-index:110; display:flex; flex-direction:column;}
+  .frame-overlay-bar{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:calc(12px + var(--safe-top)) 14px 10px; border-bottom:1px solid var(--line); background:var(--ink-2); flex-shrink:0;}
+  .frame-overlay-title{font-family:var(--sans); font-size:13px; font-weight:600;}
+  .frame-overlay-actions{display:flex; align-items:center; gap:14px; font-family:var(--mono); font-size:11px; color:var(--paper-dim);}
+  .frame-overlay-actions a{color:var(--accent); text-decoration:none;}
+  .frame-overlay-close{background:none; border:none; color:var(--paper-dim); font-size:20px; line-height:1; padding:2px 4px;}
+  .frame-overlay iframe{flex:1; width:100%; border:none; background:var(--ink);}
   .overlay-hidden{display:none;}
   .overlay-inner{max-width:400px; width:100%; margin:auto;}
   .overlay-wordmark{font-family:var(--sans); font-weight:600; font-size:15px; color:var(--accent); margin-bottom:26px; text-align:center; letter-spacing:-0.01em;}
@@ -402,6 +409,18 @@
     </div>
   </div>
 
+  <!-- ================= MT5 WEB TERMINAL (in-app frame) ================= -->
+  <div class="frame-overlay overlay-hidden" id="mt5FrameOverlay">
+    <div class="frame-overlay-bar">
+      <div class="frame-overlay-title">MT5 Web Terminal</div>
+      <div class="frame-overlay-actions">
+        <a href="https://web.metatrader.app/terminal" target="_blank" rel="noopener">open in new tab ↗</a>
+        <button class="frame-overlay-close" onclick="closeMt5Frame()" aria-label="Close">×</button>
+      </div>
+    </div>
+    <iframe id="mt5FrameEl" title="MT5 Web Terminal" allow="clipboard-read; clipboard-write"></iframe>
+  </div>
+
   <!-- ================= MASTHEAD ================= -->
   <div class="masthead">
     <div class="masthead-row">
@@ -524,8 +543,8 @@
 
         <div class="rule-label">Tools &amp; preferences</div>
         <div class="panel panel-group">
-          <a class="tool-link" href="https://trade.mql5.com/trade" target="_blank" rel="noopener">
-            <span>Open MT5 Web Terminal<br><span class="s-sub" style="margin-top:2px">PipX runs in the browser — MT5 is a separate terminal, so this opens it in a new tab.</span></span>
+          <a class="tool-link" href="https://web.metatrader.app/terminal" target="_blank" rel="noopener" onclick="return openMt5Frame(event)">
+            <span>Open MT5 Web Terminal<br><span class="s-sub" style="margin-top:2px">Opens inline here. If your broker's terminal refuses to load in-frame, use "open in new tab" in the top-right.</span></span>
             <span class="arrow">↗</span>
           </a>
           <a class="tool-link" href="#" onclick="event.preventDefault(); showToast('Free VPS is usually a broker perk, not something an app can grant — check your broker\\'s client portal (often under \\'Services\\' or \\'VPS\\') once you hit their minimum lot/equity threshold.');">
@@ -691,6 +710,23 @@ function showToast(msg, ms){
   wrap.innerHTML = `<div class="toast">${msg}</div>`;
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => { wrap.innerHTML = ''; }, ms || 6000);
+}
+
+/* ---------------- MT5 web terminal (in-app iframe) ----------------
+   Note: many brokers send X-Frame-Options/CSP headers that block their web terminal
+   from loading inside anyone else's page. There's no reliable way to detect that from
+   JS (blocked frames just stay blank, no error event), so the "open in new tab" escape
+   hatch stays visible the whole time in case the frame doesn't load. */
+function openMt5Frame(event){
+  if(event) event.preventDefault();
+  const overlay = document.getElementById('mt5FrameOverlay');
+  const frame = document.getElementById('mt5FrameEl');
+  if(!frame.src) frame.src = 'https://web.metatrader.app/terminal';
+  overlay.classList.remove('overlay-hidden');
+  return false;
+}
+function closeMt5Frame(){
+  document.getElementById('mt5FrameOverlay').classList.add('overlay-hidden');
 }
 
 /* ---------------- Auth screens ---------------- */
