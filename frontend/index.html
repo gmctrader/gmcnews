@@ -207,6 +207,12 @@
   body.compact .signal-sub{display:none;}
   body.compact .signal-detail-inner{padding-top:0;}
 
+  /* ---------- Ask / chat ---------- */
+  .chat-msg{max-width:84%; padding:11px 14px; border-radius:16px; font-size:13.5px; line-height:1.5;}
+  .chat-msg.user{align-self:flex-end; background:var(--accent-dim); color:var(--paper); border-bottom-right-radius:4px;}
+  .chat-msg.bot{align-self:flex-start; background:var(--panel-raised); color:var(--paper-dim); border-bottom-left-radius:4px;}
+  .chat-msg.typing{font-family:var(--mono); font-size:11px; color:var(--paper-faint); background:none; padding:4px 2px;}
+
   /* ---------- Buttons / inputs ---------- */
   .btn{display:inline-flex; align-items:center; justify-content:center; gap:6px; font-family:var(--sans); font-weight:500; font-size:14px; padding:13px 18px; border-radius:12px; border:none; background:rgba(255,255,255,0.055); color:var(--paper); text-align:center; transition:background .15s;}
   .btn:active{background:rgba(255,255,255,0.09);}
@@ -432,6 +438,10 @@
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12a9 9 0 1 1 9 9"/><path d="M3 12h6l3-8 4 16 3-8h2"/></svg>
         DXY
       </button>
+      <button class="nav-btn" data-screen="ask" onclick="showScreen('ask')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Ask
+      </button>
       <button class="nav-btn" data-screen="desk" onclick="showScreen('desk')">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
         Desk
@@ -489,6 +499,22 @@
         <div class="dxy-grid" id="dxyStats"></div>
         <div class="rule-label">AI dollar-sentiment read</div>
         <div class="panel narrative" id="dxyNarrative">Loading…</div>
+      </section>
+
+      <!-- ================= ASK SCREEN ================= -->
+      <section class="screen" id="screen-ask">
+        <div class="page-head">
+          <h1 class="page-title">Ask PipX</h1>
+          <span class="page-note">demo</span>
+        </div>
+        <div class="panel" style="padding:0; display:flex; flex-direction:column; height:58vh; min-height:340px; overflow:hidden;">
+          <div id="chatMessages" style="flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:10px;"></div>
+          <div style="display:flex; gap:8px; padding:12px; border-top:1px solid var(--line);">
+            <input class="text-input" id="chatInput" placeholder="Ask about a pair, DXY, or risk…" onkeydown="if(event.key==='Enter') sendChatMessage();">
+            <button class="btn btn-primary" onclick="sendChatMessage()" style="flex-shrink:0;">Send</button>
+          </div>
+        </div>
+        <div class="form-note">Demo mode answers using your live signals and DXY data with local logic. Connect a real model by adding a <span style="font-family:var(--mono)">/api/assistant/ask</span> endpoint on the backend — keeping any API key server-side.</div>
       </section>
 
       <!-- ================= DESK SCREEN ================= -->
@@ -572,6 +598,7 @@ const State = {
   settings: { sound:false, compact:false },
   journal: '',
   knownSniperSymbols: new Set(),
+  chat: [],
 };
 
 /* ---------------- Mock data (mirrors backend JSON shapes) ---------------- */
@@ -967,6 +994,7 @@ function signalRowHtml(s, detailId){
         <div class="signal-detail-inner">
           ${s.reasons.map(r => `<div class="reason-row">${r}</div>`).join('')}
           <div class="fund-note">${s.news_note}</div>
+          ${riskPlanHtml(s)}
           <button class="btn btn-ghost mt5-copy-btn" onclick="event.stopPropagation(); copyForMt5('${s.symbol}','${s.direction}',${s.score},'${s.grade}')">Copy for MT5 journal ⧉</button>
         </div>
       </div>
@@ -1015,7 +1043,74 @@ async function toggleFavorite(symbol){
   }
 }
 
-/* ---------------- Desk: settings, journal, MT5 tools ---------------- */
+/* ---------------- Risk framework (structure-based, no fabricated prices) ---------------- */
+function riskPlanHtml(s){
+  const rrByGrade = { sniper:'1 : 3', high:'1 : 2.5', moderate:'1 : 2', low:'1 : 1.5' };
+  const rr = rrByGrade[s.grade] || '1 : 2';
+  const side = s.direction === 'bullish' ? 'below' : 'above';
+  let structure = `the most recent swing ${s.direction === 'bullish' ? 'low' : 'high'}`;
+  if(s.has_liquidity_sweep) structure = 'the liquidity sweep wick';
+  else if(s.has_choch) structure = 'the CHoCH origin candle';
+  else if(s.has_fvg) structure = 'the nearest unfilled FVG';
+  return `
+    <div class="fund-note" style="margin-top:10px;">
+      <b style="color:var(--paper);">Suggested risk framework</b><br>
+      Stop: ${side} ${structure}.<br>
+      Target: ${rr} reward-to-risk, based on ${s.grade} grade.<br>
+      <span style="color:var(--paper-faint); font-size:11px;">No live price feed is connected yet, so this is structure, not exact levels — place it against your own chart in MT5.</span>
+    </div>`;
+}
+
+/* ---------------- Ask PipX (chat) ---------------- */
+function renderChat(){
+  const el = document.getElementById('chatMessages');
+  if(!el) return;
+  if(!State.chat.length){
+    el.innerHTML = `<div class="chat-msg bot">Ask me about a specific pair, the DXY read, or how to think about risk — I'll answer using your current data.</div>`;
+    return;
+  }
+  el.innerHTML = State.chat.map(m => `<div class="chat-msg ${m.role}">${m.text}</div>`).join('');
+  el.scrollTop = el.scrollHeight;
+}
+
+function mockAssistantReply(msg){
+  const q = msg.toUpperCase();
+  const found = State.signals.find(s => q.includes(s.symbol));
+  if(found){
+    const fundNote = (found.fundamental && found.fundamental.note) ? found.fundamental.note : '';
+    return `${found.symbol} is reading ${found.direction}, ${found.grade} grade (score ${found.score}/100). ${found.reasons[0] || ''} ${fundNote} This comes straight from your current signal data, not financial advice — size any position off your own risk plan.`;
+  }
+  if(q.includes('DXY') || q.includes('DOLLAR')){
+    const d = State.dxy || {};
+    return `DXY is reading ${d.bias || '—'} (${d.confidence || '—'} confidence) — HTF ${d.htf_bias || '—'}, MTF ${d.mtf_bias || '—'}, momentum ${d.momentum_pct >= 0 ? '+' : ''}${d.momentum_pct ?? 0}%.`;
+  }
+  if(q.includes('STOP') || q.includes('TARGET') || q.includes('RISK') || q.includes('SL') || q.includes('TP')){
+    return `This app doesn't have a live price feed wired in, so I won't invent exact stop/target prices. Open any signal's detail panel — it now shows a suggested stop-placement rule (based on the structure that triggered it) and a grade-based reward-to-risk target you can apply to your own chart.`;
+  }
+  if(q.includes('SNIPER') || q.includes('BEST') || q.includes('TOP')){
+    const top = State.signals.slice().sort((a,b) => b.score - a.score)[0];
+    return top ? `Top-scoring right now: ${top.symbol} at ${top.score}/100 (${top.grade}, ${top.direction}).` : `No signals loaded yet.`;
+  }
+  return `I'm in demo mode — no AI backend connected yet, so I'm answering with rules against your live signals/DXY data rather than a real model. Try asking about a specific pair (e.g. "how's EURUSD looking") or "how's DXY".`;
+}
+
+async function sendChatMessage(){
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if(!text) return;
+  input.value = '';
+  State.chat.push({ role:'user', text });
+  renderChat();
+  State.chat.push({ role:'bot typing', text:'thinking…' });
+  renderChat();
+  const r = await apiPost('/api/assistant/ask', { message:text, dxy:State.dxy, signals:State.signals }, null, false);
+  State.chat.pop();
+  const reply = (r.ok && r.data && r.data.reply) ? r.data.reply : mockAssistantReply(text);
+  State.chat.push({ role:'bot', text: reply });
+  renderChat();
+}
+
+
 function renderSettings(){
   document.getElementById('settingsPanel').innerHTML = `
     <div class="settings-row">
@@ -1218,6 +1313,7 @@ async function boot(){
   document.getElementById('editionLine').textContent = State.mode === 'account' ? 'DXY Desk · signed in' : 'DXY Desk · guest';
   renderDesk();
   await loadDeskExtras();
+  renderChat();
   await loadData();
   setInterval(loadData, 60000);
   setInterval(updateLastUpdatedNote, 5000);
