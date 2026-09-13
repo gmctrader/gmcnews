@@ -16,6 +16,11 @@ def upcoming(within_hours: float = Query(168.0, description="Lookahead window in
     for e in events:
         payload = e.to_dict()
         if enrich:
+            # forecast/previous/actual aren't sourced anywhere yet -- see
+            # gemini_news.py's module docstring for why we don't ask
+            # Gemini to guess them. Wire a real calendar data provider
+            # here (Finnhub, TradingEconomics, etc.) and pass its values
+            # through as forecast=/previous=/actual= once you have one.
             enrichment = gemini_news.enrich_event(payload["label"], payload["utc"][:10])
             payload["enrichment"] = enrichment.to_dict()
         out.append(payload)
