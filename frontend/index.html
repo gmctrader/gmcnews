@@ -575,7 +575,7 @@
    CONFIG
    ============================================================ */
 const API_BASE = "https://dxy-news-signals.onrender.com";
-const AUTH_ENABLED = false; // set true once the backend's /api/auth/register (and /login) routes are confirmed working — currently returning "Not Found"
+const AUTH_ENABLED = true; // backend now implements /api/auth/register, /login, /me — see backend/app/routers/auth.py
 
 /* ---------------- Storage (session + local fallback profile) ---------------- */
 const hasWidgetStorage = typeof window.storage !== "undefined";
