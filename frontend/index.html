@@ -297,6 +297,10 @@ h1.page-title{font-family:var(--disp); font-size:23px; font-weight:600; letter-s
 .journal-textarea:focus{outline:none; border-color:var(--violet);}
 .journal-saved{font-family:var(--mono); font-size:10.5px; color:var(--text-faint); margin-top:8px; text-align:right; min-height:14px;}
 .mt5-copy-btn{margin-top:10px; padding:8px 12px; font-size:11.5px; border-radius:20px;}
+.share-row{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;}
+.share-btn{display:flex; align-items:center; gap:6px; background:var(--bg-3); border:1px solid var(--border); color:var(--text); font-size:11.5px; font-weight:500; padding:8px 12px; border-radius:20px;}
+.share-btn:active{opacity:.8;}
+.share-btn svg{width:14px; height:14px; flex:none;}
 body.compact .signal-row{padding:10px 12px;}
 body.compact .signal-sub{display:none;}
 body.compact .signal-detail-inner{padding-top:0;}
@@ -339,6 +343,7 @@ body.compact .signal-detail-inner{padding-top:0;}
 /* overlays (auth/onboarding/mt5) */
 .overlay{position:fixed; inset:0; background:var(--bg); z-index:100; display:flex; flex-direction:column; overflow-y:auto; padding:calc(30px + var(--safe-top)) 22px calc(30px + var(--safe-bottom));}
 .overlay-hidden{display:none !important;}
+#app.app-hidden{display:none !important;}
 .overlay-inner{max-width:400px; width:100%; margin:auto;}
 .overlay-wordmark{font-family:var(--disp); font-size:22px; font-weight:700; text-align:center; margin-bottom:28px; letter-spacing:-0.01em;}
 .auth-tabs{display:flex; gap:4px; background:var(--glass); border:1px solid var(--border); border-radius:14px; padding:4px; margin-bottom:22px;}
@@ -479,7 +484,7 @@ body.compact .signal-detail-inner{padding-top:0;}
   </footer>
 </div>
 
-<div id="app">
+<div id="app" class="app-hidden">
   <!-- ================= AUTH ================= -->
   <div class="overlay overlay-hidden" id="authScreen">
     <div class="overlay-inner">
@@ -510,9 +515,6 @@ body.compact .signal-detail-inner{padding-top:0;}
       </div>
 
       <div class="form-note" id="authBackendNote"></div>
-      <div class="form-note" style="text-align:center; margin-top:20px;">
-        <button class="link-btn" onclick="continueAsGuest()">Skip for now — explore as a guest</button>
-      </div>
     </div>
   </div>
 
@@ -856,6 +858,7 @@ function showLanding(){
 }
 async function enterApp(){
   document.getElementById('landing').classList.add('hidden');
+  document.getElementById('app').classList.remove('app-hidden');
   if(!window.__pipxBooted){
     window.__pipxBooted = true;
     await bootFlow();
@@ -866,7 +869,6 @@ async function enterApp(){
    CONFIG
    ============================================================ */
 const API_BASE = "https://dxy-news-signals.onrender.com";
-const AUTH_ENABLED = true; // backend implements /api/auth/register, /login, /me
 
 /* ---------------- Storage (session + local fallback profile) ---------------- */
 const hasWidgetStorage = typeof window.storage !== "undefined";
@@ -1028,7 +1030,7 @@ async function doLogin(){
   btn.disabled = true; btn.textContent = 'Signing in…';
   const r = await apiPost('/api/auth/login', { email, password }, null, false);
   btn.disabled = false; btn.textContent = 'Sign in';
-  if(r.networkError){ showAuthError('loginError', "Can't reach the backend right now — try again, or continue as a guest below."); return; }
+  if(r.networkError){ showAuthError('loginError', "Can't reach the backend right now — please try again in a moment."); return; }
   if(!r.ok){ showAuthError('loginError', (r.data && r.data.detail) || 'Incorrect email or password.'); return; }
   await enterAccountSession(r.data);
 }
@@ -1043,7 +1045,7 @@ async function doRegister(){
   btn.disabled = true; btn.textContent = 'Creating account…';
   const r = await apiPost('/api/auth/register', { email, password, name }, null, false);
   btn.disabled = false; btn.textContent = 'Create account';
-  if(r.networkError){ showAuthError('regError', "Can't reach the backend right now — try again, or continue as a guest below."); return; }
+  if(r.networkError){ showAuthError('regError', "Can't reach the backend right now — please try again in a moment."); return; }
   if(!r.ok){ showAuthError('regError', (r.data && r.data.detail) || 'Could not create that account.'); return; }
   await enterAccountSession(r.data);
 }
@@ -1060,21 +1062,6 @@ async function enterAccountSession(sessionData){
     obGoTo(0);
   } else {
     await boot();
-  }
-}
-async function continueAsGuest(){
-  State.mode = 'guest';
-  State.token = null;
-  State.user = null;
-  await storeSet('session', { mode: 'guest' });
-  document.getElementById('authScreen').classList.add('overlay-hidden');
-  const localProfile = await storeGet('guest_profile');
-  if(localProfile){
-    State.profile = localProfile;
-    await boot();
-  } else {
-    document.getElementById('onboarding').classList.remove('overlay-hidden');
-    obGoTo(0);
   }
 }
 async function doLogout(){
@@ -1137,13 +1124,8 @@ async function finishOnboarding(){
     pairs: obSelections.pairs, sessions: obSelections.sessions, account_size: ""
   };
   document.getElementById('onboarding').classList.add('overlay-hidden');
-  if(State.mode === 'account' && State.token){
-    const r = await apiPut('/api/profile/me', profile, profile, true);
-    State.profile = r.ok ? r.data : profile;
-  } else {
-    State.profile = profile;
-    await storeSet('guest_profile', profile);
-  }
+  const r = await apiPut('/api/profile/me', profile, profile, true);
+  State.profile = r.ok ? r.data : profile;
   await boot();
 }
 
@@ -1301,6 +1283,24 @@ function levelCardHtml(s){
         </button>
         <button class="btn btn-ghost mt5-copy-btn" style="flex:none; margin-top:0;" onclick="event.stopPropagation(); copyForMt5('${s.symbol}','${s.direction}',${s.score},'${s.grade}')">Copy ⧉</button>
       </div>
+      <div class="share-row">
+        <button class="share-btn" onclick="event.stopPropagation(); shareSignal('${s.symbol}','telegram')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.05 3.79c-.28-.24-.7-.29-1.15-.13h-.01c-.5.18-16.36 6.5-17.16 6.83-.15.06-1.39.58-1.26 1.6.11.86 1.03 1.22 1.14 1.26l4.16 1.38c.27.85 1.24 3.9 1.45 4.55.13.4.34 1.16.9 1.28.5.16.94-.15 1.22-.38.16-.13 1.92-1.76 2.96-2.73l4.35 3.32.09.05c.24.11.46.16.68.16.17 0 .34-.03.5-.1.45-.19.75-.6.83-1.13.26-1.68 2.65-16.31 2.75-16.98.02-.13.03-.32-.01-.47a.9.9 0 0 0-.44-.51ZM8.85 15.24l-1.1-3.65 9.58-6.02-8.11 8.49-.37 1.18Z"/></svg>
+          Telegram
+        </button>
+        <button class="share-btn" onclick="event.stopPropagation(); shareSignal('${s.symbol}','whatsapp')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.15-1.7-.85-2-.94-.27-.1-.46-.15-.66.15-.2.3-.75.94-.92 1.13-.17.2-.34.22-.63.08-.3-.15-1.24-.46-2.36-1.46-.87-.78-1.46-1.74-1.63-2.03-.17-.3-.02-.46.13-.6.13-.14.3-.34.44-.51.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.66-1.6-.9-2.19-.24-.57-.48-.5-.66-.5-.17-.01-.36-.01-.56-.01-.2 0-.51.07-.78.37-.27.3-1.02 1-1.02 2.44s1.05 2.83 1.2 3.03c.15.2 2.06 3.15 5 4.4.7.3 1.24.48 1.67.62.7.22 1.34.19 1.84.11.56-.08 1.7-.7 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.27-.2-.56-.34Z"/><path d="M12 2C6.48 2 2 6.35 2 11.7c0 1.9.55 3.68 1.5 5.19L2 22l5.3-1.4a10.4 10.4 0 0 0 4.7 1.1c5.52 0 10-4.35 10-9.7C22 6.35 17.52 2 12 2Zm0 17.7c-1.6 0-3.1-.44-4.38-1.2l-.31-.18-3.14.83.84-3-.2-.32a7.9 7.9 0 0 1-1.31-4.33c0-4.36 3.66-7.9 8.5-7.9s8.5 3.54 8.5 7.9-3.66 7.9-8.5 7.9Z"/></svg>
+          WhatsApp
+        </button>
+        <button class="share-btn" onclick="event.stopPropagation(); shareSignal('${s.symbol}','x')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23 22h-6.9l-5.4-6.6L4.5 22H1.4l8.1-9.3L1 2h7.1l4.9 6.1L18.9 2Zm-1.2 18h1.9L7.4 4H5.3l12.4 16Z"/></svg>
+          X
+        </button>
+        <button class="share-btn" onclick="event.stopPropagation(); shareSignal('${s.symbol}','copy')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy
+        </button>
+      </div>
     </div>`;
 }
 
@@ -1367,11 +1367,7 @@ async function toggleFavorite(symbol){
   renderTicker();
   if(State.profile){
     State.profile.pairs = State.favorites.slice();
-    if(State.mode === 'account' && State.token){
-      apiPut('/api/profile/me', State.profile, State.profile, true);
-    } else {
-      await storeSet('guest_profile', State.profile);
-    }
+    apiPut('/api/profile/me', State.profile, State.profile, true);
   }
 }
 
@@ -1420,7 +1416,7 @@ function renderDesk(){
   const el = document.getElementById('deskCard');
   const p = State.profile;
   if(!p){ el.innerHTML = '<div style="color:var(--text-dim)">No profile yet.</div>'; return; }
-  const emailLine = State.user ? State.user.email : 'Guest session (not saved to an account)';
+  const emailLine = State.user ? State.user.email : '';
   el.innerHTML = `
     <div class="desk-name">${p.name || 'Trader'}</div>
     <div class="desk-sub">${emailLine}</div>
@@ -1539,6 +1535,38 @@ function copyForMt5(symbol, direction, score, grade){
     showToast('Clipboard not available. Text: ' + text, 9000);
   }
 }
+function buildShareText(symbol){
+  const s = State.signals.find(x => x.symbol === symbol);
+  if(!s) return `${symbol} — PipX Ledger signal`;
+  const lv = s.levels;
+  const arrow = s.direction === 'bullish' ? '🟢 LONG' : s.direction === 'bearish' ? '🔴 SHORT' : (s.direction || '').toUpperCase();
+  const lines = [`${arrow}  ${s.symbol}`, `Grade: ${(s.grade || '—').toUpperCase()} · Score: ${s.score}/100`];
+  if(lv){
+    lines.push('', `Entry: ${lv.entry}`, `Stop: ${lv.stop}`);
+    if(lv.targets && lv.targets.length) lines.push(`Targets: ${lv.targets.join(' / ')}`);
+  }
+  lines.push('', 'via PipX Ledger');
+  return lines.join('\n');
+}
+function shareSignal(symbol, channel){
+  const text = buildShareText(symbol);
+  const pageUrl = location.href.split('#')[0];
+  if(channel === 'telegram'){
+    window.open(`https://t.me/share/url?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(text)}`, '_blank');
+  } else if(channel === 'whatsapp'){
+    window.open(`https://wa.me/?text=${encodeURIComponent(text + '\n' + pageUrl)}`, '_blank');
+  } else if(channel === 'x'){
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(pageUrl)}`, '_blank');
+  } else if(channel === 'copy'){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text + '\n' + pageUrl)
+        .then(() => showToast('Signal text copied — paste it anywhere.'))
+        .catch(() => showToast('Could not copy automatically. Text: ' + text, 9000));
+    } else {
+      showToast('Clipboard not available. Text: ' + text, 9000);
+    }
+  }
+}
 let audioCtx = null;
 function playSniperTone(){
   try{
@@ -1640,7 +1668,7 @@ async function manualRefresh(){
 async function boot(){
   State.favorites = (State.profile && State.profile.pairs) ? State.profile.pairs.slice() : [];
   document.getElementById('greeting').textContent = State.profile ? `${State.profile.name}'s signals` : 'Signals';
-  document.getElementById('editionLine').textContent = State.mode === 'account' ? 'DXY Desk · signed in' : 'DXY Desk · guest';
+  document.getElementById('editionLine').textContent = 'DXY Desk · signed in';
   renderDesk();
   await loadDeskExtras();
   renderChat();
@@ -1654,13 +1682,6 @@ async function bootFlow(){
   setInterval(updateClock, 15000);
 
   const session = await storeGet('session');
-  if(!AUTH_ENABLED){
-    State.mode = 'guest';
-    const localProfile = await storeGet('guest_profile');
-    if(localProfile){ State.profile = localProfile; await boot(); }
-    else { document.getElementById('onboarding').classList.remove('overlay-hidden'); obGoTo(0); }
-    return;
-  }
 
   if(session && session.mode === 'account' && session.token){
     State.token = session.token;
@@ -1675,10 +1696,6 @@ async function bootFlow(){
       return;
     }
     await storeDelete('session');
-  } else if(session && session.mode === 'guest'){
-    State.mode = 'guest';
-    const localProfile = await storeGet('guest_profile');
-    if(localProfile){ State.profile = localProfile; await boot(); return; }
   }
 
   document.getElementById('authScreen').classList.remove('overlay-hidden');
@@ -1687,9 +1704,8 @@ async function bootFlow(){
 /* ---------------- Initial load: skip landing for returning sessions ---------------- */
 (async function initialCheck(){
   const session = await storeGet('session');
-  const hasLocalProfile = session && session.mode === 'guest' && await storeGet('guest_profile');
-  if((session && session.mode === 'account' && session.token) || hasLocalProfile){
-    await enterApp(); // returning user — skip the landing page straight into the desk
+  if(session && session.mode === 'account' && session.token){
+    await enterApp(); // returning signed-in user — skip the landing page straight into the desk
   }
   // otherwise landing stays visible; user clicks "Launch the desk" to call enterApp()
 })();

@@ -18,6 +18,8 @@ docstring already anticipates.
 
 from __future__ import annotations
 
+import time
+
 import pandas as pd
 import yfinance as yf
 
@@ -26,6 +28,46 @@ _INTERVALS = {
     "1h": ("60m", "1mo"),
     "15m": ("15m", "5d"),
 }
+
+# --------------------------------------------------------------------
+# In-memory TTL cache for raw per-ticker downloads.
+#
+# Every page load used to trigger a fresh, sequential yfinance download
+# for every ticker/interval combo -- for the default 9-symbol watchlist
+# plus the DXY basket fallback, that's 20-30+ blocking network calls on
+# every single request, which is what made the app feel like it hung on
+# "Loading market data...". This cache means each distinct ticker/interval
+# is only ever actually downloaded once per `_TTL_SECONDS` window; every
+# request in between (including the 9 symbols reusing shared basket
+# tickers, and repeat page loads) is served from memory instantly.
+#
+# Not persisted to disk on purpose -- candle data goes stale fast enough
+# that surviving a restart isn't useful, and keeping it in-process avoids
+# any serialization cost for DataFrames.
+# --------------------------------------------------------------------
+_TTL_SECONDS = 90
+_cache: dict[tuple[str, str], tuple[float, pd.DataFrame]] = {}
+
+
+def _cached_download(ticker: str, interval: str, period: str) -> pd.DataFrame | None:
+    key = (ticker, interval)
+    now = time.time()
+    hit = _cache.get(key)
+    if hit and now - hit[0] < _TTL_SECONDS:
+        return hit[1]
+
+    try:
+        raw = yf.download(ticker, interval=interval, period=period,
+                           progress=False, auto_adjust=True)
+    except Exception:
+        return hit[1] if hit else None  # serve stale data over a hard failure if we have it
+
+    if raw is None or raw.empty:
+        return hit[1] if hit else None
+
+    df = _normalize(raw)
+    _cache[key] = (now, df)
+    return df
 
 # Maps our internal symbol names to Yahoo Finance tickers.
 _YF_TICKERS = {
@@ -73,13 +115,9 @@ def get_candles(symbol: str) -> dict:
         return {}
     out = {}
     for label, (interval, period) in _INTERVALS.items():
-        try:
-            raw = yf.download(ticker, interval=interval, period=period,
-                               progress=False, auto_adjust=True)
-            if raw is not None and not raw.empty:
-                out[label] = _normalize(raw)
-        except Exception:
-            continue
+        df = _cached_download(ticker, interval, period)
+        if df is not None:
+            out[label] = df
     return out
 
 
@@ -90,13 +128,9 @@ def get_dxy_candles() -> tuple[dict, str]:
     """
     out = {}
     for label, (interval, period) in _INTERVALS.items():
-        try:
-            raw = yf.download(DXY_TICKER, interval=interval, period=period,
-                               progress=False, auto_adjust=True)
-            if raw is not None and not raw.empty:
-                out[label] = _normalize(raw)
-        except Exception:
-            continue
+        df = _cached_download(DXY_TICKER, interval, period)
+        if df is not None:
+            out[label] = df
     if out:
         return out, "direct"
 
@@ -106,13 +140,9 @@ def get_dxy_candles() -> tuple[dict, str]:
     for label, (interval, period) in _INTERVALS.items():
         frames = {}
         for tkr in _DXY_BASKET:
-            try:
-                raw = yf.download(tkr, interval=interval, period=period,
-                                   progress=False, auto_adjust=True)
-                if raw is not None and not raw.empty:
-                    frames[tkr] = _normalize(raw)
-            except Exception:
-                continue
+            df = _cached_download(tkr, interval, period)
+            if df is not None:
+                frames[tkr] = df
         if not frames:
             continue
         base = next(iter(frames.values()))["time"]
