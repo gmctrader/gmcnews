@@ -178,6 +178,7 @@ body{background:radial-gradient(ellipse at 50% -15%,rgba(55,91,180,.2),transpare
 @media(prefers-reduced-motion:reduce){.panel:hover,.trio-card:hover,.sample-card:hover,.signal-row:hover{transform:none}}
 .masthead-right.status-offline{color:var(--gold);border-color:rgba(255,202,118,.35)}
 .empty-state{max-width:680px;margin:8px auto;padding:28px 14px;text-align:center}.empty-state h2{font-size:clamp(20px,3vw,28px);margin:16px 0 12px;letter-spacing:-.035em}.empty-state p{color:var(--text-dim);line-height:1.7;margin:0 auto 18px}.empty-state code{font-family:var(--mono);font-size:.9em;color:var(--cyan);background:rgba(88,229,255,.08);padding:2px 6px;border-radius:6px}.setup-hint{padding:14px 16px;background:rgba(88,229,255,.045);border:1px solid var(--border);border-radius:14px;text-align:left}.state-orb{width:46px;height:46px;border-radius:50%;margin:0 auto;background:radial-gradient(circle at 35% 30%,#b3fbff,#58e5ff 26%,rgba(88,229,255,.12) 65%,transparent 72%);box-shadow:0 0 34px rgba(88,229,255,.3);animation:pulseGlow 2s ease-in-out infinite}.state-orb.muted{background:radial-gradient(circle at 35% 30%,#ffe2aa,#ffca76 26%,rgba(255,202,118,.1) 65%,transparent 72%);box-shadow:0 0 26px rgba(255,202,118,.16);animation:none}.signal-list{display:grid;gap:14px}.live-signal{padding:20px 22px;border:1px solid var(--border);border-radius:16px;background:rgba(6,13,25,.48)}.live-signal>div:first-child{display:flex;align-items:center;justify-content:space-between;font-size:18px}.direction{font-size:12px;text-transform:uppercase;letter-spacing:.08em}.direction.up{color:var(--pos)}.direction.down{color:var(--neg)}.signal-meta{display:flex;justify-content:space-between;gap:18px;margin-top:12px;color:var(--text-dim);font-size:13px;line-height:1.55}.signal-meta span:last-child{text-align:right}
+.api-setup[hidden]{display:none}.api-setup{position:fixed;inset:0;z-index:260;display:grid;place-items:center;overflow:auto;padding:24px;background:rgba(3,7,15,.84);backdrop-filter:blur(18px)}.api-setup-card{width:min(100%,650px);padding:34px;border:1px solid var(--border-strong);border-radius:24px;background:linear-gradient(145deg,rgba(16,28,49,.98),rgba(7,13,25,.98));box-shadow:0 32px 100px rgba(0,0,0,.55),0 0 50px rgba(88,229,255,.08)}.api-setup-card h2{font-size:clamp(26px,4vw,36px);margin:10px 0 14px;letter-spacing:-.04em}.api-setup-copy,.api-help p{color:var(--text-dim);line-height:1.65}.api-setup-card label{display:block;margin:24px 0 10px;font-size:14px;font-weight:600}.api-url-input{margin-bottom:8px}.api-hint{color:var(--text-faint);font-size:13px;line-height:1.6}.api-hint code,.api-help code{color:var(--cyan);font-family:var(--mono)}.api-save{width:100%;margin-top:12px}.api-help{margin-top:28px;padding-top:20px;border-top:1px solid var(--border)}.api-help h3{font-size:15px;margin:17px 0 6px}.api-help p{font-size:13px;margin:0}.api-help a{color:var(--cyan);text-decoration:underline;text-underline-offset:3px}.api-setup-error{min-height:18px;color:var(--neg);font-size:13px;margin-top:10px}@media(max-width:700px){.api-setup{padding:14px}.api-setup-card{padding:24px 20px}}
 </style>
 </head>
 <body>
@@ -259,6 +260,27 @@ body{background:radial-gradient(ellipse at 50% -15%,rgba(55,91,180,.2),transpare
   </footer>
 </div>
 
+<div id="api-setup" class="api-setup" hidden>
+  <section class="api-setup-card" role="dialog" aria-modal="true" aria-labelledby="api-setup-title">
+    <div class="land-eyebrow">One-time connection setup</div>
+    <h2 id="api-setup-title">Connect your signal engine</h2>
+    <p class="api-setup-copy">Enter the public base URL where the FastAPI service is deployed. This setting saves in this browser and can be changed from the desk header.</p>
+    <form id="api-setup-form" onsubmit="saveApiSetup(event)">
+      <label for="api-base-input">Backend API base URL</label>
+      <input id="api-base-input" class="text-input api-url-input" type="url" inputmode="url" autocomplete="url" placeholder="https://pipx-six.vercel.app" required>
+      <p class="api-hint">Paste the origin only, without <code>/api</code>. If frontend and backend share the Vercel deployment, use <code>https://pipx-six.vercel.app</code>.</p>
+      <div id="api-setup-error" class="api-setup-error" role="status"></div>
+      <button class="btn btn-primary api-save" type="submit">Save and open desk</button>
+    </form>
+    <div class="api-help">
+      <h3>Where do I get the API URL?</h3>
+      <p>Deploy the repository’s FastAPI backend on Vercel. Its deployment domain is the API base URL. <a href="https://vercel.com/docs/frameworks/backend/fastapi" target="_blank" rel="noopener noreferrer">Vercel FastAPI deployment guide ↗</a></p>
+      <h3>Optional Gemini news commentary</h3>
+      <p>Get a Gemini key from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio ↗</a>, then add it as <code>GEMINI_API_KEY</code> in Vercel → Project Settings → Environment Variables. Keep the key server-side; don’t paste it into this browser form.</p>
+    </div>
+  </section>
+</div>
+
 <div id="app" class="overlay-hidden">
   <!-- ================= MASTHEAD ================= -->
   <div class="masthead">
@@ -266,7 +288,7 @@ body{background:radial-gradient(ellipse at 50% -15%,rgba(55,91,180,.2),transpare
       <div class="masthead-brand">
         <div class="masthead-title">PipX Ledger</div>
       </div>
-      <div class="masthead-right" id="backend-status" role="status">Checking signal engine…</div>
+      <button class="masthead-right" id="backend-status" type="button" onclick="openApiSetup()" aria-label="Open API connection settings">Checking signal engine…</button>
     </div>
   </div>
 
@@ -285,7 +307,8 @@ body{background:radial-gradient(ellipse at 50% -15%,rgba(55,91,180,.2),transpare
 </div>
 
 <script>
-const API_BASE=(window.PIPX_API_BASE||window.location.origin).replace(/\/$/,'');
+const API_STORAGE_KEY='pipx-api-base';
+let API_BASE=(localStorage.getItem(API_STORAGE_KEY)||window.PIPX_API_BASE||window.location.origin).replace(/\/$/,'');
 const WATCHLIST='EURUSD,GBPUSD,AUDUSD,NZDUSD,USDJPY,USDCHF,USDCAD,XAUUSD,BTCUSD';
 function safeText(value){const node=document.createElement('span');node.textContent=String(value??'');return node.innerHTML;}
 function renderSignals(payload){
@@ -294,9 +317,28 @@ function renderSignals(payload){
   if(!signals.length){content.innerHTML='<div class="empty-state"><div class="state-orb muted"></div><h2>Signal engine connected · no setups yet</h2><p>Live market data reached the API, but no valid confluence setups are forming for the current watchlist.</p></div>';return;}
   content.innerHTML='<div class="signal-list">'+signals.map(s=>'<article class="live-signal"><div><strong>'+safeText(s.symbol)+'</strong><span class="direction '+(s.direction==='bullish'?'up':'down')+'">'+safeText(s.direction||'unclear')+'</span></div><div class="signal-meta"><span>'+safeText(s.grade||'ungraded')+' · '+safeText(s.score??'—')+'/100</span><span>'+safeText((s.reasons||[]).slice(0,2).join(' '))+'</span></div><div class="signal-meta"><span>'+safeText(s.news_note||'News status unavailable')+'</span><span>'+(s.veto?'Setup vetoed':'No veto')+'</span></div></article>').join('')+'</div>';
 }
+function openApiSetup(){
+  document.getElementById('api-base-input').value=API_BASE;
+  document.getElementById('api-setup-error').textContent='';
+  document.getElementById('api-setup').hidden=false;
+}
+function saveApiSetup(event){
+  event.preventDefault();
+  const field=document.getElementById('api-base-input'),error=document.getElementById('api-setup-error');
+  try{
+    const parsed=new URL(field.value.trim());
+    if(!['https:','http:'].includes(parsed.protocol)||parsed.username||parsed.password)throw new Error('Enter a valid public API URL without a username or password.');
+    if(parsed.protocol==='http:'&&!['localhost','127.0.0.1'].includes(parsed.hostname))throw new Error('Use HTTPS for a public API URL.');
+    API_BASE=parsed.origin;
+    localStorage.setItem(API_STORAGE_KEY,API_BASE);
+    document.getElementById('api-setup').hidden=true;
+    document.getElementById('landing').classList.add('hidden');
+    document.getElementById('app').classList.remove('overlay-hidden');
+    loadSignals();
+  }catch(e){error.textContent=e.message||'Could not save this API URL in browser storage.';}
+}
 async function loadSignals(){
   const status=document.getElementById('backend-status'),content=document.getElementById('signal-content');
-  if(!API_BASE){status.textContent='Signal engine not connected';status.classList.add('status-offline');content.innerHTML='<div class="empty-state"><div class="state-orb muted"></div><h2>Live signals aren’t connected yet</h2><p>This Vercel site is serving the frontend, but no backend API address is configured. The live confluence engine runs separately; until it is deployed and connected, this page cannot calculate real signals.</p><p class="setup-hint">Next: deploy the <code>backend</code> service, set <code>window.PIPX_API_BASE</code> to its public URL in the frontend configuration, then redeploy.</p><button class="btn btn-ghost" onclick="loadSignals()">Check connection again</button></div>';return;}
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),8000);
   try{
     status.textContent='Checking API…';
@@ -305,10 +347,12 @@ async function loadSignals(){
     const response=await fetch(API_BASE+'/api/signals?symbols='+encodeURIComponent(WATCHLIST),{signal:controller.signal});
     if(!response.ok)throw new Error('Signal feed returned '+response.status);
     renderSignals(await response.json());status.textContent='Signal engine connected';status.classList.remove('status-offline');
-  }catch(error){status.textContent='Signal engine unavailable';status.classList.add('status-offline');content.innerHTML='<div class="empty-state"><div class="state-orb muted"></div><h2>Could not reach the signal engine</h2><p>Check the backend deployment, its <code>/api/health</code> endpoint, and its CORS settings. No live signal is being shown.</p><button class="btn btn-ghost" onclick="loadSignals()">Retry connection</button></div>';}
+  }catch(error){status.textContent='Signal engine unavailable';status.classList.add('status-offline');content.innerHTML='<div class="empty-state"><div class="state-orb muted"></div><h2>Could not reach the signal engine</h2><p>Check the API URL, Vercel deployment, and CORS settings. No live signal is being shown.</p><button class="btn btn-ghost" onclick="loadSignals()">Retry connection</button></div>';}
   finally{clearTimeout(timeout);}
 }
 async function enterApp(){
+  if(!localStorage.getItem(API_STORAGE_KEY)){openApiSetup();return;}
+  API_BASE=(localStorage.getItem(API_STORAGE_KEY)||window.location.origin).replace(/\/$/,'');
   document.getElementById('landing').classList.add('hidden');
   document.getElementById('app').classList.remove('overlay-hidden');
   loadSignals();
