@@ -12,6 +12,7 @@ from .news import user_history
 from .routers import auth, profile, news, dxy, signals
 
 app = FastAPI(title="DXY News Signals", version="0.1.0")
+_database_init_error: str | None = None
 
 app.add_middleware(
     CORSMiddleware,
@@ -23,9 +24,15 @@ app.add_middleware(
 
 @app.on_event("startup")
 def _startup():
-    db.init_db()
-    user_db.init_db()
-    user_history.init_db()
+    global _database_init_error
+    try:
+        db.init_db()
+        user_db.init_db()
+        user_history.init_db()
+        _database_init_error = None
+    except Exception as exc:  # database failure should not take live market reads offline
+        _database_init_error = type(exc).__name__
+        print(f"Database initialization failed ({_database_init_error}); account features are unavailable.")
 
 
 app.include_router(auth.router)
@@ -46,9 +53,10 @@ def health():
         except Exception:
             persistent = False
     secure_secret = security.AUTH_SECRET_CONFIGURED
-    ready = (persistent and secure_secret) if on_vercel else True
+    ready = (persistent and secure_secret and _database_init_error is None) if on_vercel else _database_init_error is None
     return {
         "status": "ok",
+        "database_initialized": _database_init_error is None,
         "accounts": {
             "ready": ready,
             "persistent": persistent or not on_vercel,
