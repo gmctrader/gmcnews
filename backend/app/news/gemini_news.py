@@ -36,6 +36,7 @@ still runs (e.g. in local dev without the key configured).
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from dataclasses import dataclass
@@ -87,8 +88,8 @@ def _stub(event_label: str, reason: str) -> NewsEnrichment:
     )
 
 
-def _client():
-    api_key = os.environ.get("GEMINI_API_KEY")
+def _client(api_key_override: Optional[str] = None):
+    api_key = (api_key_override or os.environ.get("GEMINI_API_KEY", "")).strip()
     if not api_key:
         return None
     from google import genai
@@ -156,7 +157,7 @@ def enrich_event(
         )
 
 
-def dollar_sentiment_summary(dxy_bias: str, confidence: str) -> str:
+def dollar_sentiment_summary(dxy_bias: str, confidence: str, api_key_override: Optional[str] = None) -> str:
     """
     A short Gemini-written paragraph on DXY's structural bias.
 
@@ -166,12 +167,13 @@ def dollar_sentiment_summary(dxy_bias: str, confidence: str) -> str:
     thinking it's today's headlines. Falls back to a templated
     sentence with no key, same as before.
     """
-    api_key = os.environ.get("GEMINI_API_KEY")
+    api_key = (api_key_override or os.environ.get("GEMINI_API_KEY", "")).strip()
     if not api_key:
         return (f"DXY structure reads {dxy_bias} with {confidence} confidence. "
-                f"(Set GEMINI_API_KEY for AI-generated commentary.)")
+                f"(Add a Gemini API key in dashboard settings for AI commentary.)")
 
-    cache_key = f"sentiment:{dxy_bias}:{confidence}"
+    key_fingerprint = hashlib.sha256(api_key.encode("utf-8")).hexdigest()[:12]
+    cache_key = f"sentiment:{key_fingerprint}:{dxy_bias}:{confidence}"
     cached = cache.get(cache_key)
     if cached is not None:
         return cached
@@ -197,7 +199,7 @@ def dollar_sentiment_summary(dxy_bias: str, confidence: str) -> str:
             config=types.GenerateContentConfig(temperature=0.3),
         )
         text = (response.text or "").strip()
-        result = text + "\n\n(General AI commentary, not live news -- add a grounded/billed key for a live read.)"
+        result = text + "\n\n(General AI commentary, not a live-news read.)"
         cache.set(cache_key, result, _SENTIMENT_TTL_SECONDS)
         return result
     except Exception as exc:  # noqa: BLE001
