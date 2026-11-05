@@ -176,6 +176,8 @@ body{background:radial-gradient(ellipse at 50% -15%,rgba(55,91,180,.2),transpare
 .land-sub,.land-p,.trio-card p,.sample-row .k{color:var(--text-dim);}
 @media(max-width:700px){.land-nav{padding-left:20px;padding-right:20px}.land-hero{padding:100px 22px 82px}.land-section{padding:82px 20px}.land-section-head{margin-bottom:44px}.trio-card,.sample-card,.panel{padding:24px}.masthead-row{padding:16px 18px}.page-head{margin-bottom:28px}.overlay{padding-left:20px;padding-right:20px}.nav-btn{padding:16px 0 14px}}
 @media(prefers-reduced-motion:reduce){.panel:hover,.trio-card:hover,.sample-card:hover,.signal-row:hover{transform:none}}
+.masthead-right.status-offline{color:var(--gold);border-color:rgba(255,202,118,.35)}
+.empty-state{max-width:680px;margin:8px auto;padding:28px 14px;text-align:center}.empty-state h2{font-size:clamp(20px,3vw,28px);margin:16px 0 12px;letter-spacing:-.035em}.empty-state p{color:var(--text-dim);line-height:1.7;margin:0 auto 18px}.empty-state code{font-family:var(--mono);font-size:.9em;color:var(--cyan);background:rgba(88,229,255,.08);padding:2px 6px;border-radius:6px}.setup-hint{padding:14px 16px;background:rgba(88,229,255,.045);border:1px solid var(--border);border-radius:14px;text-align:left}.state-orb{width:46px;height:46px;border-radius:50%;margin:0 auto;background:radial-gradient(circle at 35% 30%,#b3fbff,#58e5ff 26%,rgba(88,229,255,.12) 65%,transparent 72%);box-shadow:0 0 34px rgba(88,229,255,.3);animation:pulseGlow 2s ease-in-out infinite}.state-orb.muted{background:radial-gradient(circle at 35% 30%,#ffe2aa,#ffca76 26%,rgba(255,202,118,.1) 65%,transparent 72%);box-shadow:0 0 26px rgba(255,202,118,.16);animation:none}.signal-list{display:grid;gap:14px}.live-signal{padding:20px 22px;border:1px solid var(--border);border-radius:16px;background:rgba(6,13,25,.48)}.live-signal>div:first-child{display:flex;align-items:center;justify-content:space-between;font-size:18px}.direction{font-size:12px;text-transform:uppercase;letter-spacing:.08em}.direction.up{color:var(--pos)}.direction.down{color:var(--neg)}.signal-meta{display:flex;justify-content:space-between;gap:18px;margin-top:12px;color:var(--text-dim);font-size:13px;line-height:1.55}.signal-meta span:last-child{text-align:right}
 </style>
 </head>
 <body>
@@ -264,7 +266,7 @@ body{background:radial-gradient(ellipse at 50% -15%,rgba(55,91,180,.2),transpare
       <div class="masthead-brand">
         <div class="masthead-title">PipX Ledger</div>
       </div>
-      <div class="masthead-right">DXY Desk Active</div>
+      <div class="masthead-right" id="backend-status" role="status">Checking signal engine…</div>
     </div>
   </div>
 
@@ -276,16 +278,40 @@ body{background:radial-gradient(ellipse at 50% -15%,rgba(55,91,180,.2),transpare
     <main>
       <section class="screen active">
         <div class="page-head"><h1 class="page-title">Active Signals</h1></div>
-        <div class="panel">Loading...</div>
+        <div class="panel" id="signal-content" aria-live="polite"><div class="empty-state"><div class="state-orb" aria-hidden="true"></div><h2>Connecting to the signal engine</h2><p>Checking whether the live analysis API is configured for this deployment.</p></div></div>
       </section>
     </main>
   </div>
 </div>
 
 <script>
+const API_BASE=(window.PIPX_API_BASE||'').replace(/\/$/,'');
+const WATCHLIST='EURUSD,GBPUSD,AUDUSD,NZDUSD,USDJPY,USDCHF,USDCAD,XAUUSD,BTCUSD';
+function safeText(value){const node=document.createElement('span');node.textContent=String(value??'');return node.innerHTML;}
+function renderSignals(payload){
+  const signals=Array.isArray(payload?.signals)?payload.signals:[];
+  const content=document.getElementById('signal-content');
+  if(!signals.length){content.innerHTML='<div class="empty-state"><div class="state-orb muted"></div><h2>Signal engine connected · no setups yet</h2><p>Live market data reached the API, but no valid confluence setups are forming for the current watchlist.</p></div>';return;}
+  content.innerHTML='<div class="signal-list">'+signals.map(s=>'<article class="live-signal"><div><strong>'+safeText(s.symbol)+'</strong><span class="direction '+(s.direction==='bullish'?'up':'down')+'">'+safeText(s.direction||'unclear')+'</span></div><div class="signal-meta"><span>'+safeText(s.grade||'ungraded')+' · '+safeText(s.score??'—')+'/100</span><span>'+safeText((s.reasons||[]).slice(0,2).join(' '))+'</span></div><div class="signal-meta"><span>'+safeText(s.news_note||'News status unavailable')+'</span><span>'+(s.veto?'Setup vetoed':'No veto')+'</span></div></article>').join('')+'</div>';
+}
+async function loadSignals(){
+  const status=document.getElementById('backend-status'),content=document.getElementById('signal-content');
+  if(!API_BASE){status.textContent='Signal engine not connected';status.classList.add('status-offline');content.innerHTML='<div class="empty-state"><div class="state-orb muted"></div><h2>Live signals aren’t connected yet</h2><p>This Vercel site is serving the frontend, but no backend API address is configured. The live confluence engine runs separately; until it is deployed and connected, this page cannot calculate real signals.</p><p class="setup-hint">Next: deploy the <code>backend</code> service, set <code>PIPX_API_BASE</code> to its public URL in the Vercel project, then redeploy.</p><button class="btn btn-ghost" onclick="loadSignals()">Check connection again</button></div>';return;}
+  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),8000);
+  try{
+    status.textContent='Checking API…';
+    const health=await fetch(API_BASE+'/api/health',{signal:controller.signal});
+    if(!health.ok)throw new Error('Health check returned '+health.status);
+    const response=await fetch(API_BASE+'/api/signals?symbols='+encodeURIComponent(WATCHLIST),{signal:controller.signal});
+    if(!response.ok)throw new Error('Signal feed returned '+response.status);
+    renderSignals(await response.json());status.textContent='Signal engine connected';status.classList.remove('status-offline');
+  }catch(error){status.textContent='Signal engine unavailable';status.classList.add('status-offline');content.innerHTML='<div class="empty-state"><div class="state-orb muted"></div><h2>Could not reach the signal engine</h2><p>Check the backend deployment, its <code>/api/health</code> endpoint, and its CORS settings. No live signal is being shown.</p><button class="btn btn-ghost" onclick="loadSignals()">Retry connection</button></div>';}
+  finally{clearTimeout(timeout);}
+}
 async function enterApp(){
   document.getElementById('landing').classList.add('hidden');
   document.getElementById('app').classList.remove('overlay-hidden');
+  loadSignals();
 }
 </script>
 </body>
