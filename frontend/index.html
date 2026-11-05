@@ -179,6 +179,65 @@ body{background:radial-gradient(ellipse at 50% -15%,rgba(55,91,180,.2),transpare
 .masthead-right.status-offline{color:var(--gold);border-color:rgba(255,202,118,.35)}
 .empty-state{max-width:680px;margin:8px auto;padding:28px 14px;text-align:center}.empty-state h2{font-size:clamp(20px,3vw,28px);margin:16px 0 12px;letter-spacing:-.035em}.empty-state p{color:var(--text-dim);line-height:1.7;margin:0 auto 18px}.empty-state code{font-family:var(--mono);font-size:.9em;color:var(--cyan);background:rgba(88,229,255,.08);padding:2px 6px;border-radius:6px}.setup-hint{padding:14px 16px;background:rgba(88,229,255,.045);border:1px solid var(--border);border-radius:14px;text-align:left}.state-orb{width:46px;height:46px;border-radius:50%;margin:0 auto;background:radial-gradient(circle at 35% 30%,#b3fbff,#58e5ff 26%,rgba(88,229,255,.12) 65%,transparent 72%);box-shadow:0 0 34px rgba(88,229,255,.3);animation:pulseGlow 2s ease-in-out infinite}.state-orb.muted{background:radial-gradient(circle at 35% 30%,#ffe2aa,#ffca76 26%,rgba(255,202,118,.1) 65%,transparent 72%);box-shadow:0 0 26px rgba(255,202,118,.16);animation:none}.signal-list{display:grid;gap:14px}.live-signal{padding:20px 22px;border:1px solid var(--border);border-radius:16px;background:rgba(6,13,25,.48)}.live-signal>div:first-child{display:flex;align-items:center;justify-content:space-between;font-size:18px}.direction{font-size:12px;text-transform:uppercase;letter-spacing:.08em}.direction.up{color:var(--pos)}.direction.down{color:var(--neg)}.signal-meta{display:flex;justify-content:space-between;gap:18px;margin-top:12px;color:var(--text-dim);font-size:13px;line-height:1.55}.signal-meta span:last-child{text-align:right}
 .api-setup[hidden]{display:none}.api-setup{position:fixed;inset:0;z-index:260;display:grid;place-items:center;overflow:auto;padding:24px;background:rgba(3,7,15,.84);backdrop-filter:blur(18px)}.api-setup-card{width:min(100%,650px);padding:34px;border:1px solid var(--border-strong);border-radius:24px;background:linear-gradient(145deg,rgba(16,28,49,.98),rgba(7,13,25,.98));box-shadow:0 32px 100px rgba(0,0,0,.55),0 0 50px rgba(88,229,255,.08)}.api-setup-card h2{font-size:clamp(26px,4vw,36px);margin:10px 0 14px;letter-spacing:-.04em}.api-setup-copy,.api-help p{color:var(--text-dim);line-height:1.65}.api-setup-card label{display:block;margin:24px 0 10px;font-size:14px;font-weight:600}.api-url-input{margin-bottom:8px}.api-hint{color:var(--text-faint);font-size:13px;line-height:1.6}.api-hint code,.api-help code{color:var(--cyan);font-family:var(--mono)}.api-save{width:100%;margin-top:12px}.api-help{margin-top:28px;padding-top:20px;border-top:1px solid var(--border)}.api-help h3{font-size:15px;margin:17px 0 6px}.api-help p{font-size:13px;margin:0}.api-help a{color:var(--cyan);text-decoration:underline;text-underline-offset:3px}.api-setup-error{min-height:18px;color:var(--neg);font-size:13px;margin-top:10px}@media(max-width:700px){.api-setup{padding:14px}.api-setup-card{padding:24px 20px}}
+/* Observatory dashboard */
+#app{max-width:1320px;padding:0 34px 30px}
+.masthead{position:sticky;margin:0 -34px;padding:0 34px;border-bottom:1px solid rgba(108,154,210,.12)}
+.masthead-row{max-width:1252px;margin:0 auto;padding:20px 12px}
+.masthead-brand{gap:14px}.masthead-title{font-size:20px;letter-spacing:-.04em}
+.masthead-title:before{content:'◈';display:inline-grid;place-items:center;margin-right:10px;width:30px;height:30px;border-radius:10px;color:#06121e;background:linear-gradient(145deg,#87f5ff,#7981ff);box-shadow:0 0 24px rgba(88,229,255,.28)}
+.masthead-right{border-radius:12px;padding:12px 15px;cursor:pointer}
+.shell{padding:40px 20px 110px}
+.screen{max-width:1060px;margin:0 auto}
+.desk-topline{display:flex;justify-content:space-between;align-items:center;margin:6px 0 22px}
+.terminal-kicker,.local-clock,.feed-chip{display:inline-flex;align-items:center;gap:9px;font:600 10px var(--mono);letter-spacing:.11em;color:#8299b5}
+.terminal-kicker{padding:9px 12px;border:1px solid rgba(88,229,255,.16);border-radius:8px;background:rgba(88,229,255,.04);color:#91eefe}
+.terminal-kicker i,.feed-chip i{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 12px var(--cyan)}
+.local-clock{letter-spacing:.04em}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:22px;margin:0 0 26px}
+h1.page-title{font-size:clamp(36px,5vw,58px);line-height:1;letter-spacing:-.06em;background:linear-gradient(100deg,#f4f8ff,#aebcff 58%,#71edff);background-clip:text;-webkit-background-clip:text;color:transparent}
+.page-subtitle{color:var(--text-dim);font-size:15px;margin:12px 0 0;line-height:1.55}
+.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:34px}
+.metric-card{position:relative;overflow:hidden;min-height:120px;padding:20px 22px;border:1px solid var(--border);border-radius:18px;background:linear-gradient(145deg,rgba(18,31,54,.84),rgba(7,14,27,.92));box-shadow:0 18px 42px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.04)}
+.metric-card:after{content:'';position:absolute;width:130px;height:130px;border-radius:50%;right:-55px;top:-70px;background:radial-gradient(circle,rgba(88,229,255,.15),transparent 70%)}
+.metric-violet:after{background:radial-gradient(circle,rgba(139,124,255,.2),transparent 70%)}
+.metric-gold:after{background:radial-gradient(circle,rgba(255,202,118,.14),transparent 70%)}
+.metric-label{display:block;font:600 10px var(--mono);letter-spacing:.12em;color:#7f95b2}
+.metric-card strong{display:block;margin:13px 0 5px;font:700 19px var(--mono);letter-spacing:-.04em;color:#dcecff}
+.metric-cyan strong{color:#71eaff}.metric-violet strong{color:#a99fff}.metric-gold strong{color:#ffd48f}
+.metric-card strong small{font-size:10px;color:#8194ae}
+.metric-card>span:last-child{color:#8297b2;font-size:12px}
+.feed-heading{display:flex;align-items:end;justify-content:space-between;margin:0 0 13px}
+.feed-heading h2{font-size:22px;letter-spacing:-.04em;margin-top:6px}
+.feed-chip{border:1px solid var(--border);padding:8px 10px;border-radius:99px;letter-spacing:.04em}
+.signal-panel{padding:30px;min-height:245px;border-radius:22px}
+.empty-state{padding:24px 12px}
+.empty-state h2{font-size:25px}
+.dashboard-footnote{margin:14px 4px;color:#6f839d;font-size:11px;line-height:1.6}
+.settings-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:18px;align-items:stretch}
+.api-settings-panel,.api-guide-panel{padding:28px;border-radius:22px}
+.settings-card-head{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.settings-card-head h2,.api-guide-panel h2{font-size:23px;letter-spacing:-.04em;margin:6px 0 0}
+.settings-orb{display:grid;place-items:center;width:46px;height:46px;border:1px solid rgba(88,229,255,.25);border-radius:14px;color:var(--cyan);background:linear-gradient(145deg,rgba(88,229,255,.14),rgba(139,124,255,.11));font-size:21px}
+.settings-copy{color:var(--text-dim);font-size:13px;line-height:1.65}
+.api-settings-panel label{display:block;font-size:12px;font-weight:600;margin:20px 0 9px}
+.api-input-row{display:flex;gap:10px;align-items:center}
+.api-input-row .text-input{margin:0;min-width:0}
+.api-input-row .btn{padding:17px 20px;white-space:nowrap}
+.saved-note{display:flex;align-items:center;gap:8px;color:#7790ad;font:11px var(--mono);margin:13px 0 0;overflow-wrap:anywhere}
+.saved-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--pos);box-shadow:0 0 10px rgba(99,239,189,.55)}
+.api-guide-panel{background:linear-gradient(145deg,rgba(17,23,49,.9),rgba(8,14,27,.92))}
+.setup-steps{list-style:none;padding:0;margin:22px 0;display:grid;gap:17px;counter-reset:step}
+.setup-steps li{counter-increment:step;display:grid;grid-template-columns:26px 1fr;column-gap:10px}
+.setup-steps li:before{content:counter(step,decimal-leading-zero);grid-row:span 2;color:var(--cyan);font:600 10px var(--mono);padding-top:3px}
+.setup-steps b{font-size:13px}.setup-steps span{font-size:12px;line-height:1.5;color:var(--text-dim);margin-top:4px}
+.guide-link{display:flex;justify-content:space-between;align-items:center;padding:13px 14px;border:1px solid rgba(88,229,255,.2);border-radius:12px;color:var(--cyan);font-size:12px;font-weight:600;background:rgba(88,229,255,.05)}
+.secret-note{margin-top:18px;padding:14px;border-radius:12px;background:rgba(255,202,118,.06);border:1px solid rgba(255,202,118,.14)}
+.secret-note b{font-size:12px;color:var(--gold)}.secret-note p{font-size:11px;line-height:1.6;color:var(--text-dim);margin:7px 0 0}.secret-note a{color:#ffd48f;text-decoration:underline}
+.bottom-nav{position:fixed;left:50%;right:auto;bottom:18px;transform:translateX(-50%);width:min(390px,calc(100vw - 32px));padding:6px;border:1px solid rgba(125,167,218,.17);border-radius:18px;background:rgba(7,13,25,.88);box-shadow:0 18px 54px rgba(0,0,0,.45),inset 0 1px rgba(255,255,255,.06)}
+.nav-btn{flex-direction:row;justify-content:center;gap:9px;padding:13px 10px;border-radius:12px;font-size:12px}
+.nav-icon{font-size:17px;line-height:1}
+.nav-btn.active{background:linear-gradient(135deg,rgba(88,229,255,.16),rgba(139,124,255,.14));color:#8ceeff}
+@media(max-width:760px){#app{padding:0 14px 18px}.masthead{margin:0 -14px;padding:0 14px}.masthead-row{padding:14px 8px}.shell{padding:28px 2px 100px}.metric-grid{grid-template-columns:1fr;gap:10px}.metric-card{min-height:98px}.page-head{align-items:flex-start;flex-direction:column}.settings-grid{grid-template-columns:1fr}.api-settings-panel,.api-guide-panel{padding:22px}.api-input-row{align-items:stretch;flex-direction:column}.api-input-row .btn{width:100%}.signal-panel{padding:18px}.desk-topline{margin-bottom:17px}.local-clock{font-size:9px}}
 </style>
 </head>
 <body>
@@ -293,20 +352,77 @@ body{background:radial-gradient(ellipse at 50% -15%,rgba(55,91,180,.2),transpare
   </div>
 
   <div class="shell">
-    <nav class="bottom-nav">
-      <button class="nav-btn active">Signals</button>
-      <button class="nav-btn">Desk</button>
+    <nav class="bottom-nav" aria-label="Dashboard sections">
+      <button class="nav-btn active" id="nav-signals" type="button" onclick="showScreen('signals')"><span class="nav-icon">◈</span><span>Signals</span></button>
+      <button class="nav-btn" id="nav-api" type="button" onclick="showScreen('api')"><span class="nav-icon">⌘</span><span>API Settings</span></button>
     </nav>
     <main>
-      <section class="screen active">
-        <div class="page-head"><h1 class="page-title">Active Signals</h1></div>
-        <div class="panel" id="signal-content" aria-live="polite"><div class="empty-state"><div class="state-orb" aria-hidden="true"></div><h2>Connecting to the signal engine</h2><p>Checking whether the live analysis API is configured for this deployment.</p></div></div>
+      <section class="screen active" id="signals-screen">
+        <div class="desk-topline"><span class="terminal-kicker"><i></i> MARKET INTELLIGENCE TERMINAL</span><span id="local-clock" class="local-clock">LOCAL TIME</span></div>
+        <div class="page-head"><div><h1 class="page-title">Signal Observatory</h1><p class="page-subtitle">Structure, dollar bias and event risk in one view.</p></div><button class="btn btn-ghost" type="button" onclick="showScreen('api')">Configure connection <span aria-hidden="true">↗</span></button></div>
+        <div class="metric-grid">
+          <article class="metric-card metric-cyan"><span class="metric-label">SIGNAL ENGINE</span><strong id="engine-metric">CONNECTING</strong><span id="engine-caption">Checking backend status</span></article>
+          <article class="metric-card metric-violet"><span class="metric-label">WATCHLIST</span><strong>09 <small>SYMBOLS</small></strong><span>FX · Metals · Digital assets</span></article>
+          <article class="metric-card metric-gold"><span class="metric-label">ANALYSIS MODE</span><strong>CONFLUENCE</strong><span>Price structure + DXY + news timing</span></article>
+        </div>
+        <div class="feed-heading"><div><span class="metric-label">LIVE FEED</span><h2>Active setups</h2></div><span class="feed-chip"><i></i> API monitored</span></div>
+        <div class="panel signal-panel" id="signal-content" aria-live="polite"><div class="empty-state"><div class="state-orb" aria-hidden="true"></div><h2>Connecting to the signal engine</h2><p>Checking whether the live analysis API is configured for this deployment.</p></div></div>
+        <p class="dashboard-footnote">Signals are research outputs, not guarantees. Check the source and event timing before acting.</p>
+      </section>
+      <section class="screen" id="api-screen">
+        <div class="desk-topline"><span class="terminal-kicker"><i></i> CONNECTION CONTROL</span><span class="local-clock">PERSISTENT SETUP</span></div>
+        <div class="page-head"><div><h1 class="page-title">API Connection</h1><p class="page-subtitle">Store and manage the signal engine address for this browser.</p></div></div>
+        <div class="settings-grid">
+          <div class="panel api-settings-panel">
+            <div class="settings-card-head"><div class="settings-orb">↗</div><div><span class="metric-label">BACKEND ENDPOINT</span><h2>Signal engine URL</h2></div></div>
+            <p class="settings-copy">Paste the public base URL for the FastAPI backend. Use the deployment origin only—don’t add <code>/api</code>.</p>
+            <form onsubmit="saveDashboardApi(event)">
+              <label for="dashboard-api-input">API base URL</label>
+              <div class="api-input-row"><input id="dashboard-api-input" class="text-input api-url-input" type="url" inputmode="url" autocomplete="url" placeholder="https://pipx-six.vercel.app" required><button class="btn btn-primary" type="submit">Save URL</button></div>
+              <p class="saved-note"><span class="saved-dot"></span> Saved in this browser only · <span id="saved-api-host">Not set</span></p>
+              <div id="dashboard-api-feedback" class="api-setup-error" role="status"></div>
+            </form>
+          </div>
+          <aside class="panel api-guide-panel">
+            <span class="metric-label">SETUP GUIDE</span><h2>Get connected</h2>
+            <ol class="setup-steps"><li><b>Deploy the backend</b><span>Use the Vercel FastAPI guide and the repository’s backend service.</span></li><li><b>Copy its public URL</b><span>If both services share this Vercel project, use the same site URL.</span></li><li><b>Save and verify</b><span>This dashboard checks <code>/api/health</code> before loading signals.</span></li></ol>
+            <a class="guide-link" href="https://vercel.com/docs/frameworks/backend/fastapi" target="_blank" rel="noopener noreferrer">Open Vercel FastAPI guide <span>↗</span></a>
+            <div class="secret-note"><b>Optional Gemini commentary</b><p>Get a key from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio</a>, then add <code>GEMINI_API_KEY</code> in Vercel Environment Variables. Keep it server-side; never store it in this browser.</p></div>
+          </aside>
+        </div>
       </section>
     </main>
   </div>
 </div>
 
 <script>
+function showScreen(name){
+  const signals=name==='signals';
+  document.getElementById('signals-screen').classList.toggle('active',signals);
+  document.getElementById('api-screen').classList.toggle('active',!signals);
+  document.getElementById('nav-signals').classList.toggle('active',signals);
+  document.getElementById('nav-api').classList.toggle('active',!signals);
+  if(!signals)refreshApiSettings();
+}
+function refreshApiSettings(){
+  const input=document.getElementById('dashboard-api-input');
+  if(input)input.value=API_BASE;
+  const display=document.getElementById('saved-api-host');
+  if(display){try{display.textContent=new URL(API_BASE).host;}catch{display.textContent='Not set';}}
+}
+function saveDashboardApi(event){
+  event.preventDefault();
+  const field=document.getElementById('dashboard-api-input'),feedback=document.getElementById('dashboard-api-feedback');
+  try{
+    const parsed=new URL(field.value.trim());
+    if(!['https:','http:'].includes(parsed.protocol)||parsed.username||parsed.password)throw new Error('Enter a valid public API URL without a username or password.');
+    if(parsed.protocol==='http:'&&!['localhost','127.0.0.1'].includes(parsed.hostname))throw new Error('Use HTTPS for a public API URL.');
+    API_BASE=parsed.origin;
+    localStorage.setItem(API_STORAGE_KEY,API_BASE);
+    refreshApiSettings();feedback.textContent='Saved to this browser. Checking the API now…';
+    loadSignals();
+  }catch(e){feedback.textContent=e.message||'Could not save this API URL.';}
+}
 const API_STORAGE_KEY='pipx-api-base';
 let API_BASE=(localStorage.getItem(API_STORAGE_KEY)||window.PIPX_API_BASE||window.location.origin).replace(/\/$/,'');
 const WATCHLIST='EURUSD,GBPUSD,AUDUSD,NZDUSD,USDJPY,USDCHF,USDCAD,XAUUSD,BTCUSD';
@@ -341,13 +457,13 @@ async function loadSignals(){
   const status=document.getElementById('backend-status'),content=document.getElementById('signal-content');
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),8000);
   try{
-    status.textContent='Checking API…';
+    status.textContent='Checking API…';document.getElementById('engine-metric').textContent='CHECKING';document.getElementById('engine-caption').textContent='Verifying /api/health';
     const health=await fetch(API_BASE+'/api/health',{signal:controller.signal});
     if(!health.ok)throw new Error('Health check returned '+health.status);
     const response=await fetch(API_BASE+'/api/signals?symbols='+encodeURIComponent(WATCHLIST),{signal:controller.signal});
     if(!response.ok)throw new Error('Signal feed returned '+response.status);
-    renderSignals(await response.json());status.textContent='Signal engine connected';status.classList.remove('status-offline');
-  }catch(error){status.textContent='Signal engine unavailable';status.classList.add('status-offline');content.innerHTML='<div class="empty-state"><div class="state-orb muted"></div><h2>Could not reach the signal engine</h2><p>Check the API URL, Vercel deployment, and CORS settings. No live signal is being shown.</p><button class="btn btn-ghost" onclick="loadSignals()">Retry connection</button></div>';}
+    renderSignals(await response.json());status.textContent='Signal engine connected';status.classList.remove('status-offline');document.getElementById('engine-metric').textContent='ONLINE';document.getElementById('engine-caption').textContent=new URL(API_BASE).host;
+  }catch(error){status.textContent='Signal engine unavailable';status.classList.add('status-offline');document.getElementById('engine-metric').textContent='OFFLINE';document.getElementById('engine-caption').textContent='Open API Settings to reconnect';content.innerHTML='<div class="empty-state"><div class="state-orb muted"></div><h2>Could not reach the signal engine</h2><p>Check the API URL, Vercel deployment, and CORS settings. No live signal is being shown.</p><button class="btn btn-ghost" onclick="loadSignals()">Retry connection</button></div>';}
   finally{clearTimeout(timeout);}
 }
 async function enterApp(){
