@@ -296,7 +296,7 @@ function renderSignals(payload){
 }
 async function loadSignals(){
   const status=document.getElementById('backend-status'),content=document.getElementById('signal-content');
-  if(!API_BASE){status.textContent='Signal engine not connected';status.classList.add('status-offline');content.innerHTML='<div class="empty-state"><div class="state-orb muted"></div><h2>Live signals aren’t connected yet</h2><p>This Vercel site is serving the frontend, but no backend API address is configured. The live confluence engine runs separately; until it is deployed and connected, this page cannot calculate real signals.</p><p class="setup-hint">Next: deploy the <code>backend</code> service, set <code>PIPX_API_BASE</code> to its public URL in the Vercel project, then redeploy.</p><button class="btn btn-ghost" onclick="loadSignals()">Check connection again</button></div>';return;}
+  if(!API_BASE){status.textContent='Signal engine not connected';status.classList.add('status-offline');content.innerHTML='<div class="empty-state"><div class="state-orb muted"></div><h2>Live signals aren’t connected yet</h2><p>This Vercel site is serving the frontend, but no backend API address is configured. The live confluence engine runs separately; until it is deployed and connected, this page cannot calculate real signals.</p><p class="setup-hint">Next: deploy the <code>backend</code> service, set <code>window.PIPX_API_BASE</code> to its public URL in the frontend configuration, then redeploy.</p><button class="btn btn-ghost" onclick="loadSignals()">Check connection again</button></div>';return;}
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),8000);
   try{
     status.textContent='Checking API…';
