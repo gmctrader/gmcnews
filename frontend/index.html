@@ -285,7 +285,7 @@ body{background:radial-gradient(ellipse at 50% -15%,rgba(55,91,180,.2),transpare
 </div>
 
 <script>
-const API_BASE=(window.PIPX_API_BASE||'').replace(/\/$/,'');
+const API_BASE=(window.PIPX_API_BASE||window.location.origin).replace(/\/$/,'');
 const WATCHLIST='EURUSD,GBPUSD,AUDUSD,NZDUSD,USDJPY,USDCHF,USDCAD,XAUUSD,BTCUSD';
 function safeText(value){const node=document.createElement('span');node.textContent=String(value??'');return node.innerHTML;}
 function renderSignals(payload){
