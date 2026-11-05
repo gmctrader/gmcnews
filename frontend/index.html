@@ -238,6 +238,7 @@ h1.page-title{font-size:clamp(36px,5vw,58px);line-height:1;letter-spacing:-.06em
 .nav-icon{font-size:17px;line-height:1}
 .nav-btn.active{background:linear-gradient(135deg,rgba(88,229,255,.16),rgba(139,124,255,.14));color:#8ceeff}
 @media(max-width:760px){#app{padding:0 14px 18px}.masthead{margin:0 -14px;padding:0 14px}.masthead-row{padding:14px 8px}.shell{padding:28px 2px 100px}.metric-grid{grid-template-columns:1fr;gap:10px}.metric-card{min-height:98px}.page-head{align-items:flex-start;flex-direction:column}.settings-grid{grid-template-columns:1fr}.api-settings-panel,.api-guide-panel{padding:22px}.api-input-row{align-items:stretch;flex-direction:column}.api-input-row .btn{width:100%}.signal-panel{padding:18px}.desk-topline{margin-bottom:17px}.local-clock{font-size:9px}}
+.api-skip{width:100%;margin-top:9px}.clear-key{margin-top:10px;color:var(--neg);border-color:rgba(255,113,141,.2)}.ai-feed-heading{margin-top:28px}.ai-feed-heading .btn{font-size:12px;padding:10px 14px}.ai-context-panel{padding:21px 24px;min-height:84px}.ai-context-panel p{color:var(--text-dim);font-size:13px;line-height:1.65;margin:0}.ai-context-panel .ai-disclaimer{display:block;color:var(--text-faint);font-size:10px;margin-top:12px}.ai-context-panel .ai-error{color:var(--gold)}
 </style>
 </head>
 <body>
@@ -321,21 +322,22 @@ h1.page-title{font-size:clamp(36px,5vw,58px);line-height:1;letter-spacing:-.06em
 
 <div id="api-setup" class="api-setup" hidden>
   <section class="api-setup-card" role="dialog" aria-modal="true" aria-labelledby="api-setup-title">
-    <div class="land-eyebrow">One-time connection setup</div>
-    <h2 id="api-setup-title">Connect your signal engine</h2>
-    <p class="api-setup-copy">Enter the public base URL where the FastAPI service is deployed. This setting saves in this browser and can be changed from the desk header.</p>
-    <form id="api-setup-form" onsubmit="saveApiSetup(event)">
-      <label for="api-base-input">Backend API base URL</label>
-      <input id="api-base-input" class="text-input api-url-input" type="url" inputmode="url" autocomplete="url" placeholder="https://pipx-six.vercel.app" required>
-      <p class="api-hint">Paste the origin only, without <code>/api</code>. If frontend and backend share the Vercel deployment, use <code>https://pipx-six.vercel.app</code>.</p>
+    <div class="land-eyebrow">AI connection setup</div>
+    <h2 id="api-setup-title">Add your Gemini API key</h2>
+    <p class="api-setup-copy">Paste the API key itself from Google AI Studio—not the AI Studio web address. It saves in this browser and is sent only to this app’s backend when you request AI commentary.</p>
+    <form id="api-setup-form" onsubmit="saveGeminiKey(event)">
+      <label for="gemini-key-input">Gemini API key</label>
+      <input id="gemini-key-input" class="text-input api-url-input" type="password" autocomplete="off" placeholder="Paste your Gemini API key" spellcheck="false">
+      <p class="api-hint">Use a private device. The key is stored in this browser’s local storage.</p>
       <div id="api-setup-error" class="api-setup-error" role="status"></div>
-      <button class="btn btn-primary api-save" type="submit">Save and open desk</button>
+      <button class="btn btn-primary api-save" type="submit">Save key and open desk</button>
+      <button class="btn btn-ghost api-skip" type="button" onclick="continueWithoutGemini()">Continue without AI key</button>
     </form>
     <div class="api-help">
-      <h3>Where do I get the API URL?</h3>
-      <p>Deploy the repository’s FastAPI backend on Vercel. Its deployment domain is the API base URL. <a href="https://vercel.com/docs/frameworks/backend/fastapi" target="_blank" rel="noopener noreferrer">Vercel FastAPI deployment guide ↗</a></p>
-      <h3>Optional Gemini news commentary</h3>
-      <p>Get a Gemini key from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio ↗</a>, then add it as <code>GEMINI_API_KEY</code> in Vercel → Project Settings → Environment Variables. Keep the key server-side; don’t paste it into this browser form.</p>
+      <h3>Get your API key</h3>
+      <p>Open <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio API keys ↗</a>, create a key, and copy its value—not the page URL.</p>
+      <h3>How the key is used</h3>
+      <p>AI context is generated only when requested. Repeated requests are cached to reduce API usage. Remove the saved key from API Settings when needed.</p>
     </div>
   </section>
 </div>
@@ -367,27 +369,30 @@ h1.page-title{font-size:clamp(36px,5vw,58px);line-height:1;letter-spacing:-.06em
         </div>
         <div class="feed-heading"><div><span class="metric-label">LIVE FEED</span><h2>Active setups</h2></div><span class="feed-chip"><i></i> API monitored</span></div>
         <div class="panel signal-panel" id="signal-content" aria-live="polite"><div class="empty-state"><div class="state-orb" aria-hidden="true"></div><h2>Connecting to the signal engine</h2><p>Checking whether the live analysis API is configured for this deployment.</p></div></div>
+        <div class="feed-heading ai-feed-heading"><div><span class="metric-label">ON-DEMAND · CACHED</span><h2>AI market context</h2></div><button class="btn btn-ghost" type="button" onclick="loadAiContext()">Generate context</button></div>
+        <div class="panel ai-context-panel" id="ai-context" aria-live="polite"><p>AI commentary runs only when requested. Add your Gemini API key in API Settings to enable it.</p></div>
         <p class="dashboard-footnote">Signals are research outputs, not guarantees. Check the source and event timing before acting.</p>
       </section>
       <section class="screen" id="api-screen">
-        <div class="desk-topline"><span class="terminal-kicker"><i></i> CONNECTION CONTROL</span><span class="local-clock">PERSISTENT SETUP</span></div>
-        <div class="page-head"><div><h1 class="page-title">API Connection</h1><p class="page-subtitle">Store and manage the signal engine address for this browser.</p></div></div>
+        <div class="desk-topline"><span class="terminal-kicker"><i></i> AI CREDENTIALS</span><span class="local-clock">PRIVATE TO THIS BROWSER</span></div>
+        <div class="page-head"><div><h1 class="page-title">Gemini API Key</h1><p class="page-subtitle">Add the key value from AI Studio. The backend address is automatic.</p></div></div>
         <div class="settings-grid">
           <div class="panel api-settings-panel">
-            <div class="settings-card-head"><div class="settings-orb">↗</div><div><span class="metric-label">BACKEND ENDPOINT</span><h2>Signal engine URL</h2></div></div>
-            <p class="settings-copy">Paste the public base URL for the FastAPI backend. Use the deployment origin only—don’t add <code>/api</code>.</p>
-            <form onsubmit="saveDashboardApi(event)">
-              <label for="dashboard-api-input">API base URL</label>
-              <div class="api-input-row"><input id="dashboard-api-input" class="text-input api-url-input" type="url" inputmode="url" autocomplete="url" placeholder="https://pipx-six.vercel.app" required><button class="btn btn-primary" type="submit">Save URL</button></div>
-              <p class="saved-note"><span class="saved-dot"></span> Saved in this browser only · <span id="saved-api-host">Not set</span></p>
+            <div class="settings-card-head"><div class="settings-orb">✳</div><div><span class="metric-label">GOOGLE AI STUDIO</span><h2>API key storage</h2></div></div>
+            <p class="settings-copy">Paste the actual key—not <code>https://aistudio.google.com</code>. It is saved in this browser and sent over HTTPS only to this app’s backend when AI context is requested.</p>
+            <form onsubmit="saveDashboardGeminiKey(event)">
+              <label for="dashboard-gemini-key">Gemini API key</label>
+              <div class="api-input-row"><input id="dashboard-gemini-key" class="text-input api-url-input" type="password" autocomplete="off" placeholder="Paste your Gemini API key" spellcheck="false"><button class="btn btn-primary" type="submit">Save key</button></div>
+              <p class="saved-note"><span class="saved-dot"></span> <span id="saved-key-state">Checking saved key…</span></p>
               <div id="dashboard-api-feedback" class="api-setup-error" role="status"></div>
             </form>
+            <button class="btn btn-ghost clear-key" type="button" onclick="clearGeminiKey()">Remove saved key</button>
           </div>
           <aside class="panel api-guide-panel">
-            <span class="metric-label">SETUP GUIDE</span><h2>Get connected</h2>
-            <ol class="setup-steps"><li><b>Deploy the backend</b><span>Use the Vercel FastAPI guide and the repository’s backend service.</span></li><li><b>Copy its public URL</b><span>If both services share this Vercel project, use the same site URL.</span></li><li><b>Save and verify</b><span>This dashboard checks <code>/api/health</code> before loading signals.</span></li></ol>
-            <a class="guide-link" href="https://vercel.com/docs/frameworks/backend/fastapi" target="_blank" rel="noopener noreferrer">Open Vercel FastAPI guide <span>↗</span></a>
-            <div class="secret-note"><b>Optional Gemini commentary</b><p>Get a key from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio</a>, then add <code>GEMINI_API_KEY</code> in Vercel Environment Variables. Keep it server-side; never store it in this browser.</p></div>
+            <span class="metric-label">QUICK SETUP</span><h2>Get your key</h2>
+            <ol class="setup-steps"><li><b>Open Google AI Studio</b><span>Use the official API key page below.</span></li><li><b>Create and copy a key</b><span>Copy the key value, not the page URL.</span></li><li><b>Paste and save here</b><span>It stays in this browser. Generate AI context on demand to control usage.</span></li></ol>
+            <a class="guide-link" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Get a Gemini API key <span>↗</span></a>
+            <div class="secret-note"><b>Key safety</b><p>Saved in this browser’s local storage. The key is sent only to this app’s backend over HTTPS. Don’t use shared devices; remove it here when finished. You may instead set <code>GEMINI_API_KEY</code> in Vercel Environment Variables.</p></div>
           </aside>
         </div>
       </section>
@@ -396,6 +401,10 @@ h1.page-title{font-size:clamp(36px,5vw,58px);line-height:1;letter-spacing:-.06em
 </div>
 
 <script>
+const GEMINI_KEY_STORAGE='pipx-gemini-api-key';
+const API_BASE=(window.location.origin||'').replace(/\/$/,'');
+const WATCHLIST='EURUSD,GBPUSD,AUDUSD,NZDUSD,USDJPY,USDCHF,USDCAD,XAUUSD,BTCUSD';
+function geminiKey(){return localStorage.getItem(GEMINI_KEY_STORAGE)||'';}
 function showScreen(name){
   const signals=name==='signals';
   document.getElementById('signals-screen').classList.toggle('active',signals);
@@ -405,27 +414,45 @@ function showScreen(name){
   if(!signals)refreshApiSettings();
 }
 function refreshApiSettings(){
-  const input=document.getElementById('dashboard-api-input');
-  if(input)input.value=API_BASE;
-  const display=document.getElementById('saved-api-host');
-  if(display){try{display.textContent=new URL(API_BASE).host;}catch{display.textContent='Not set';}}
+  const state=document.getElementById('saved-key-state'),key=geminiKey();
+  if(state)state.textContent=key?'Key saved in this browser · ••••••••'+key.slice(-4):'No key saved in this browser';
+  const panel=document.getElementById('ai-context');
+  if(panel&&!key)panel.innerHTML='<p>AI commentary runs only when requested. Add your Gemini API key in API Settings to enable it.</p>';
 }
-function saveDashboardApi(event){
+function openApiSetup(){
+  document.getElementById('gemini-key-input').value='';
+  document.getElementById('api-setup-error').textContent=geminiKey()?'A key is already saved. Leave the field blank to keep it.':'';
+  document.getElementById('api-setup').hidden=false;
+}
+function saveGeminiKey(event){
   event.preventDefault();
-  const field=document.getElementById('dashboard-api-input'),feedback=document.getElementById('dashboard-api-feedback');
-  try{
-    const parsed=new URL(field.value.trim());
-    if(!['https:','http:'].includes(parsed.protocol)||parsed.username||parsed.password)throw new Error('Enter a valid public API URL without a username or password.');
-    if(parsed.protocol==='http:'&&!['localhost','127.0.0.1'].includes(parsed.hostname))throw new Error('Use HTTPS for a public API URL.');
-    API_BASE=parsed.origin;
-    localStorage.setItem(API_STORAGE_KEY,API_BASE);
-    refreshApiSettings();feedback.textContent='Saved to this browser. Checking the API now…';
-    loadSignals();
-  }catch(e){feedback.textContent=e.message||'Could not save this API URL.';}
+  const key=document.getElementById('gemini-key-input').value.trim(),error=document.getElementById('api-setup-error');
+  if(key&&key.length<20){error.textContent='That looks too short. Copy the API key value from AI Studio, not its web address.';return;}
+  if(key)localStorage.setItem(GEMINI_KEY_STORAGE,key);
+  else if(!geminiKey()){error.textContent='Paste your Gemini API key or choose Continue without AI key.';return;}
+  document.getElementById('api-setup').hidden=true;
+  document.getElementById('landing').classList.add('hidden');
+  document.getElementById('app').classList.remove('overlay-hidden');
+  refreshApiSettings();loadSignals();
 }
-const API_STORAGE_KEY='pipx-api-base';
-let API_BASE=(localStorage.getItem(API_STORAGE_KEY)||window.PIPX_API_BASE||window.location.origin).replace(/\/$/,'');
-const WATCHLIST='EURUSD,GBPUSD,AUDUSD,NZDUSD,USDJPY,USDCHF,USDCAD,XAUUSD,BTCUSD';
+function continueWithoutGemini(){
+  document.getElementById('api-setup').hidden=true;
+  document.getElementById('landing').classList.add('hidden');
+  document.getElementById('app').classList.remove('overlay-hidden');loadSignals();
+}
+function saveDashboardGeminiKey(event){
+  event.preventDefault();
+  const field=document.getElementById('dashboard-gemini-key'),feedback=document.getElementById('dashboard-api-feedback'),key=field.value.trim();
+  if(!key){feedback.textContent='Paste the API key value from Google AI Studio.';return;}
+  if(key.length<20){feedback.textContent='That looks too short. Copy the key value, not the website URL.';return;}
+  localStorage.setItem(GEMINI_KEY_STORAGE,key);field.value='';feedback.textContent='Gemini key saved in this browser.';refreshApiSettings();
+}
+function clearGeminiKey(){
+  localStorage.removeItem(GEMINI_KEY_STORAGE);
+  const field=document.getElementById('dashboard-gemini-key');if(field)field.value='';
+  const feedback=document.getElementById('dashboard-api-feedback');if(feedback)feedback.textContent='Saved Gemini key removed from this browser.';
+  refreshApiSettings();
+}
 function safeText(value){const node=document.createElement('span');node.textContent=String(value??'');return node.innerHTML;}
 function renderSignals(payload){
   const signals=Array.isArray(payload?.signals)?payload.signals:[];
@@ -433,46 +460,41 @@ function renderSignals(payload){
   if(!signals.length){content.innerHTML='<div class="empty-state"><div class="state-orb muted"></div><h2>Signal engine connected · no setups yet</h2><p>Live market data reached the API, but no valid confluence setups are forming for the current watchlist.</p></div>';return;}
   content.innerHTML='<div class="signal-list">'+signals.map(s=>'<article class="live-signal"><div><strong>'+safeText(s.symbol)+'</strong><span class="direction '+(s.direction==='bullish'?'up':'down')+'">'+safeText(s.direction||'unclear')+'</span></div><div class="signal-meta"><span>'+safeText(s.grade||'ungraded')+' · '+safeText(s.score??'—')+'/100</span><span>'+safeText((s.reasons||[]).slice(0,2).join(' '))+'</span></div><div class="signal-meta"><span>'+safeText(s.news_note||'News status unavailable')+'</span><span>'+(s.veto?'Setup vetoed':'No veto')+'</span></div></article>').join('')+'</div>';
 }
-function openApiSetup(){
-  document.getElementById('api-base-input').value=API_BASE;
-  document.getElementById('api-setup-error').textContent='';
-  document.getElementById('api-setup').hidden=false;
-}
-function saveApiSetup(event){
-  event.preventDefault();
-  const field=document.getElementById('api-base-input'),error=document.getElementById('api-setup-error');
+async function loadAiContext(){
+  const panel=document.getElementById('ai-context'),key=geminiKey();
+  if(!key){panel.innerHTML='<p class="ai-error">Add a Gemini API key in API Settings first.</p>';return;}
+  panel.innerHTML='<p>Generating short structural context…</p>';
   try{
-    const parsed=new URL(field.value.trim());
-    if(!['https:','http:'].includes(parsed.protocol)||parsed.username||parsed.password)throw new Error('Enter a valid public API URL without a username or password.');
-    if(parsed.protocol==='http:'&&!['localhost','127.0.0.1'].includes(parsed.hostname))throw new Error('Use HTTPS for a public API URL.');
-    API_BASE=parsed.origin;
-    localStorage.setItem(API_STORAGE_KEY,API_BASE);
-    document.getElementById('api-setup').hidden=true;
-    document.getElementById('landing').classList.add('hidden');
-    document.getElementById('app').classList.remove('overlay-hidden');
-    loadSignals();
-  }catch(e){error.textContent=e.message||'Could not save this API URL in browser storage.';}
+    const response=await fetch(API_BASE+'/api/dxy/bias');
+    if(!response.ok)throw new Error('DXY endpoint returned '+response.status);
+    const dxy=await response.json();
+    const query=new URLSearchParams({dxy_bias:dxy.bias||'neutral',confidence:dxy.confidence||'weak'});
+    const answer=await fetch(API_BASE+'/api/news/sentiment?'+query.toString(),{headers:{'X-Gemini-API-Key':key}});
+    if(!answer.ok)throw new Error('AI commentary endpoint returned '+answer.status);
+    const result=await answer.json();
+    panel.innerHTML='<p>'+safeText(result.summary||'No commentary returned.')+'</p><span class="ai-disclaimer">General AI context from DXY structure, not a live-news forecast. Cached to reduce repeat API calls.</span>';
+  }catch(error){panel.innerHTML='<p class="ai-error">Could not generate context: '+safeText(error.message||'request failed')+'. Check the deployment and key.</p>';}
 }
 async function loadSignals(){
-  const status=document.getElementById('backend-status'),content=document.getElementById('signal-content');
+  const status=document.getElementById('backend-status'),content=document.getElementById('signal-content'),metric=document.getElementById('engine-metric'),caption=document.getElementById('engine-caption');
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),8000);
   try{
-    status.textContent='Checking API…';document.getElementById('engine-metric').textContent='CHECKING';document.getElementById('engine-caption').textContent='Verifying /api/health';
+    status.textContent='Checking API…';metric.textContent='CHECKING';caption.textContent='Verifying /api/health';
     const health=await fetch(API_BASE+'/api/health',{signal:controller.signal});
     if(!health.ok)throw new Error('Health check returned '+health.status);
     const response=await fetch(API_BASE+'/api/signals?symbols='+encodeURIComponent(WATCHLIST),{signal:controller.signal});
     if(!response.ok)throw new Error('Signal feed returned '+response.status);
-    renderSignals(await response.json());status.textContent='Signal engine connected';status.classList.remove('status-offline');document.getElementById('engine-metric').textContent='ONLINE';document.getElementById('engine-caption').textContent=new URL(API_BASE).host;
-  }catch(error){status.textContent='Signal engine unavailable';status.classList.add('status-offline');document.getElementById('engine-metric').textContent='OFFLINE';document.getElementById('engine-caption').textContent='Open API Settings to reconnect';content.innerHTML='<div class="empty-state"><div class="state-orb muted"></div><h2>Could not reach the signal engine</h2><p>Check the API URL, Vercel deployment, and CORS settings. No live signal is being shown.</p><button class="btn btn-ghost" onclick="loadSignals()">Retry connection</button></div>';}
+    renderSignals(await response.json());status.textContent='Signal engine connected';status.classList.remove('status-offline');metric.textContent='ONLINE';caption.textContent=new URL(API_BASE).host;
+  }catch(error){status.textContent='Signal engine unavailable';status.classList.add('status-offline');metric.textContent='OFFLINE';caption.textContent='Open API Settings to reconnect';content.innerHTML='<div class="empty-state"><div class="state-orb muted"></div><h2>Could not reach the signal engine</h2><p>Check the API deployment and its <code>/api/health</code> endpoint. No live signal is being shown.</p><button class="btn btn-ghost" onclick="loadSignals()">Retry connection</button></div>';}
   finally{clearTimeout(timeout);}
 }
 async function enterApp(){
-  if(!localStorage.getItem(API_STORAGE_KEY)){openApiSetup();return;}
-  API_BASE=(localStorage.getItem(API_STORAGE_KEY)||window.location.origin).replace(/\/$/,'');
   document.getElementById('landing').classList.add('hidden');
   document.getElementById('app').classList.remove('overlay-hidden');
-  loadSignals();
+  if(!geminiKey())openApiSetup();
+  loadSignals();refreshApiSettings();
 }
+refreshApiSettings();
 </script>
 </body>
 </html>
