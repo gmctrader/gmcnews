@@ -139,6 +139,43 @@ h1.page-title{font-size:32px; font-weight:800; letter-spacing:-0.05em; color:var
 .text-input{width:100%; background:var(--bg-2); border:1px solid var(--border-strong); border-radius:12px; padding:18px 20px; color:var(--text); font-size:16px; margin-bottom:28px;}
 .text-input:focus{outline:none; border-color:var(--violet); box-shadow:0 0 0 4px var(--violet-dim);}
 .btn-block{width:100%; padding:18px; margin-top:12px;}
+/* ── PipX Observatory · immersive glass desk skin ─────────────────────── */
+:root{
+  color-scheme:dark;
+  --bg:#050913; --bg-2:rgba(12,20,36,.82); --bg-3:rgba(20,32,52,.78);
+  --border:rgba(132,190,255,.12); --border-strong:rgba(132,190,255,.24);
+  --text:#e8f3ff; --text-dim:#9db1ca; --text-faint:#6d839f;
+  --violet:#8b7cff; --violet-2:#aa9fff; --violet-dim:rgba(139,124,255,.14);
+  --cyan:#58e5ff; --cyan-dim:rgba(88,229,255,.12);
+  --gold:#ffca76; --gold-dim:rgba(255,202,118,.12);
+  --pos:#63efbd; --pos-dim:rgba(99,239,189,.12);
+  --neg:#ff718d; --neg-dim:rgba(255,113,141,.12);
+}
+html,body{background:var(--bg); color:var(--text);}
+body{background:radial-gradient(ellipse at 50% -15%,rgba(55,91,180,.2),transparent 48%),#050913;}
+#bgCanvas{background:radial-gradient(circle at 8% 8%,rgba(91,117,255,.14),transparent 35%),radial-gradient(circle at 92% 82%,rgba(38,211,229,.1),transparent 32%),linear-gradient(145deg,#050913,#091323 58%,#060b16);}
+.glass,.glass-strong,.panel,.trio-card,.sample-card{background:linear-gradient(145deg,rgba(16,28,49,.88),rgba(8,15,28,.84));border:1px solid var(--border);box-shadow:0 22px 60px rgba(0,0,0,.32),inset 0 1px rgba(255,255,255,.055);backdrop-filter:blur(18px);}
+.glass,.glass-strong,.panel,.trio-card,.sample-card,.signal-row{transform:translateZ(0);transition:transform .28s ease,border-color .28s ease,box-shadow .28s ease;}
+.panel{border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.36),0 0 36px rgba(88,229,255,.035),inset 0 1px rgba(255,255,255,.06);}
+.panel:hover,.trio-card:hover,.sample-card:hover{transform:perspective(1000px) rotateX(1deg) translateY(-3px);border-color:rgba(88,229,255,.25);box-shadow:0 30px 80px rgba(0,0,0,.42),0 0 38px rgba(88,229,255,.07),inset 0 1px rgba(255,255,255,.08);}
+.land-nav,.masthead{background:rgba(5,9,19,.76);border-color:var(--border);backdrop-filter:blur(24px) saturate(150%);}
+.land-nav-cta,.btn-primary{background:linear-gradient(135deg,#7568f5,#3fcce8);color:#06101c;box-shadow:0 10px 34px rgba(88,229,255,.2),inset 0 1px rgba(255,255,255,.3);}
+.btn-ghost{border-color:var(--border-strong);color:var(--text-dim);}
+.btn-ghost:hover,.nav-btn.active{background:var(--violet-dim);color:var(--cyan);}
+.land-kicker,.masthead-right{background:rgba(12,23,40,.78);border:1px solid var(--border-strong);color:var(--cyan);box-shadow:0 8px 30px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.06);}
+.land-title{background:linear-gradient(115deg,#fff 15%,#a8b5ff 50%,#6cecff 88%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 10px 50px rgba(88,229,255,.12);}
+.land-brand,.masthead-title{color:var(--text);}
+.land-section,.land-footer{border-color:var(--border);}
+.sample-bar{background:rgba(139,163,194,.16);}
+.bottom-nav{background:rgba(5,10,20,.88);border-color:var(--border);backdrop-filter:blur(24px) saturate(160%);}
+.nav-btn{color:var(--text-faint);}.nav-btn.active{color:var(--cyan);}
+.signal-row{border-bottom-color:var(--border);}.signal-row:hover{background:rgba(88,229,255,.055);border-color:var(--border-strong);transform:perspective(900px) translateZ(8px);}
+.score-num{color:var(--cyan);text-shadow:0 0 22px rgba(88,229,255,.28);}
+.text-input{background:rgba(6,13,25,.8);border-color:var(--border-strong);color:var(--text);}
+.overlay{background:radial-gradient(ellipse at 50% 0%,rgba(71,76,164,.2),transparent 55%),#050913;}
+.land-sub,.land-p,.trio-card p,.sample-row .k{color:var(--text-dim);}
+@media(max-width:700px){.land-nav{padding-left:20px;padding-right:20px}.land-hero{padding:100px 22px 82px}.land-section{padding:82px 20px}.land-section-head{margin-bottom:44px}.trio-card,.sample-card,.panel{padding:24px}.masthead-row{padding:16px 18px}.page-head{margin-bottom:28px}.overlay{padding-left:20px;padding-right:20px}.nav-btn{padding:16px 0 14px}}
+@media(prefers-reduced-motion:reduce){.panel:hover,.trio-card:hover,.sample-card:hover,.signal-row:hover{transform:none}}
 </style>
 </head>
 <body>
