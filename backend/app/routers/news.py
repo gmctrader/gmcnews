@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Header, Query
 
 from ..news import news_calendar as nc
 from ..news import gemini_news
@@ -33,5 +33,8 @@ def blackout():
 
 
 @router.get("/sentiment")
-def sentiment(dxy_bias: str = Query(...), confidence: str = Query(...)):
-    return {"summary": gemini_news.dollar_sentiment_summary(dxy_bias, confidence)}
+def sentiment(dxy_bias: str = Query(...), confidence: str = Query(...),
+              x_gemini_api_key: str | None = Header(default=None)):
+    return {"summary": gemini_news.dollar_sentiment_summary(
+        dxy_bias, confidence, api_key_override=x_gemini_api_key
+    )}
