@@ -5,7 +5,8 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from . import profiles as db
+from . import db
+from . import profiles as profile_db
 from . import users as user_db
 from . import security
 from .news import user_history
@@ -26,7 +27,7 @@ app.add_middleware(
 def _startup():
     global _database_init_error
     try:
-        db.init_db()
+        profile_db.init_db()
         user_db.init_db()
         user_history.init_db()
         _database_init_error = None
