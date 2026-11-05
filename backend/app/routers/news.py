@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from ..news import news_calendar as nc
@@ -22,17 +22,12 @@ class NewsHistoryIn(BaseModel):
 
 @router.get("/upcoming")
 def upcoming(within_hours: float = Query(120.0, ge=1, le=720, description="Lookahead window in hours"),
-             enrich: bool = Query(True, description="Fetch forecast/actual via Gemini")):
+             enrich: bool = Query(False, description="Fetch forecast/actual via Gemini")):
     events = nc.upcoming(within_hours=within_hours)
     out = []
     for e in events:
         payload = e.to_dict()
         if enrich:
-            # forecast/previous/actual aren't sourced anywhere yet -- see
-            # gemini_news.py's module docstring for why we don't ask
-            # Gemini to guess them. Wire a real calendar data provider
-            # here (Finnhub, TradingEconomics, etc.) and pass its values
-            # through as forecast=/previous=/actual= once you have one.
             enrichment = gemini_news.enrich_event(payload["label"], payload["utc"][:10])
             payload["enrichment"] = enrichment.to_dict()
         out.append(payload)
@@ -41,7 +36,7 @@ def upcoming(within_hours: float = Query(120.0, ge=1, le=720, description="Looka
 
 @router.get("/recent")
 def recent(within_days: int = Query(5, ge=1, le=30, description="Past calendar window in days")):
-    """Return recent scheduled releases; observed outcomes are recorded by the user's desk."""
+    """Return recently scheduled releases; this is not an observed market outcome."""
     now = datetime.now(timezone.utc)
     start = now - timedelta(days=within_days)
     events = [e.to_dict(now=now) for e in nc.get_events() if start <= e.dt_utc < now]
@@ -68,5 +63,8 @@ def blackout():
 
 
 @router.get("/sentiment")
-def sentiment(dxy_bias: str = Query(...), confidence: str = Query(...)):
-    return {"summary": gemini_news.dollar_sentiment_summary(dxy_bias, confidence)}
+def sentiment(dxy_bias: str = Query(...), confidence: str = Query(...),
+              x_gemini_api_key: str | None = Header(default=None)):
+    return {"summary": gemini_news.dollar_sentiment_summary(
+        dxy_bias, confidence, api_key_override=x_gemini_api_key
+    )}
