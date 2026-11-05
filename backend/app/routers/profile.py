@@ -43,7 +43,7 @@ class ProfileMeIn(BaseModel):
 
 @router.post("")
 def create(body: ProfileIn):
-    profile = db.create_profile(db.TraderProfile(**body.model_dump()))
+    raise HTTPException(405, "Use the authenticated /api/profile/me endpoint.")
     return profile.to_dict()
 
 
@@ -69,15 +69,18 @@ def upsert_me(body: ProfileMeIn, current_user: user_db.User = Depends(get_curren
 
 
 @router.get("/{profile_id}")
-def read(profile_id: str):
+def read(profile_id: str, current_user: user_db.User = Depends(get_current_user)):
     profile = db.get_profile(profile_id)
-    if not profile:
+    if not profile or profile.user_id != current_user.id:
         raise HTTPException(404, "Profile not found")
     return profile.to_dict()
 
 
 @router.patch("/{profile_id}")
-def patch(profile_id: str, body: ProfilePatch):
+def patch(profile_id: str, body: ProfilePatch, current_user: user_db.User = Depends(get_current_user)):
+    profile = db.get_profile(profile_id)
+    if not profile or profile.user_id != current_user.id:
+        raise HTTPException(404, "Profile not found")
     profile = db.update_profile(profile_id, **body.model_dump(exclude_none=True))
     if not profile:
         raise HTTPException(404, "Profile not found")

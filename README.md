@@ -109,3 +109,11 @@ On a phone, open the page in the browser and use "Add to Home Screen" —
 2. Point the frontend's `API_BASE` at it.
 3. Swap `candles.py` for your real MT5/broker feed when you're ready to
    trade off it instead of demo/yfinance data.
+
+## Accounts, mobile, and data provenance
+
+The hosted app at `https://pipx-six.vercel.app/` uses the same `/api` service on desktop and mobile. A sign-in can sync a user's saved news research across devices. Gemini API keys are isolated by account on each browser/device and are sent directly to Google; users enter their key once per device.
+
+Before production signup is enabled, connect persistent PostgreSQL storage to the Vercel project and set `AUTH_SECRET_KEY` in Vercel Environment Variables. The app reports account readiness from `/api/health` and disables signup when production storage or a secure signing key is missing. Vercel's Marketplace supports external Postgres integrations such as Neon and Supabase: https://vercel.com/docs/marketplace-storage.
+
+The calendar links each scheduled release to its official BLS/Federal Reserve schedule. Market structure uses Yahoo Finance ticker feeds with provider candle timestamps; quotes may be delayed and are not broker execution prices. DXY fallback data is explicitly labeled synthetic. News briefs require Google Search grounding citations, and pair directions are derived from the grounded USD lean plus fresh live structure; disagreements are marked mixed.

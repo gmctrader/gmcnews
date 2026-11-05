@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import os
+
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel
 
 from .. import profiles as profile_db
 from .. import users as user_db
+from .. import db, security
 from ..security import create_token, decode_token, hash_password, verify_password
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
@@ -21,6 +24,21 @@ class RegisterIn(BaseModel):
 class LoginIn(BaseModel):
     email: str
     password: str
+
+
+def _require_persistent_account_setup() -> None:
+    ready = db.USE_POSTGRES and security.AUTH_SECRET_CONFIGURED
+    if ready:
+        try:
+            with db.get_conn() as conn:
+                conn.execute("SELECT 1").fetchone()
+        except Exception:
+            ready = False
+    if os.environ.get("VERCEL") and not ready:
+        raise HTTPException(
+            503,
+            "Accounts are not ready on this deployment. Configure persistent Postgres and AUTH_SECRET_KEY in Vercel project environment variables, then redeploy.",
+        )
 
 
 def get_current_user(
@@ -49,6 +67,7 @@ def _session_payload(user: user_db.User) -> dict:
 
 @router.post("/register")
 def register(body: RegisterIn):
+    _require_persistent_account_setup()
     email = body.email.strip().lower()
     if "@" not in email or "." not in email.split("@")[-1] or len(email) < 5:
         raise HTTPException(400, "Enter a valid email address.")
@@ -62,6 +81,7 @@ def register(body: RegisterIn):
 
 @router.post("/login")
 def login(body: LoginIn):
+    _require_persistent_account_setup()
     user = user_db.get_user_by_email(body.email)
     if not user or not verify_password(body.password, user.password_hash):
         raise HTTPException(401, "Incorrect email or password.")

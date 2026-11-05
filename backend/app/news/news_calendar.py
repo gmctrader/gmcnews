@@ -58,6 +58,13 @@ CATEGORY_LABEL = {
     "PPI": "Producer Price Index (PPI)",
 }
 
+CATEGORY_SOURCE_URL = {
+    "FOMC": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+    "NFP": "https://www.bls.gov/schedule/news_release/empsit.htm",
+    "CPI": "https://www.bls.gov/schedule/news_release/cpi.htm",
+    "PPI": "https://www.bls.gov/schedule/news_release/ppi.htm",
+}
+
 
 def _et(y: int, m: int, d: int, hh: int, mm: int) -> datetime:
     return datetime(y, m, d, hh, mm, tzinfo=ET)
@@ -84,6 +91,7 @@ class NewsEvent:
             "label": self.label or CATEGORY_LABEL.get(self.category, self.category),
             "impact": self.impact,
             "source": self.source,
+            "source_url": CATEGORY_SOURCE_URL.get(self.category),
             "utc": self.dt_utc.isoformat(),
             "local_et": self.dt_utc.astimezone(ET).strftime("%Y-%m-%d %H:%M ET"),
             # Auto-detects whatever timezone this machine is actually set

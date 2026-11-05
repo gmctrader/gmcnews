@@ -31,7 +31,9 @@ PBKDF2_ITERATIONS = 260_000
 TOKEN_TTL_DAYS = 30
 _INSECURE_DEFAULT = "dev-insecure-secret-change-me-in-render-env-vars"
 
-SECRET_KEY = os.environ.get("AUTH_SECRET_KEY") or _INSECURE_DEFAULT
+_configured_secret = (os.environ.get("AUTH_SECRET_KEY") or "").strip()
+AUTH_SECRET_CONFIGURED = len(_configured_secret) >= 32 and _configured_secret != _INSECURE_DEFAULT
+SECRET_KEY = _configured_secret if AUTH_SECRET_CONFIGURED else _INSECURE_DEFAULT
 if SECRET_KEY == _INSECURE_DEFAULT:
     print(
         "WARNING: AUTH_SECRET_KEY is not set. Using an insecure built-in default -- "

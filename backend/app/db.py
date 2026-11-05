@@ -23,10 +23,17 @@ import sqlite3
 from contextlib import contextmanager
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 DATABASE_URL = os.environ.get("DATABASE_URL", "").strip()
 USE_POSTGRES = bool(DATABASE_URL)
 
-_SQLITE_PATH = Path(__file__).parent.parent / "data" / "app.db"
+_SQLITE_PATH = (
+    Path("/tmp/pipx-app.db") if os.environ.get("VERCEL")
+    else Path(__file__).parent.parent / "data" / "app.db"
+)
 _SQLITE_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 
