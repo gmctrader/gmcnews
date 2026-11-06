@@ -1,265 +1,165 @@
 """
-backend/app/data/candles.py  —  drop-in replacement for the yfinance-only feed.
+Candle data provider.
 
-Provider chain (first that works wins):
-  1. Twelve Data  (official API, key required: TWELVEDATA_API_KEY)  FX, metals, crypto
-  2. Yahoo Finance via yfinance (no key)                            safety net only
-  3. Stale cache (<= MAX_STALE seconds), labelled in df.attrs["source"]
+This engine was originally MT5-side (broker-connected). For the web
+app, we need *some* live price source with zero setup, so this module
+uses yfinance (free, no API key) as a fallback provider. When you're
+ready to go live with real MT5/broker candles, drop a new provider in
+here with the same function signature and swap PROVIDER below -- every
+other module (fundamental.py, market_structure.py, confluence.py)
+already just consumes a plain {"1h": df, "15m": df} dict and doesn't
+care where it came from.
 
-DXY: built from the six ICE component pairs (official weights) on Twelve Data,
-falling back to Yahoo's DX-Y.NYB. No fake/synthetic price series is ever invented;
-if every provider fails, CandleUnavailable is raised so the engine can withhold a plan.
-
-Interface (unchanged):
-    get_candles(symbol)  -> {"1h": DataFrame, "15m": DataFrame}
-    get_dxy_candles()    -> {"1h": DataFrame, "15m": DataFrame}
-DataFrame: UTC DatetimeIndex, columns open/high/low/close/volume (see COLUMN_STYLE).
-df.attrs["source"] tells you which provider produced it.
+DXY itself has no clean free ticker on yfinance, so we use "DX-Y.NYB"
+where available and fall back to a synthetic index built from the six
+basket currencies, matching the "synthetic" path fundamental.py's
+docstring already anticipates.
 """
+
 from __future__ import annotations
 
-import logging
-import os
-import threading
 import time
-from datetime import datetime, timezone
 
 import pandas as pd
-import requests
+import yfinance as yf
 
-log = logging.getLogger("candles")
+# yfinance interval/period pairs that keep us under its lookback limits.
+_INTERVALS = {
+    "1h": ("60m", "1mo"),
+    "15m": ("15m", "5d"),
+}
 
-# ── config ────────────────────────────────────────────────────────────────
-COLUMN_STYLE = os.getenv("CANDLE_COLUMNS", "lower")   # "lower" -> close ; "title" -> Close (yfinance style)
-TD_KEY = os.getenv("TWELVEDATA_API_KEY", "").strip()
-TD_URL = "https://api.twelvedata.com/time_series"
-TD_PER_MIN = int(os.getenv("TD_CREDITS_PER_MIN", "8"))     # free plan: 8/min
-TD_PER_DAY = int(os.getenv("TD_CREDITS_PER_DAY", "780"))   # free plan: 800/day, keep headroom
-HTTP_TIMEOUT = 8
-MAX_STALE = int(os.getenv("CANDLE_MAX_STALE", "7200"))     # serve cached bars up to 2h old if all providers fail
-
-TTL = {"15m": 300, "1h": 1200}      # cache seconds per timeframe
-DXY_TTL = 900
-BARS = {"15m": 500, "1h": 300}
-TD_INTERVAL = {"15m": "15min", "1h": "1h"}
-YF_PERIOD = {"15m": "30d", "1h": "60d"}
-
-FIAT = {"USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD", "NZD", "SEK", "NOK", "MXN",
-        "ZAR", "SGD", "HKD", "TRY", "PLN", "CNH"}
-METALS = {"XAU", "XAG", "XPT", "XPD"}
-CRYPTO = {"BTC", "ETH", "SOL", "XRP", "LTC", "BNB", "ADA", "DOGE"}
-
-# ICE DXY: 50.14348112 * EURUSD^-0.576 * USDJPY^0.136 * GBPUSD^-0.119 * USDCAD^0.091 * USDSEK^0.042 * USDCHF^0.036
-DXY_K = 50.14348112
-DXY_W = {"EUR/USD": -0.576, "USD/JPY": 0.136, "GBP/USD": -0.119,
-         "USD/CAD": 0.091, "USD/SEK": 0.042, "USD/CHF": 0.036}
+# --------------------------------------------------------------------
+# In-memory TTL cache for raw per-ticker downloads.
+#
+# Every page load used to trigger a fresh, sequential yfinance download
+# for every ticker/interval combo -- for the default 9-symbol watchlist
+# plus the DXY basket fallback, that's 20-30+ blocking network calls on
+# every single request, which is what made the app feel like it hung on
+# "Loading market data...". This cache means each distinct ticker/interval
+# is only ever actually downloaded once per `_TTL_SECONDS` window; every
+# request in between (including the 9 symbols reusing shared basket
+# tickers, and repeat page loads) is served from memory instantly.
+#
+# Not persisted to disk on purpose -- candle data goes stale fast enough
+# that surviving a restart isn't useful, and keeping it in-process avoids
+# any serialization cost for DataFrames.
+# --------------------------------------------------------------------
+_TTL_SECONDS = 90
+_cache: dict[tuple[str, str], tuple[float, pd.DataFrame]] = {}
 
 
-class CandleUnavailable(RuntimeError):
-    """Every provider failed and no usable cache exists."""
-
-
-# ── symbol mapping ────────────────────────────────────────────────────────
-def _norm(sym: str) -> str:
-    return sym.upper().replace("/", "").replace("_", "").replace("=X", "").replace("-", "").strip()
-
-
-def to_td_symbol(sym: str) -> str | None:
-    s = _norm(sym)
-    if len(s) == 6 and s[:3] in (FIAT | METALS | CRYPTO) and s[3:] in FIAT:
-        return f"{s[:3]}/{s[3:]}"
-    return None
-
-
-def to_yahoo_symbol(sym: str) -> str:
-    s = _norm(sym)
-    if s in ("DXY", "USDX"):
-        return "DX-Y.NYB"
-    if s == "XAUUSD":
-        return "GC=F"
-    if s == "XAGUSD":
-        return "SI=F"
-    if len(s) == 6 and s[:3] in CRYPTO:
-        return f"{s[:3]}-{s[3:]}"
-    if len(s) == 6 and s[:3] in FIAT and s[3:] in FIAT:
-        return f"{s}=X"
-    return sym
-
-
-# ── Twelve Data credit governor (never blows the free quota) ──────────────
-class _Budget:
-    def __init__(self):
-        self.lock = threading.Lock()
-        self.day = None
-        self.used = 0
-        self.window: list[float] = []
-
-    def take(self, n: int) -> bool:
-        now = time.time()
-        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-        with self.lock:
-            if self.day != today:
-                self.day, self.used = today, 0
-            self.window = [t for t in self.window if now - t < 60]
-            if self.used + n > TD_PER_DAY or len(self.window) + n > TD_PER_MIN:
-                return False
-            self.used += n
-            self.window.extend([now] * n)
-            return True
-
-
-_budget = _Budget()
-_cache: dict[tuple, tuple[float, pd.DataFrame]] = {}
-_cache_lock = threading.Lock()
-
-
-# ── Twelve Data ───────────────────────────────────────────────────────────
-def _parse_td_block(block) -> pd.DataFrame:
-    if not isinstance(block, dict) or block.get("status") == "error" or not block.get("values"):
-        msg = block.get("message") if isinstance(block, dict) else "bad payload"
-        raise CandleUnavailable(f"twelvedata: {msg}")
-    df = pd.DataFrame(block["values"])
-    df["datetime"] = pd.to_datetime(df["datetime"], utc=True)
-    df = df.set_index("datetime").sort_index()
-    for c in ("open", "high", "low", "close"):
-        df[c] = pd.to_numeric(df[c], errors="coerce")
-    df["volume"] = pd.to_numeric(df["volume"], errors="coerce").fillna(0.0) if "volume" in df else 0.0
-    df = df[["open", "high", "low", "close", "volume"]].dropna(subset=["open", "high", "low", "close"])
-    df.index.name = None
-    return df
-
-
-def _td_request(symbols: list[str], tf: str) -> dict[str, pd.DataFrame]:
-    if not TD_KEY:
-        raise CandleUnavailable("twelvedata: no TWELVEDATA_API_KEY set")
-    if not _budget.take(len(symbols)):
-        raise CandleUnavailable("twelvedata: local credit budget exhausted")
-    r = requests.get(
-        TD_URL,
-        params={"symbol": ",".join(symbols), "interval": TD_INTERVAL[tf], "outputsize": BARS[tf],
-                "timezone": "UTC", "order": "ASC", "apikey": TD_KEY},
-        timeout=HTTP_TIMEOUT,
-    )
-    r.raise_for_status()
-    data = r.json()
-    if isinstance(data, dict) and data.get("status") == "error" and "values" not in data \
-            and not any("/" in k for k in data):
-        raise CandleUnavailable(f"twelvedata: {data.get('message', data)}")
-    blocks = {symbols[0]: data} if len(symbols) == 1 else data
-    return {s: _parse_td_block(blocks.get(s)) for s in symbols}
-
-
-def _td_single(td_sym: str, tf: str) -> pd.DataFrame:
-    return _td_request([td_sym], tf)[td_sym]
-
-
-def _dxy_from_components(frames: dict[str, pd.DataFrame]) -> pd.DataFrame:
-    cols = {}
-    for field in ("open", "high", "low", "close"):
-        cols[field] = pd.concat({s: frames[s][field] for s in DXY_W}, axis=1).ffill(limit=2).dropna()
-    idx = cols["close"].index.intersection(cols["open"].index)
-    out = pd.DataFrame(index=idx)
-    for field in ("open", "high", "low", "close"):
-        c = cols[field].loc[idx]
-        v = DXY_K
-        for s, w in DXY_W.items():
-            v = v * (c[s] ** w)
-        out[field] = v
-    # components never peak simultaneously: keep OHLC internally consistent
-    out["high"] = out[["open", "high", "low", "close"]].max(axis=1)
-    out["low"] = out[["open", "high", "low", "close"]].min(axis=1)
-    out["volume"] = 0.0
-    return out
-
-
-def _resample(df: pd.DataFrame, rule: str) -> pd.DataFrame:
-    return df.resample(rule).agg({"open": "first", "high": "max", "low": "min",
-                                  "close": "last", "volume": "sum"}).dropna()
-
-
-def _td_dxy_15m(_tf=None) -> pd.DataFrame:
-    return _dxy_from_components(_td_request(list(DXY_W), "15m"))
-
-
-def _td_dxy(tf: str) -> pd.DataFrame:
-    m15 = _get("DXY-TD", "15m", [("twelvedata-dxy", _td_dxy_15m)], ttl=DXY_TTL)
-    return m15 if tf == "15m" else _resample(m15, "1h")
-
-
-# ── Yahoo fallback ────────────────────────────────────────────────────────
-def _yahoo(ticker: str, tf: str) -> pd.DataFrame:
-    import yfinance as yf
-    raw = yf.download(ticker, period=YF_PERIOD[tf], interval="15m" if tf == "15m" else "1h",
-                      progress=False, auto_adjust=False, threads=False)
-    if raw is None or raw.empty:
-        raise CandleUnavailable(f"yahoo: empty for {ticker}")
-    if isinstance(raw.columns, pd.MultiIndex):
-        raw.columns = raw.columns.get_level_values(0)
-    raw.columns = [str(c).lower() for c in raw.columns]
-    df = raw[["open", "high", "low", "close"]].copy()
-    df["volume"] = raw["volume"] if "volume" in raw else 0.0
-    df.index = pd.to_datetime(df.index, utc=True) if df.index.tz is None else df.index.tz_convert("UTC")
-    df.index.name = None
-    return df.dropna(subset=["open", "high", "low", "close"])
-
-
-# ── generic cached loader with fallback + stale-serve ─────────────────────
-def _get(key: str, tf: str, loaders: list, ttl: int | None = None) -> pd.DataFrame:
-    ck = (key, tf)
-    ttl = TTL[tf] if ttl is None else ttl
-    with _cache_lock:
-        hit = _cache.get(ck)
-    if hit and time.time() - hit[0] < ttl:
+def _cached_download(ticker: str, interval: str, period: str) -> pd.DataFrame | None:
+    key = (ticker, interval)
+    now = time.time()
+    hit = _cache.get(key)
+    if hit and now - hit[0] < _TTL_SECONDS:
         return hit[1]
-    errors = []
-    for name, fn in loaders:
-        try:
-            df = fn(tf)
-            if df is not None and len(df) >= 30:
-                df = df.copy()
-                df.attrs["source"] = name
-                with _cache_lock:
-                    _cache[ck] = (time.time(), df)
-                return df
-            errors.append(f"{name}: too few bars")
-        except Exception as e:  # noqa: BLE001 — any provider failure falls through
-            errors.append(f"{name}: {e}")
-            log.warning("candles %s %s via %s failed: %s", key, tf, name, e)
-    if hit and time.time() - hit[0] < MAX_STALE:
-        stale = hit[1].copy()
-        stale.attrs["source"] = str(hit[1].attrs.get("source", "?")) + " (stale)"
-        return stale
-    raise CandleUnavailable(f"{key} {tf}: " + " | ".join(errors))
 
+    try:
+        raw = yf.download(ticker, interval=interval, period=period,
+                           progress=False, auto_adjust=True)
+    except Exception:
+        return hit[1] if hit else None  # serve stale data over a hard failure if we have it
 
-def _style(df: pd.DataFrame) -> pd.DataFrame:
-    if COLUMN_STYLE == "title":
-        src = df.attrs.get("source")
-        df = df.rename(columns=str.capitalize)
-        df.attrs["source"] = src
+    if raw is None or raw.empty:
+        return hit[1] if hit else None
+
+    df = _normalize(raw)
+    _cache[key] = (now, df)
     return df
 
+# Maps our internal symbol names to Yahoo Finance tickers.
+_YF_TICKERS = {
+    "EURUSD": "EURUSD=X", "GBPUSD": "GBPUSD=X", "AUDUSD": "AUDUSD=X",
+    "NZDUSD": "NZDUSD=X", "USDJPY": "USDJPY=X", "USDCHF": "USDCHF=X",
+    "USDCAD": "USDCAD=X", "XAUUSD": "GC=F", "XAGUSD": "SI=F",
+    "BTCUSD": "BTC-USD", "ETHUSD": "ETH-USD",
+    "USOIL": "CL=F", "UKOIL": "BZ=F",
+    # Broad equity indices (Yahoo symbols; kept distinct from USD FX pairs).
+    "US500": "^GSPC", "SPX500": "^GSPC", "NAS100": "^NDX",
+    "US100": "^NDX", "DJ30": "^DJI", "US30": "^DJI",
+    "UK100": "^FTSE", "GER40": "^GDAXI", "DE40": "^GDAXI",
+    "JP225": "^N225",
+}
 
-# ── public API ────────────────────────────────────────────────────────────
-def get_candles(symbol: str) -> dict[str, pd.DataFrame]:
-    td_sym, y_sym = to_td_symbol(symbol), to_yahoo_symbol(symbol)
-    key = _norm(symbol)
+DXY_TICKER = "DX-Y.NYB"
+
+# DXY basket weights (ICE formula), used only if the direct ticker
+# is unavailable and we need to build a synthetic index.
+_DXY_BASKET = {
+    "EURUSD=X": -0.576, "USDJPY=X": 0.136, "GBPUSD=X": -0.119,
+    "USDCAD=X": 0.091, "USDSEK=X": 0.042, "USDCHF=X": 0.036,
+}
+
+
+def _normalize(df: pd.DataFrame) -> pd.DataFrame:
+    # Recent yfinance versions return MultiIndex columns like
+    # ("High", "DX-Y.NYB") even for a single ticker. Flatten to the
+    # plain field name first, or the rename below silently no-ops and
+    # df["high"] ends up returning a DataFrame instead of a Series --
+    # which is what produces "truth value of a Series is ambiguous"
+    # several layers downstream in market_structure.py.
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = df.columns.get_level_values(0)
+
+    df = df.reset_index()
+    time_col = "Datetime" if "Datetime" in df.columns else "Date"
+    df = df.rename(columns={
+        time_col: "time", "Open": "open", "High": "high",
+        "Low": "low", "Close": "close", "Volume": "volume",
+    })
+    df["time"] = pd.to_datetime(df["time"], utc=True)
+    return df[["time", "open", "high", "low", "close"]]
+
+
+def get_candles(symbol: str) -> dict:
+    """Returns {"1h": df, "15m": df} for a tradeable symbol."""
+    ticker = _YF_TICKERS.get(symbol.upper())
+    if not ticker:
+        return {}
     out = {}
-    for tf in ("1h", "15m"):
-        loaders = []
-        if td_sym and TD_KEY:
-            loaders.append(("twelvedata", lambda t, s=td_sym: _td_single(s, t)))
-        loaders.append(("yahoo", lambda t, s=y_sym: _yahoo(s, t)))
-        out[tf] = _style(_get(key, tf, loaders))
+    for label, (interval, period) in _INTERVALS.items():
+        df = _cached_download(ticker, interval, period)
+        if df is not None:
+            out[label] = df
     return out
 
 
-def get_dxy_candles() -> dict[str, pd.DataFrame]:
+def get_dxy_candles() -> tuple[dict, str]:
+    """
+    Returns ({"1h": df, "15m": df}, source) where source is
+    "broker"/"direct" or "synthetic".
+    """
     out = {}
-    for tf in ("1h", "15m"):
-        loaders = []
-        if TD_KEY:
-            loaders.append(("twelvedata-dxy", _td_dxy))
-        loaders.append(("yahoo", lambda t: _yahoo("DX-Y.NYB", t)))
-        out[tf] = _style(_get("DXY", tf, loaders, ttl=DXY_TTL))
-    return out
+    for label, (interval, period) in _INTERVALS.items():
+        df = _cached_download(DXY_TICKER, interval, period)
+        if df is not None:
+            out[label] = df
+    if out:
+        return out, "direct"
+
+    # Fallback: synthetic index from the basket, weighted log-returns
+    # accumulated into an index series (same shape as a real price df).
+    out = {}
+    for label, (interval, period) in _INTERVALS.items():
+        frames = {}
+        for tkr in _DXY_BASKET:
+            df = _cached_download(tkr, interval, period)
+            if df is not None:
+                frames[tkr] = df
+        if not frames:
+            continue
+        base = next(iter(frames.values()))["time"]
+        synth = pd.Series(100.0, index=range(len(base)))
+        for tkr, weight in _DXY_BASKET.items():
+            if tkr not in frames:
+                continue
+            closes = frames[tkr]["close"].reset_index(drop=True)
+            returns = closes.pct_change().fillna(0.0)
+            synth = synth * (1 + weight * returns).cumprod()
+        df = pd.DataFrame({
+            "time": base, "open": synth, "high": synth, "low": synth, "close": synth,
+        })
+        out[label] = df
+    return out, "synthetic"
