@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
-from typing import Any
+from typing import Any, Literal, Optional
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from ..news import news_calendar as nc
-from ..news import gemini_news
+from ..news import ai_news
 from ..news import user_history
 from ..users import User
 from .auth import get_current_user
@@ -20,15 +20,25 @@ class NewsHistoryIn(BaseModel):
     payload: dict[str, Any]
 
 
+class AIResearchIn(BaseModel):
+    prompt: str = Field(min_length=1, max_length=20000)
+    queries: list[str] = Field(min_length=1, max_length=3)
+    format: Literal["json", "text"] = "text"
+    topic: Literal["news", "general", "finance"] = "news"
+    time_range: Optional[Literal["day", "week", "month", "year"]] = "week"
+    max_tokens: int = Field(default=1200, ge=100, le=2500)
+    temperature: float = Field(default=0.2, ge=0.0, le=1.0)
+
+
 @router.get("/upcoming")
 def upcoming(within_hours: float = Query(120.0, ge=1, le=720, description="Lookahead window in hours"),
-             enrich: bool = Query(False, description="Fetch forecast/actual via Gemini")):
+             enrich: bool = Query(False, description="Fetch forecast/actual via Tavily + Groq (server env keys)")):
     events = nc.upcoming(within_hours=within_hours)
     out = []
     for e in events:
         payload = e.to_dict()
         if enrich:
-            enrichment = gemini_news.enrich_event(payload["label"], payload["utc"][:10])
+            enrichment = ai_news.enrich_event(payload["label"], payload["utc"][:10])
             payload["enrichment"] = enrichment.to_dict()
         out.append(payload)
     return {"events": out}
@@ -62,9 +72,35 @@ def blackout():
     return nc.blackout_status().to_dict()
 
 
+@router.post("/ai")
+def ai_research(body: AIResearchIn,
+                x_groq_api_key: str | None = Header(default=None),
+                x_tavily_api_key: str | None = Header(default=None)):
+    """
+    Web-grounded AI research: Tavily search + Groq analysis.
+
+    The caller supplies their own free keys in headers, so anonymous requests can
+    never spend the server owner's quota. Keys are used for this request only and
+    are never stored or logged.
+    """
+    groq_key = (x_groq_api_key or "").strip()
+    tavily_key = (x_tavily_api_key or "").strip()
+    if not groq_key or not tavily_key:
+        raise HTTPException(400, "Add both your Groq key and Tavily key in Settings first.")
+    try:
+        return ai_news.research(
+            body.prompt, body.queries, groq_key, tavily_key,
+            json_mode=body.format == "json", topic=body.topic, time_range=body.time_range,
+            max_tokens=body.max_tokens, temperature=body.temperature,
+        )
+    except ai_news.AIError as exc:
+        raise HTTPException(exc.status, exc.message) from exc
+
+
 @router.get("/sentiment")
 def sentiment(dxy_bias: str = Query(...), confidence: str = Query(...),
-              x_gemini_api_key: str | None = Header(default=None)):
-    return {"summary": gemini_news.dollar_sentiment_summary(
-        dxy_bias, confidence, api_key_override=x_gemini_api_key
+              x_groq_api_key: str | None = Header(default=None),
+              x_tavily_api_key: str | None = Header(default=None)):
+    return {"summary": ai_news.dollar_sentiment_summary(
+        dxy_bias, confidence, groq_key=x_groq_api_key, tavily_key=x_tavily_api_key
     )}

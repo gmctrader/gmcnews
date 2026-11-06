@@ -17,9 +17,10 @@ A trading desk that combines three angles on every symbol:
    and maps it onto each symbol via the correlation table.
 3. **News timing + forecast/actual** — `news_calendar.py` (your file,
    unchanged) gives exact release times with zero internet dependency;
-   `gemini_news.py` (new) calls Gemini with search grounding to fill in
-   forecast/previous/actual values and a plain-language dollar-sentiment
-   read, since your original calendar deliberately doesn't fetch that.
+   `ai_news.py` (new) searches the live web with Tavily and has Groq read the
+   results to fill in forecast/previous/actual values and a plain-language
+   dollar-sentiment read, since your original calendar deliberately doesn't
+   fetch that. Both services have free plans and need no card.
 
 `confluence.py` (new) combines all three into one 0–100 score per symbol,
 with a plain-language "why" for every point awarded.
@@ -35,7 +36,7 @@ backend/
       confluence.py         NEW  — combines all three angles into a score
     news/
       news_calendar.py       YOURS (unchanged)
-      gemini_news.py         NEW  — Gemini + search grounding for forecasts
+      ai_news.py             NEW  — Tavily web search + Groq AI for forecasts/research
     data/
       candles.py             NEW  — free yfinance price feed (swap for MT5 later)
     routers/                 NEW  — FastAPI endpoints
@@ -54,21 +55,24 @@ frontend/
 cd backend
 python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env        # then add your GEMINI_API_KEY
+cp .env.example .env        # optional: add GROQ_API_KEY and TAVILY_API_KEY
 uvicorn app.main:app --reload --port 8000
 ```
 
-Get a Gemini API key at https://aistudio.google.com/apikey — the app runs
-fine without one, it just shows placeholder text instead of live
-forecast/sentiment data until a key is set.
+Get two free keys (no card needed): a Groq key at https://console.groq.com/keys
+(AI analysis) and a Tavily key at https://app.tavily.com (live web search).
+Dashboard users paste their own keys in Settings. The server-side keys in `.env`
+are only used by `?enrich=true`. The app runs fine without any keys, it just
+shows placeholder text instead of live forecast/sentiment data.
 
 Endpoints:
 - `GET /api/dxy/bias` — current DXY structural bias
 - `GET /api/signals?symbols=EURUSD,GBPUSD,XAUUSD` — confluence scan, now including a `levels` object (entry/stop/targets/R:R/pips) per signal
 - `POST /api/signals/{symbol}/send` — sends that symbol's current signal to whichever channels are configured
 - `POST /api/signals/broadcast?min_grade=high` — scans the default watchlist and sends every signal at/above the given grade
-- `GET /api/news/upcoming?within_hours=168` — calendar + Gemini enrichment
-- `GET /api/news/sentiment?dxy_bias=bullish&confidence=moderate` — AI narrative
+- `GET /api/news/upcoming?within_hours=168` — calendar + Tavily/Groq enrichment (needs server keys)
+- `GET /api/news/sentiment?dxy_bias=bullish&confidence=moderate` — AI narrative (send `x-groq-api-key`, optionally `x-tavily-api-key`)
+- `POST /api/news/ai` — web-grounded research: Tavily search + Groq analysis; keys sent as `x-groq-api-key` and `x-tavily-api-key` headers
 - `POST /api/profile`, `GET/PATCH /api/profile/{id}` — trader profiles
 
 To actually deliver sent signals, set one or more of these on the backend (see `.env.example`): `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID`, `DISCORD_WEBHOOK_URL`, or `GENERIC_WEBHOOK_URL` (for your own server or an MT5 EA bridge).
@@ -91,7 +95,7 @@ On a phone, open the page in the browser and use "Add to Home Screen" —
 - The **ICT structure, DXY bias, and confluence scoring logic are real and
   tested** — see the module docstrings; they run on actual OHLC data via
   yfinance.
-- **Gemini enrichment needs `GEMINI_API_KEY`** to return live forecasts —
+- **Enrichment needs `GROQ_API_KEY` and `TAVILY_API_KEY`** to return live forecasts —
   without it, endpoints return clearly-labeled placeholder text so nothing
   breaks.
 - The **frontend ships with demo data** so you can see and use the full
@@ -104,7 +108,7 @@ On a phone, open the page in the browser and use "Add to Home Screen" —
 
 ## Suggested next steps
 
-1. Get a Gemini API key and deploy the backend (Render/Railway/Fly.io all
+1. Get free Groq and Tavily keys and deploy the backend (Render/Railway/Fly.io all
    have free tiers that work for this).
 2. Point the frontend's `API_BASE` at it.
 3. Swap `candles.py` for your real MT5/broker feed when you're ready to
@@ -112,8 +116,8 @@ On a phone, open the page in the browser and use "Add to Home Screen" —
 
 ## Accounts, mobile, and data provenance
 
-The hosted app at `https://pipx-six.vercel.app/` uses the same `/api` service on desktop and mobile. A sign-in can sync a user's saved news research across devices. Gemini API keys are isolated by account on each browser/device and are sent directly to Google; users enter their key once per device.
+The hosted app at `https://pipx-six.vercel.app/` uses the same `/api` service on desktop and mobile. A sign-in can sync a user's saved news research across devices. Groq and Tavily API keys are isolated by account on each browser/device. They are sent only to this app's own `/api` service, which forwards them to Groq and Tavily for that single request and never stores or logs them; users enter their keys once per device.
 
 Before production signup is enabled, connect persistent PostgreSQL storage to the Vercel project and set `AUTH_SECRET_KEY` in Vercel Environment Variables. The app reports account readiness from `/api/health` and disables signup when production storage or a secure signing key is missing. Vercel's Marketplace supports external Postgres integrations such as Neon and Supabase: https://vercel.com/docs/marketplace-storage.
 
-The calendar links each scheduled release to its official BLS/Federal Reserve schedule. Market structure uses Yahoo Finance ticker feeds with provider candle timestamps; quotes may be delayed and are not broker execution prices. DXY fallback data is explicitly labeled synthetic. News briefs require Google Search grounding citations, and pair directions are derived from the grounded USD lean plus fresh live structure; disagreements are marked mixed.
+The calendar links each scheduled release to its official BLS/Federal Reserve schedule. Market structure uses Yahoo Finance ticker feeds with provider candle timestamps; quotes may be delayed and are not broker execution prices. DXY fallback data is explicitly labeled synthetic. News briefs require web-search source citations (Tavily), and pair directions are derived from the sourced USD lean plus fresh live structure; disagreements are marked mixed.

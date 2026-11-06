@@ -1,11 +1,10 @@
 """
 Minimal TTL cache, backed by a single JSON file on disk.
 
-Why this exists: gemini_news.py used to get called fresh on every single
+Why this exists: ai_news.py used to get called fresh on every single
 page load/refresh for every calendar event. On a free-tier key that
-burns through the (small) daily quota almost immediately -- see the
-429 RESOURCE_EXHAUSTED you hit. This cache means each distinct
-event/query only ever triggers one real Gemini call per `ttl_seconds`
+burns through the (small) daily quota almost immediately (HTTP 429). This cache means each distinct
+event/query only ever triggers one real AI call per `ttl_seconds`
 window; every request in between is served from disk for free.
 
 Not a database, not multi-process safe in a strict sense (fine for a
@@ -21,7 +20,7 @@ import time
 from typing import Any, Optional
 
 _CACHE_FILE = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "gemini_cache.json"
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "ai_cache.json"
 )
 
 
