@@ -1,4 +1,7 @@
 .env
+.env.local
+.env*.local
+.vercel/
 *.db
 __pycache__/
 *.pyc
