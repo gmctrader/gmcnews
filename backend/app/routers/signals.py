@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, Query
 
 from ..analysis.fundamental import compute_dxy_bias
 from ..analysis.confluence import build_signal
-from ..data.candles import _YF_TICKERS, get_candles, get_dxy_candles
+from ..data.candles import _YF_TICKERS, get_candles, get_dxy_candles, provider_name
 from ..notify.dispatch import dispatch_signal
 
 router = APIRouter(prefix="/api/signals", tags=["signals"])
@@ -36,13 +36,14 @@ def _scan(watchlist: list[str]) -> tuple[dict, list[dict]]:
                 stamp = frame.iloc[-1]["time"]
                 observed_at = stamp.isoformat() if hasattr(stamp, "isoformat") else str(stamp)
                 last_price = float(frame.iloc[-1]["close"])
+            provider = provider_name(symbol)
             payload["market_data"] = {
-                "provider": "Yahoo Finance",
+                "provider": provider,
                 "symbol": _YF_TICKERS.get(symbol.upper()),
                 "timeframe": "15m" if "15m" in candles else "1h",
                 "as_of": observed_at,
                 "last_price": last_price,
-                "note": "Yahoo Finance feed; quotes may be delayed and are not broker execution prices.",
+                "note": f"{provider} feed; quotes may be delayed and are not broker execution prices.",
             }
             results.append(payload)
 

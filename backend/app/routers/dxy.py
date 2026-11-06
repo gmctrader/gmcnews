@@ -3,7 +3,7 @@ from __future__ import annotations
 from fastapi import APIRouter
 
 from ..analysis.fundamental import compute_dxy_bias
-from ..data.candles import get_dxy_candles
+from ..data.candles import get_dxy_candles, provider_name
 
 router = APIRouter(prefix="/api/dxy", tags=["dxy"])
 
@@ -22,7 +22,7 @@ def snapshot():
     if frame is None:
         frame = candles.get("1h")
     if frame is None or frame.empty:
-        return {"available": False, "provider": "Yahoo Finance", "source": source}
+        return {"available": False, "provider": provider_name("DXY"), "source": source}
     latest = frame.iloc[-1]
     stamp = latest["time"]
     return {
@@ -30,7 +30,7 @@ def snapshot():
         "price": float(latest["close"]),
         "time": stamp.isoformat() if hasattr(stamp, "isoformat") else str(stamp),
         "source": source,
-        "provider": "Yahoo Finance",
+        "provider": provider_name("DXY"),
         "interval": "15m" if "15m" in candles else "1h",
-        "note": "Yahoo Finance feed; quotes may be delayed. A synthetic fallback is a basket proxy, not the official DXY index.",
+        "note": "Quotes may be delayed. \"computed\" = ICE-formula DXY from live component pairs; \"synthetic\" is a basket proxy, not the official DXY index.",
     }
