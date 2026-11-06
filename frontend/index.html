@@ -3,391 +3,231 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>PipX Ledger — Precision FX &amp; Gold Signals</title>
-<meta name="theme-color" content="#f7f8fa">
+<title>PipX Ledger — AI Macro Desk</title>
+<meta name="theme-color" content="#06080d">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#f8fafc; --bg-2:#ffffff; --bg-3:#eef2f6;
-  --border:rgba(0,0,0,0.04); --border-strong:rgba(0,0,0,0.08);
-  --text:#0f172a; --text-dim:#475569; --text-faint:#94a3b8;
-  --violet:#4f46e5; --violet-2:#4338ca; --violet-dim:rgba(79,70,229,0.05);
-  --cyan:#06b6d4; --cyan-dim:rgba(6,182,212,0.05);
-  --gold:#d97706; --gold-dim:rgba(217,119,6,0.05);
-  --pos:#16a34a; --pos-dim:rgba(22,163,74,0.05);
-  --neg:#dc2626; --neg-dim:rgba(220,38,38,0.05);
-  --sans:'Inter', sans-serif;
-  --mono:'Roboto Mono', monospace;
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-top: env(safe-area-inset-top, 0px);
-}
-*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-html,body{margin:0; padding:0; background:var(--bg); color:var(--text); font-family:var(--sans); height:100%; -webkit-font-smoothing:antialiased; letter-spacing:-0.015em; font-weight:400;}
-body{overscroll-behavior-y:none;}
-::selection{background:var(--violet-dim); color:var(--violet-2);}
-a{color:inherit; text-decoration:none;}
-button{font-family:inherit; cursor:pointer; color:inherit; border:none; background:none; transition:all .2s ease; line-height:1;}
-input,select,textarea{font-family:inherit;}
-h1,h2,h3{margin:0; font-weight:700;}
-@media (prefers-reduced-motion: reduce){ *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;} }
-
-#bgCanvas{position:fixed; inset:0; z-index:0; width:100%; height:100%; display:block; background:
-  radial-gradient(circle at 10% 10%, rgba(79,70,229,0.03), transparent 30%),
-  radial-gradient(circle at 90% 90%, rgba(6,182,212,0.02), transparent 30%),
-  var(--bg);
-}
-
-.glass{background:var(--bg-2); border:1px solid var(--border); border-radius:20px;}
-.glass-strong{background:var(--bg-2); border:1px solid var(--border-strong); border-radius:20px; box-shadow:0 12px 40px rgba(0,0,0,0.02);}
-
-@keyframes fadeUp{from{opacity:0; transform:translateY(24px);} to{opacity:1; transform:translateY(0);}}
-@keyframes pulseGlow{0%,100%{opacity:.4;} 50%{opacity:.7;}}
-.reveal{animation:fadeUp .8s cubic-bezier(.2,.9,.4,1) both;}
-.reveal-1{animation-delay:.15s;} .reveal-2{animation-delay:.3s;} .reveal-3{animation-delay:.45s;}
-
-#landing{position:fixed; inset:0; z-index:200; overflow-y:auto; overflow-x:hidden; background:transparent;}
-#landing.hidden{display:none;}
-.land-nav{position:sticky; top:0; z-index:5; display:flex; align-items:center; justify-content:space-between; padding:calc(28px + var(--safe-top)) 48px 24px; background:rgba(248,250,252,0.9); backdrop-filter:blur(20px);}
-.land-brand{display:flex; align-items:center; gap:12px; font-weight:800; font-size:22px; letter-spacing:-0.04em; color:var(--text);}
-.land-brand em{font-style:normal; font-weight:400; color:var(--text-dim);}
-.land-nav-cta{background:var(--text); color:var(--bg); border-radius:30px; padding:13px 26px; font-size:14px; font-weight:600;}
-.land-nav-cta:hover{opacity:0.9; transform:translateY(-1px);}
-
-.land-hero{max-width:1000px; margin:0 auto; padding:160px 48px 140px; text-align:center; position:relative;}
-.land-kicker{display:inline-flex; align-items:center; gap:12px; font-size:13px; font-weight:500; color:var(--cyan); background:var(--bg-2); padding:10px 20px; border-radius:30px; border:1px solid var(--border); box-shadow:0 2px 8px rgba(0,0,0,0.01);}
-.land-kicker .dot{width:8px; height:8px; border-radius:50%; background:var(--cyan); animation:pulseGlow 2s ease-in-out infinite;}
-.land-title{font-size:clamp(48px,9vw,90px); line-height:1.02; letter-spacing:-0.06em; margin:40px 0 36px; color:var(--text); font-weight:800;}
-.land-sub{font-size:clamp(18px,2.7vw,23px); color:var(--text-dim); line-height:1.65; max-width:700px; margin:0 auto; font-weight:400;}
-.land-cta-row{display:flex; gap:24px; justify-content:center; flex-wrap:wrap; margin-top:64px;}
-.btn{display:inline-flex; align-items:center; justify-content:center; gap:10px; font-weight:600; font-size:16px; padding:20px 40px; border-radius:14px; transition:all .2s; text-align:center;}
-.btn-primary{background:var(--violet); color:var(--bg-2); box-shadow:0 10px 25px -5px rgba(79,70,229,0.2);}
-.btn-primary:hover{background:var(--violet-2); transform:translateY(-1px);}
-.btn-ghost{background:transparent; border:1px solid var(--border-strong); color:var(--text-dim);}
-.btn-ghost:hover{background:var(--bg-2); border-color:var(--text-faint); color:var(--text);}
-
-.land-section{max-width:1200px; margin:0 auto; padding:140px 48px;}
-.land-section-head{text-align:center; max-width:750px; margin:0 auto 80px;}
-.land-eyebrow{font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-faint);}
-.land-h2{font-size:clamp(36px,5.5vw,56px); letter-spacing:-0.05em; margin:20px 0 24px; line-height:1.08; font-weight:800; color:var(--text);}
-.land-p{color:var(--text-dim); font-size:18px; line-height:1.75;}
-
-.trio-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:40px;}
-@media (max-width:820px){.trio-grid{grid-template-columns:1fr; gap:32px;}}
-.trio-card{padding:48px; box-shadow:0 6px 20px rgba(0,0,0,0.01); background:var(--bg-2);}
-.trio-icon{width:64px; height:64px; border-radius:18px; display:flex; align-items:center; justify-content:center; margin-bottom:32px;}
-.trio-icon svg{width:32px; height:32px;}
-.trio-card h3{font-size:22px; margin-bottom:16px; letter-spacing:-0.03em; font-weight:700;}
-.trio-card p{font-size:16px; color:var(--text-dim); line-height:1.75;}
-
-.sample-wrap{display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center;}
-@media (max-width:820px){.sample-wrap{grid-template-columns:1fr; gap:64px;}}
-.sample-card{padding:48px;}
-.sample-top{display:flex; align-items:center; justify-content:space-between; margin-bottom:36px;}
-.sample-symbol{font-weight:800; font-size:22px; letter-spacing:-0.03em;}
-.sample-badge{font-family:var(--mono); font-size:11px; font-weight:500; padding:8px 16px; border-radius:30px; background:var(--gold-dim); color:var(--gold); border:1px solid rgba(217,119,6,0.1);}
-.sample-row{display:flex; align-items:center; justify-content:space-between; padding:20px 0; border-top:1px solid var(--border); font-size:16px;}
-.sample-row:first-of-type{border-top:none;}
-.sample-row .k{color:var(--text-dim);}
-.sample-row .v{font-family:var(--mono); font-weight:500; font-size:15px;}
-.v.stop{color:var(--neg);} .v.tp{color:var(--pos);}
-.sample-bar{height:8px; border-radius:8px; background:var(--bg-3); position:relative; margin:28px 0 16px;}
-.sample-bar::after{content:''; position:absolute; left:22%; top:0; bottom:0; width:12%; background:var(--text-faint); opacity:0.15; border-radius:2px;}
-.sample-note{font-size:14px; color:var(--text-faint); margin-top:20px; text-align:center;}
-
-.land-footer{max-width:1200px; margin:0 auto; padding:100px 48px calc(120px + var(--safe-bottom)); text-align:center; border-top:1px solid var(--border);}
-.land-disclaimer{font-size:14px; color:var(--text-faint); max-width:750px; margin:40px auto 0; line-height:1.8;}
-
-/* ============ App shell ============ */
-#app{max-width:1200px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; position:relative; z-index:1;}
-.masthead{position:sticky; top:0; z-index:20; padding-top:var(--safe-top); background:rgba(248,250,252,0.9); backdrop-filter:blur(20px); border-bottom:1px solid var(--border);}
-.masthead-row{display:flex; align-items:center; justify-content:space-between; gap:24px; padding:24px 40px;}
-.masthead-brand{display:flex; align-items:center; gap:12px;}
-.masthead-title{font-size:19px; font-weight:800; letter-spacing:-0.04em; color:var(--text);}
-.masthead-right{display:flex; align-items:center; gap:16px; font-size:13px; font-weight:500; color:var(--text-dim); background:var(--bg-2); border:1px solid var(--border); padding:10px 18px; border-radius:30px;}
-
-.shell{flex:1; display:flex; flex-direction:column; padding-bottom:calc(120px + var(--safe-bottom));}
-main{flex:1; padding:48px 40px; max-width:880px; width:100%; margin:0 auto;}
-.screen{display:none;}
-.screen.active{display:block; animation:fadeUp .6s cubic-bezier(.2,.9,.4,1) both;}
-
-.page-head{margin-bottom:48px;}
-h1.page-title{font-size:32px; font-weight:800; letter-spacing:-0.05em; color:var(--text);}
-
-.panel{background:var(--bg-2); border-radius:20px; padding:40px; border:1px solid var(--border); box-shadow:0 4px 16px rgba(0,0,0,0.01);}
-
-.signal-row{display:flex; align-items:center; gap:24px; padding:24px; border-bottom:1px solid var(--border); border-radius:12px; cursor:pointer;}
-.signal-row:hover{background:var(--bg-3); border-color:var(--border-strong);}
-.score-num{font-family:var(--mono); font-weight:700; font-size:22px; color:var(--violet);}
-
-/* bottom nav */
-.bottom-nav{position:fixed; bottom:0; left:0; right:0; z-index:30; padding-bottom:var(--safe-bottom); background:rgba(248,250,252,0.95); backdrop-filter:blur(20px); border-top:1px solid var(--border); display:flex;}
-.nav-btn{flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; padding:24px 0 20px; color:var(--text-faint); font-size:12px; font-weight:600; letter-spacing:0.01em;}
-.nav-btn.active{color:var(--violet); background:var(--violet-dim);}
-.nav-icon{width:22px; height:22px;}
-
-/* Overlay forms */
-.overlay{position:fixed; inset:0; background:var(--bg); z-index:100; display:flex; overflow-y:auto; padding:calc(80px + var(--safe-top)) 48px calc(80px + var(--safe-bottom));}
-.overlay-hidden{display:none !important;}
-.overlay-inner{max-width:480px; width:100%; margin:auto;}
-.overlay-wordmark{font-size:26px; font-weight:800; text-align:center; margin-bottom:48px; letter-spacing:-0.05em;}
-.text-input{width:100%; background:var(--bg-2); border:1px solid var(--border-strong); border-radius:12px; padding:18px 20px; color:var(--text); font-size:16px; margin-bottom:28px;}
-.text-input:focus{outline:none; border-color:var(--violet); box-shadow:0 0 0 4px var(--violet-dim);}
-.btn-block{width:100%; padding:18px; margin-top:12px;}
-/* ── PipX Observatory · immersive glass desk skin ─────────────────────── */
-:root{
-  color-scheme:dark;
-  --bg:#050913; --bg-2:rgba(12,20,36,.82); --bg-3:rgba(20,32,52,.78);
-  --border:rgba(132,190,255,.12); --border-strong:rgba(132,190,255,.24);
-  --text:#e8f3ff; --text-dim:#9db1ca; --text-faint:#6d839f;
-  --violet:#8b7cff; --violet-2:#aa9fff; --violet-dim:rgba(139,124,255,.14);
-  --cyan:#58e5ff; --cyan-dim:rgba(88,229,255,.12);
-  --gold:#ffca76; --gold-dim:rgba(255,202,118,.12);
-  --pos:#63efbd; --pos-dim:rgba(99,239,189,.12);
-  --neg:#ff718d; --neg-dim:rgba(255,113,141,.12);
-}
-html,body{background:var(--bg); color:var(--text);}
-body{background:radial-gradient(ellipse at 50% -15%,rgba(55,91,180,.2),transparent 48%),#050913;}
-#bgCanvas{background:radial-gradient(circle at 8% 8%,rgba(91,117,255,.14),transparent 35%),radial-gradient(circle at 92% 82%,rgba(38,211,229,.1),transparent 32%),linear-gradient(145deg,#050913,#091323 58%,#060b16);}
-.glass,.glass-strong,.panel,.trio-card,.sample-card{background:linear-gradient(145deg,rgba(16,28,49,.88),rgba(8,15,28,.84));border:1px solid var(--border);box-shadow:0 22px 60px rgba(0,0,0,.32),inset 0 1px rgba(255,255,255,.055);backdrop-filter:blur(18px);}
-.glass,.glass-strong,.panel,.trio-card,.sample-card,.signal-row{transform:translateZ(0);transition:transform .28s ease,border-color .28s ease,box-shadow .28s ease;}
-.panel{border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.36),0 0 36px rgba(88,229,255,.035),inset 0 1px rgba(255,255,255,.06);}
-.panel:hover,.trio-card:hover,.sample-card:hover{transform:perspective(1000px) rotateX(1deg) translateY(-3px);border-color:rgba(88,229,255,.25);box-shadow:0 30px 80px rgba(0,0,0,.42),0 0 38px rgba(88,229,255,.07),inset 0 1px rgba(255,255,255,.08);}
-.land-nav,.masthead{background:rgba(5,9,19,.76);border-color:var(--border);backdrop-filter:blur(24px) saturate(150%);}
-.land-nav-cta,.btn-primary{background:linear-gradient(135deg,#7568f5,#3fcce8);color:#06101c;box-shadow:0 10px 34px rgba(88,229,255,.2),inset 0 1px rgba(255,255,255,.3);}
-.btn-ghost{border-color:var(--border-strong);color:var(--text-dim);}
-.btn-ghost:hover,.nav-btn.active{background:var(--violet-dim);color:var(--cyan);}
-.land-kicker,.masthead-right{background:rgba(12,23,40,.78);border:1px solid var(--border-strong);color:var(--cyan);box-shadow:0 8px 30px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.06);}
-.land-title{background:linear-gradient(115deg,#fff 15%,#a8b5ff 50%,#6cecff 88%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 10px 50px rgba(88,229,255,.12);}
-.land-brand,.masthead-title{color:var(--text);}
-.land-section,.land-footer{border-color:var(--border);}
-.sample-bar{background:rgba(139,163,194,.16);}
-.bottom-nav{background:rgba(5,10,20,.88);border-color:var(--border);backdrop-filter:blur(24px) saturate(160%);}
-.nav-btn{color:var(--text-faint);}.nav-btn.active{color:var(--cyan);}
-.signal-row{border-bottom-color:var(--border);}.signal-row:hover{background:rgba(88,229,255,.055);border-color:var(--border-strong);transform:perspective(900px) translateZ(8px);}
-.score-num{color:var(--cyan);text-shadow:0 0 22px rgba(88,229,255,.28);}
-.text-input{background:rgba(6,13,25,.8);border-color:var(--border-strong);color:var(--text);}
-.overlay{background:radial-gradient(ellipse at 50% 0%,rgba(71,76,164,.2),transparent 55%),#050913;}
-.land-sub,.land-p,.trio-card p,.sample-row .k{color:var(--text-dim);}
-@media(max-width:700px){.land-nav{padding-left:20px;padding-right:20px}.land-hero{padding:100px 22px 82px}.land-section{padding:82px 20px}.land-section-head{margin-bottom:44px}.trio-card,.sample-card,.panel{padding:24px}.masthead-row{padding:16px 18px}.page-head{margin-bottom:28px}.overlay{padding-left:20px;padding-right:20px}.nav-btn{padding:16px 0 14px}}
-@media(prefers-reduced-motion:reduce){.panel:hover,.trio-card:hover,.sample-card:hover,.signal-row:hover{transform:none}}
-.masthead-right.status-offline{color:var(--gold);border-color:rgba(255,202,118,.35)}
-.empty-state{max-width:680px;margin:8px auto;padding:28px 14px;text-align:center}.empty-state h2{font-size:clamp(20px,3vw,28px);margin:16px 0 12px;letter-spacing:-.035em}.empty-state p{color:var(--text-dim);line-height:1.7;margin:0 auto 18px}.empty-state code{font-family:var(--mono);font-size:.9em;color:var(--cyan);background:rgba(88,229,255,.08);padding:2px 6px;border-radius:6px}.setup-hint{padding:14px 16px;background:rgba(88,229,255,.045);border:1px solid var(--border);border-radius:14px;text-align:left}.state-orb{width:46px;height:46px;border-radius:50%;margin:0 auto;background:radial-gradient(circle at 35% 30%,#b3fbff,#58e5ff 26%,rgba(88,229,255,.12) 65%,transparent 72%);box-shadow:0 0 34px rgba(88,229,255,.3);animation:pulseGlow 2s ease-in-out infinite}.state-orb.muted{background:radial-gradient(circle at 35% 30%,#ffe2aa,#ffca76 26%,rgba(255,202,118,.1) 65%,transparent 72%);box-shadow:0 0 26px rgba(255,202,118,.16);animation:none}.signal-list{display:grid;gap:14px}.live-signal{padding:20px 22px;border:1px solid var(--border);border-radius:16px;background:rgba(6,13,25,.48)}.live-signal>div:first-child{display:flex;align-items:center;justify-content:space-between;font-size:18px}.direction{font-size:12px;text-transform:uppercase;letter-spacing:.08em}.direction.up{color:var(--pos)}.direction.down{color:var(--neg)}.signal-meta{display:flex;justify-content:space-between;gap:18px;margin-top:12px;color:var(--text-dim);font-size:13px;line-height:1.55}.signal-meta span:last-child{text-align:right}
-.pair-grid{display:grid;gap:0;margin-top:12px}.pair-head,.pair-row{display:grid;grid-template-columns:.7fr .9fr 2fr;gap:10px;align-items:center;padding:10px 8px;border-bottom:1px solid var(--border);font-size:12px}.pair-head{font:10px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint)}.pair-row>span:last-child small{display:block;color:var(--text-faint);font-size:10px;line-height:1.45;margin-top:3px}.pair-row .direction{text-transform:capitalize}@media(max-width:500px){.pair-head,.pair-row{grid-template-columns:.55fr .8fr 1.6fr;font-size:10px;padding:9px 4px}.pair-head{font-size:8px}.masthead-row>div:last-child{gap:5px!important}.masthead-right{max-width:130px;text-align:center}}
-/* Account entry: keep the glass terminal language, with a real form layout. */
-#account-gate.overlay{align-items:center;justify-content:center;overflow-y:auto;padding:clamp(16px,4vh,44px) clamp(14px,4vw,48px);background:radial-gradient(ellipse at 18% 12%,rgba(78,105,238,.22),transparent 38%),radial-gradient(ellipse at 85% 88%,rgba(39,204,231,.12),transparent 36%),rgba(3,8,17,.9);backdrop-filter:blur(22px) saturate(145%)}
-.account-layout{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(360px,.82fr);width:min(100%,1080px);min-height:min(700px,calc(100svh - 48px));border:1px solid rgba(132,190,255,.18);border-radius:30px;overflow:hidden;background:linear-gradient(140deg,rgba(12,22,40,.94),rgba(6,12,23,.96));box-shadow:0 40px 120px rgba(0,0,0,.56),0 0 72px rgba(74,116,241,.09),inset 0 1px rgba(255,255,255,.07)}
-.account-story{position:relative;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;padding:clamp(28px,5vw,58px);border-right:1px solid rgba(132,190,255,.12);background:radial-gradient(circle at 80% 16%,rgba(91,229,255,.17),transparent 29%),radial-gradient(circle at 15% 85%,rgba(139,124,255,.18),transparent 33%),linear-gradient(150deg,rgba(17,31,55,.92),rgba(7,14,28,.64))}
-.account-story:after{content:"";position:absolute;width:360px;height:360px;right:-160px;bottom:-190px;border:1px solid rgba(111,212,255,.16);border-radius:50%;box-shadow:0 0 0 32px rgba(111,212,255,.025),0 0 0 72px rgba(111,212,255,.02),0 0 90px rgba(88,229,255,.12);pointer-events:none}
-.account-brand{display:flex;align-items:center;gap:12px;font-size:19px;font-weight:800;letter-spacing:-.045em}.account-brand-mark{display:grid;place-items:center;width:40px;height:40px;border:1px solid rgba(88,229,255,.34);border-radius:13px;color:var(--cyan);background:linear-gradient(145deg,rgba(88,229,255,.2),rgba(139,124,255,.18));box-shadow:0 8px 28px rgba(88,229,255,.12)}.account-brand small{display:block;margin-top:3px;color:var(--text-faint);font:9px var(--mono);letter-spacing:.17em}
-.account-story-copy{position:relative;z-index:1;margin:54px 0 48px}.account-eyebrow{display:inline-flex;align-items:center;gap:9px;color:var(--cyan);font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase}.account-eyebrow:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 14px rgba(88,229,255,.8)}.account-story h2{max-width:480px;margin:22px 0 18px;font-size:clamp(36px,5vw,58px);line-height:1.03;letter-spacing:-.065em}.account-story-copy>p{max-width:430px;color:var(--text-dim);font-size:15px;line-height:1.75}.account-points{display:grid;gap:13px;margin-top:34px}.account-point{display:flex;align-items:center;gap:12px;color:#c5d5e9;font-size:12px}.account-point-icon{display:grid;place-items:center;width:28px;height:28px;flex:0 0 28px;border:1px solid var(--border-strong);border-radius:9px;background:rgba(88,229,255,.065);color:var(--cyan)}.account-story-footer{position:relative;z-index:1;color:#69809d;font:9px var(--mono);letter-spacing:.12em;text-transform:uppercase}
-.account-form-column{display:flex;align-items:center;justify-content:center;padding:clamp(22px,4vw,48px)}.account-form{width:100%;max-width:390px}.account-form-icon{display:grid;place-items:center;width:50px;height:50px;margin-bottom:25px;border:1px solid rgba(139,124,255,.34);border-radius:16px;background:linear-gradient(145deg,rgba(139,124,255,.22),rgba(88,229,255,.11));color:#c3baff;font-size:21px;box-shadow:0 12px 34px rgba(87,85,228,.15)}.account-form .account-kicker{color:var(--text-faint);font:9px var(--mono);letter-spacing:.16em;text-transform:uppercase}.account-form h1{margin:9px 0 9px;font-size:30px;letter-spacing:-.05em}.account-form .page-subtitle{margin:0 0 27px;color:var(--text-dim);font-size:13px;line-height:1.6}
-.account-field{display:block;margin:0 0 17px}.account-field[hidden]{display:none}.account-field>span{display:block;margin:0 0 8px;color:#becde0;font-size:11px;font-weight:600;letter-spacing:.015em}.account-input{display:block;width:100%;height:50px;padding:0 15px;border:1px solid rgba(132,190,255,.2);border-radius:13px;outline:none;background:rgba(3,9,19,.72);color:var(--text);font-size:14px;transition:border-color .18s,box-shadow .18s,background .18s}.account-input::placeholder{color:#627690}.account-input:hover{border-color:rgba(132,190,255,.34)}.account-input:focus{border-color:rgba(88,229,255,.65);background:rgba(5,13,25,.95);box-shadow:0 0 0 4px rgba(88,229,255,.09),0 0 25px rgba(88,229,255,.08)}
-.account-submit{width:100%;min-height:52px;margin-top:5px;padding:0 20px;border-radius:14px;font-size:14px}.account-submit:disabled{opacity:.65;cursor:wait}.account-switch{display:block;margin:18px auto 0;color:#a9b9d0;font-size:12px;font-weight:600}.account-switch:hover{color:var(--cyan)}.account-guest{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:14px;padding:14px 12px;border:1px solid rgba(132,190,255,.14);border-radius:12px;color:#8599b5;font-size:11px}.account-guest:hover{border-color:rgba(132,190,255,.34);color:var(--text)}.account-guest span{color:var(--cyan)}.account-message{min-height:0;margin:0 0 10px;color:#ff9aa9;font-size:12px;line-height:1.5}.account-message:empty{display:none}.account-availability{margin:0 0 16px;padding:12px 13px;border:1px solid rgba(255,202,118,.2);border-radius:12px;background:rgba(255,202,118,.055);color:#d8bd8d;font-size:11px;line-height:1.55}.account-availability[hidden]{display:none}.account-footnote{max-width:365px;margin:20px auto 0;color:#7287a3;text-align:center;font-size:10px;line-height:1.65}
-@media(max-width:760px){#account-gate.overlay{align-items:flex-start;padding:12px}.account-layout{grid-template-columns:1fr;min-height:auto;width:min(100%,520px);margin:auto;border-radius:24px}.account-story{min-height:200px;padding:23px 24px 20px;border-right:0;border-bottom:1px solid rgba(132,190,255,.12)}.account-brand-mark{width:34px;height:34px;border-radius:11px}.account-brand{font-size:16px}.account-story-copy{margin:28px 0 2px}.account-story h2{margin:12px 0 8px;font-size:32px}.account-story-copy>p{margin:0;font-size:12px;line-height:1.55}.account-eyebrow{font-size:8px}.account-points,.account-story-footer{display:none}.account-form-column{padding:25px 24px 26px}.account-form-icon{width:42px;height:42px;margin-bottom:17px;border-radius:13px}.account-form h1{font-size:26px}.account-form .page-subtitle{margin-bottom:21px}.account-field{margin-bottom:14px}.account-input{height:48px}.account-footnote{margin:15px auto 0;font-size:9px}}
-@media(max-width:380px){#account-gate.overlay{padding:8px}.account-story{min-height:174px;padding:18px}.account-story h2{font-size:28px}.account-form-column{padding:20px 18px 22px}}
-/* Clear, predictable desk layers and controls */
-#account-gate.overlay{z-index:1000}
-#app{z-index:2}
-.bottom-nav{z-index:40}
-button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
-button:disabled{opacity:.55;cursor:not-allowed;transform:none}
-.watchlist-panel{margin:18px 0 22px;padding:24px}
-.watchlist-controls{display:flex;gap:10px;align-items:center}.watchlist-controls .settings-input{flex:1;margin:0}
-.watchlist-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
-.watchlist-chips .pill{display:inline-flex;align-items:center;gap:8px}.watchlist-chips button{font-size:17px;color:var(--text-dim)}
-.accuracy-panel{display:flex;align-items:center;gap:16px;margin-bottom:16px}.accuracy-panel strong{font:700 30px var(--mono);color:var(--cyan)}
-.chat-panel{padding:22px}.chat-transcript{display:grid;gap:14px;max-height:55vh;overflow:auto;padding:4px 2px 16px}.chat-message{max-width:90%;padding:14px 16px;border:1px solid var(--border);border-radius:16px;line-height:1.65;white-space:pre-wrap}.chat-message.user{justify-self:end;background:var(--violet-dim)}.chat-message.assistant{justify-self:start;background:rgba(88,229,255,.045)}.chat-message p{margin:6px 0 0}.chat-message a{color:var(--cyan);text-decoration:underline}.chat-form{display:flex;align-items:flex-end;gap:10px;border-top:1px solid var(--border);padding-top:14px}.chat-form textarea{flex:1;resize:vertical;min-height:54px;padding:13px 14px;border-radius:12px;border:1px solid var(--border-strong);background:rgba(6,13,25,.8);color:var(--text);font:inherit;line-height:1.5}.chat-form button{min-height:46px}
-@media(max-width:560px){.watchlist-controls{align-items:stretch;flex-direction:column}.watchlist-controls button{min-height:44px}.accuracy-panel{align-items:flex-start;flex-direction:column;gap:6px}}
-/* Trading desk redesign: stronger hierarchy, steady card surfaces, clear controls */
-main{max-width:1120px;padding:42px 34px 56px}
-.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:0 0 28px}
-h1.page-title{font-size:clamp(30px,4vw,42px);line-height:1.08;letter-spacing:-.045em;color:#eff6ff}
-.page-subtitle{max-width:680px;color:#9db1ca;line-height:1.6;margin-top:9px}
-.metric-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:0 0 18px}
-.metric{min-width:0;padding:18px 20px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(145deg,rgba(16,30,52,.94),rgba(8,16,30,.94));box-shadow:0 12px 30px rgba(0,0,0,.18)}
-.metric-label{display:block;color:#8ea5c1;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-.metric-value{margin-top:10px;color:#edf5ff;font-size:21px;font-weight:700}
-.panel{padding:24px;border-radius:18px;background:linear-gradient(145deg,rgba(14,27,48,.97),rgba(7,15,29,.97));box-shadow:0 14px 38px rgba(0,0,0,.22);backdrop-filter:blur(14px)}
-.panel:hover,.trio-card:hover,.sample-card:hover{transform:none;box-shadow:0 16px 40px rgba(0,0,0,.28);border-color:var(--border-strong)}
-.watchlist-panel h2{font-size:18px;color:#edf5ff}.watchlist-panel .page-subtitle{margin-bottom:16px}
-.settings-input,.chat-form textarea,.text-input{background:#071221!important;border:1px solid #2a3d57!important;color:#edf5ff!important;border-radius:11px!important;min-height:46px}
-.settings-input:focus,.chat-form textarea:focus{outline:2px solid rgba(88,229,255,.48);outline-offset:1px}
-.small-btn,.btn,.land-nav-cta{min-height:42px;padding:11px 16px;border-radius:11px;border:1px solid #304562;background:#13243a;color:#eaf4ff;font-size:13px;font-weight:700;line-height:1.2;transition:background .18s,border-color .18s,transform .18s}
-.small-btn:hover,.btn:hover,.land-nav-cta:hover{background:#1b3450;border-color:#557192;transform:translateY(-1px)}
-.small-btn.primary,.btn-primary{background:linear-gradient(125deg,#8b7cff,#58e5ff);border-color:transparent;color:#05101b;box-shadow:0 8px 22px rgba(88,229,255,.14)}
-.small-btn.primary:hover,.btn-primary:hover{background:linear-gradient(125deg,#a197ff,#82edff)}
-.pill{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid var(--border-strong);border-radius:999px;background:#102039;color:#c5d6e9;font-size:12px;font-weight:650}
-.event-card,.live-signal{padding:20px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(145deg,rgba(13,26,46,.97),rgba(8,16,29,.97));box-shadow:0 12px 30px rgba(0,0,0,.16)}
-.event-title{font-size:18px;font-weight:750;color:#eff6ff}.event-meta,.event-time,.signal-meta{color:#9db1ca;line-height:1.55}
-.event-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
-.research-card{margin-top:14px;padding:16px;border:1px solid rgba(132,190,255,.13);border-radius:13px;background:rgba(3,11,22,.5)}
-.research-card h3{font-size:14px;color:#c6d7ec;margin-bottom:8px}.research-body{color:#b7c8dc;line-height:1.65}
-.news-list,.signal-list{display:grid;gap:14px}.toolbar-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 16px}
-.bottom-nav{left:50%;right:auto;transform:translateX(-50%);width:min(100%,1120px);border:1px solid var(--border-strong);border-bottom:0;border-radius:18px 18px 0 0;box-shadow:0 -12px 36px rgba(0,0,0,.3)}
-.nav-btn{padding:14px 8px 12px;gap:6px}.nav-btn.active{border-radius:12px;background:rgba(88,229,255,.09)}
-.masthead{max-width:1120px;margin:auto;border-radius:0 0 16px 16px}.masthead-row{padding:16px 28px}
-.accuracy-panel{display:grid;grid-template-columns:1fr auto;align-items:center}.accuracy-panel strong{grid-row:span 2;font-size:36px}.accuracy-panel .muted-copy{font-size:13px}
-.chat-transcript{min-height:260px}.chat-message{max-width:min(88%,760px);font-size:14px}.chat-message.assistant{color:#d9e6f5}.chat-form button{min-width:112px}
-@media(max-width:760px){main{padding:28px 16px 44px}.masthead-row{padding:14px 16px}.metric-grid{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:1/-1}.page-head{align-items:flex-start;flex-direction:column}.panel{padding:18px}.bottom-nav{width:100%;border-radius:14px 14px 0 0}.nav-btn{font-size:11px;padding:12px 4px}.chat-form{align-items:stretch;flex-direction:column}.chat-form button{width:100%}}
+:root{color-scheme:dark;--bg:#06080d;--s1:#0c1119;--s2:#121927;--s3:#1a2438;--line:rgba(160,185,230,.1);--line2:rgba(160,185,230,.22);--tx:#eaf0fb;--dim:#97a6c0;--faint:#64738d;--ai:#8b9cff;--ai2:#5de0ff;--up:#4ff0a8;--dn:#ff6f8a;--amb:#ffc66b;--gold:#ffc66b;--cyan:#5de0ff;--violet:#8b9cff;--disp:'Space Grotesk',sans-serif;--sans:'Manrope',sans-serif;--mono:'JetBrains Mono',monospace;--sb:env(safe-area-inset-bottom,0px);--st:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+body{background:radial-gradient(900px 500px at 10% -10%,rgba(139,156,255,.14),transparent 60%),radial-gradient(700px 500px at 100% 10%,rgba(93,224,255,.08),transparent 60%),linear-gradient(rgba(160,185,230,.035) 1px,transparent 1px) 0 0/100% 38px,var(--bg);background-attachment:fixed;overscroll-behavior-y:none}
+h1,h2,h3,h4,h5{margin:0;font-family:var(--disp);letter-spacing:-.02em}
+a{color:inherit;text-decoration:none}button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+::selection{background:rgba(139,156,255,.3)}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--ai2);outline-offset:2px}
+button:disabled{opacity:.55;cursor:wait}
+.hidden,.overlay-hidden{display:none!important}
+.muted-copy{color:var(--dim);font-size:12.5px}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}@keyframes pulse{50%{opacity:.45}}@keyframes sh{to{background-position:-200% 0}}
+/* buttons + inputs */
+.btn,.small-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 16px;border:1px solid var(--line2);border-radius:12px;background:var(--s2);font-weight:700;font-size:13px;transition:.18s}
+.btn{min-height:48px;padding:0 24px;font-size:15px}
+.btn:hover,.small-btn:hover{background:var(--s3);transform:translateY(-1px)}
+.btn-primary,.small-btn.primary,.btn.primary{background:linear-gradient(120deg,var(--ai),var(--ai2));color:#06101c;border-color:transparent;box-shadow:0 8px 26px rgba(93,224,255,.16)}
+.btn-primary:hover,.small-btn.primary:hover,.btn.primary:hover{background:linear-gradient(120deg,#a4b1ff,#8aeaff)}
+.btn-ghost{background:transparent}.sm{min-height:36px;font-size:12px}
+.settings-input,.text-input,.account-input,.chat-form textarea{width:100%;min-height:44px;padding:10px 14px;background:#080d16;border:1px solid var(--line2);border-radius:12px;color:var(--tx);font:500 14px var(--sans)}
+.settings-input:focus,.account-input:focus,.chat-form textarea:focus{border-color:var(--ai2);box-shadow:0 0 0 3px rgba(93,224,255,.1);outline:0}
+.input-label{display:block;margin:14px 0 6px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border:1px solid var(--line2);border-radius:99px;background:var(--s2);color:#c5d3ea;font:600 11.5px var(--sans)}
+.pill.high{color:var(--amb);border-color:rgba(255,198,107,.35)}.pill.done{color:var(--up);border-color:rgba(79,240,168,.3)}
+.pill button{color:var(--dim);font-size:16px;line-height:1}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:8px;font:700 11px var(--mono);text-transform:uppercase;letter-spacing:.06em;background:var(--s3);color:var(--dim)}
+.badge.up{background:rgba(79,240,168,.13);color:var(--up)}.badge.dn{background:rgba(255,111,138,.13);color:var(--dn)}.badge.mx{background:rgba(255,198,107,.13);color:var(--amb)}.badge.nu{color:#b6c3da}
+.badge.right{background:rgba(79,240,168,.16);color:var(--up)}.badge.wrong{background:rgba(255,111,138,.16);color:var(--dn)}.badge.mixed,.badge.pending,.badge.retro{background:rgba(255,198,107,.12);color:var(--amb)}
+/* landing */
+#landing{position:fixed;inset:0;z-index:200;overflow:auto}
+.land-nav{display:flex;justify-content:space-between;align-items:center;padding:calc(18px + var(--st)) clamp(18px,5vw,48px) 16px}
+.brand{font:700 20px var(--disp);letter-spacing:-.03em}.brand em{font-style:normal;color:var(--ai2);margin-left:4px}
+.hero{max-width:960px;margin:0 auto;padding:clamp(48px,11vh,120px) 22px 40px;text-align:center}
+.kicker{display:inline-flex;align-items:center;gap:9px;padding:8px 16px;border:1px solid var(--line2);border-radius:99px;background:var(--s1);color:var(--ai2);font:500 11.5px var(--mono);letter-spacing:.06em}
+.kicker i{width:7px;height:7px;border-radius:50%;background:var(--up);box-shadow:0 0 12px var(--up);animation:pulse 2s infinite}
+.hero h1{margin:28px 0 20px;font-size:clamp(38px,7.4vw,76px);line-height:1.02;letter-spacing:-.045em;background:linear-gradient(115deg,#fff 20%,#aab6ff 60%,#6fe6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero>p{max-width:640px;margin:0 auto 32px;color:var(--dim);font-size:clamp(15px,2vw,18px)}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:56px;text-align:left}
+.trio>div{padding:22px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(150deg,var(--s2),var(--s1))}
+.trio b{font:500 11px var(--mono);color:var(--ai2)}.trio h3{margin:10px 0 6px;font-size:19px}.trio p{margin:0;color:var(--dim);font-size:13px}
+.land-disc{max-width:620px;margin:20px auto calc(40px + var(--sb));padding:0 22px;text-align:center;color:var(--faint);font-size:12px}
+@media(max-width:720px){.trio{grid-template-columns:1fr}}
+/* shell */
+#app{max-width:1120px;margin:0 auto;min-height:100vh;padding-bottom:calc(104px + var(--sb))}
+.masthead{position:sticky;top:0;z-index:20;padding-top:var(--st);background:rgba(6,8,13,.78);backdrop-filter:blur(22px) saturate(150%);border-bottom:1px solid var(--line)}
+.masthead-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px clamp(14px,3vw,28px)}
+.masthead-title{font:700 18px var(--disp);letter-spacing:-.03em}.masthead-title:after{content:' AI';color:var(--ai2);font:500 10px var(--mono);vertical-align:super;margin-left:3px}
+.masthead-right{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--line2);border-radius:99px;background:var(--s1);color:var(--up);font:500 11px var(--mono)}
+.masthead-right:before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 10px currentColor}
+.masthead-right.status-offline{color:var(--amb)}
+main{padding:clamp(22px,4vw,40px) clamp(14px,3vw,28px) 24px}
+.screen{display:none}.screen.active{display:block;animation:up .45s cubic-bezier(.2,.9,.3,1) both}
+.page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin-bottom:22px}
+h1.page-title{font-size:clamp(28px,4.6vw,42px);line-height:1.05;letter-spacing:-.045em}
+.page-subtitle{max-width:640px;margin:8px 0 0;color:var(--dim)}
+.clock-chip{padding:6px 12px;border:1px solid var(--line);border-radius:10px;background:var(--s1);color:var(--dim);font:500 11px var(--mono);white-space:nowrap}
+.panel,.event-card,.live-signal{padding:clamp(16px,2.4vw,24px);border:1px solid var(--line);border-radius:20px;background:linear-gradient(150deg,var(--s2),var(--s1));box-shadow:0 18px 50px rgba(0,0,0,.28),inset 0 1px rgba(255,255,255,.04)}
+.panel+.panel,.panel+.news-list{margin-top:14px}.panel h2{font-size:18px;margin-bottom:6px}
+.news-list,.signal-list{display:grid;gap:16px}
+.toolbar-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.metric{padding:14px 18px;border:1px solid var(--line);border-radius:16px;background:var(--s1)}
+.metric-label{font:500 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}.metric-value{margin-top:4px;font:600 20px var(--disp)}
+.notice{padding:12px 14px;border:1px solid rgba(139,156,255,.25);border-radius:12px;background:rgba(139,156,255,.06);color:#bcc6ee;font-size:12.5px}
+.watchlist-controls,.scanbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.watchlist-controls .settings-input,.scanbar .settings-input{flex:1;min-width:160px}
+.watchlist-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.empty-state{padding:34px 12px;text-align:center}.empty-state h2{font-size:22px;margin:14px 0 8px}.empty-state p{max-width:520px;margin:0 auto 14px;color:var(--dim)}.empty-state code{font:12px var(--mono);color:var(--ai2)}
+.state-orb{width:42px;height:42px;margin:0 auto;border-radius:50%;background:radial-gradient(circle at 35% 30%,#c9f8ff,var(--ai2) 30%,transparent 72%);box-shadow:0 0 34px rgba(93,224,255,.35);animation:pulse 2s infinite}.state-orb.muted{background:radial-gradient(circle at 35% 30%,#ffe3b0,var(--amb) 30%,transparent 72%);box-shadow:0 0 28px rgba(255,198,107,.2);animation:none}
+.skel{height:120px;border-radius:20px;background:linear-gradient(90deg,var(--s1) 30%,var(--s2) 50%,var(--s1) 70%) 0 0/200% 100%;animation:sh 1.4s linear infinite}
+/* signals */
+.ai-top{padding:14px 18px;margin-bottom:14px;border:1px solid rgba(139,156,255,.28);border-radius:16px;background:linear-gradient(120deg,rgba(139,156,255,.1),rgba(93,224,255,.05));font-size:13.5px}.ai-top b{color:var(--ai2);font:700 10.5px var(--mono);letter-spacing:.1em;margin-right:8px}
+.sg-head{display:flex;justify-content:space-between;align-items:center;font:700 20px var(--disp)}
+.bar{height:6px;margin:12px 0 4px;border-radius:9px;background:var(--s3);overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--ai),var(--ai2));border-radius:9px}
+.lv{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.lv div{padding:8px 10px;border-radius:10px;background:#080d16;border:1px solid var(--line)}.lv span{display:block;font:500 9.5px var(--mono);color:var(--faint);text-transform:uppercase}.lv b{font:600 13px var(--mono)}.lv .s b{color:var(--dn)}.lv .t b{color:var(--up)}
+.signal-meta{display:flex;justify-content:space-between;gap:14px;margin-top:8px;color:var(--dim);font-size:12.5px}.signal-meta span:last-child{text-align:right}
+.why{margin:10px 0 0;padding:0;list-style:none;font-size:13px;color:#c9d6ea}.why li{padding-left:16px;position:relative}.why li:before{content:'◆';position:absolute;left:0;color:var(--ai);font-size:8px;top:6px}
+/* event + AI brief */
+.event-card{animation:up .5s both}
+.ev-top{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:14px}
+.ev-cat{font:700 10.5px var(--mono);letter-spacing:.12em;color:var(--ai2)}.event-title{font-size:21px;margin:3px 0}.event-time{color:var(--dim);font-size:12.5px}
+.ev-side{display:grid;gap:6px;justify-items:end}.count{font:600 12px var(--mono);color:var(--amb)}
+.verdict{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:16px 18px;border-radius:16px;border:1px solid var(--line2);background:var(--s1)}
+.verdict.up{border-color:rgba(79,240,168,.4);background:linear-gradient(120deg,rgba(79,240,168,.1),transparent)}.verdict.dn{border-color:rgba(255,111,138,.4);background:linear-gradient(120deg,rgba(255,111,138,.1),transparent)}
+.v-k{display:block;font:500 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}.v-bias{font:700 28px var(--disp);letter-spacing:-.03em}.verdict.up .v-bias{color:var(--up)}.verdict.dn .v-bias{color:var(--dn)}
+.v-conf{text-align:right}.meter{display:inline-flex;gap:4px;margin-top:6px}.meter i{width:26px;height:6px;border-radius:4px;background:var(--s3)}.meter i.on{background:linear-gradient(90deg,var(--ai),var(--ai2))}
+.ai-sum{margin:14px 0 4px;font-size:15px;color:#dbe6f6;line-height:1.7}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.kv div{padding:10px 14px;border-radius:12px;background:#080d16;border:1px solid var(--line)}.kv span{display:block;font:500 10px var(--mono);color:var(--faint);text-transform:uppercase;letter-spacing:.08em}.kv b{font-weight:600}
+.blk{margin-top:16px}.blk h4{margin-bottom:8px;font:600 10.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}.blk p{margin:0;color:#c9d6ea}.blk-h{display:flex;justify-content:space-between;align-items:baseline}
+.blk.warn{padding:12px 14px;border-radius:12px;background:rgba(255,198,107,.06);border:1px solid rgba(255,198,107,.22)}
+.scen{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}.sc{padding:14px;border-radius:14px;background:#080d16;border:1px solid var(--line);border-top:2px solid var(--faint)}.sc.up{border-top-color:var(--up)}.sc.dn{border-top-color:var(--dn)}.sc h5{font:600 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:6px}.sc p{margin:0;font-size:13px;color:#c9d6ea}
+.facs{display:grid;gap:8px}.fac{display:grid;gap:2px;padding:10px 13px;border-radius:12px;background:#080d16;border:1px solid var(--line);border-left:3px solid var(--faint);font-size:13px}.fac.up{border-left-color:var(--up)}.fac.dn{border-left-color:var(--dn)}.fac.mx{border-left-color:var(--amb)}.fac b{font-size:12px}.fac span{color:#c0cde2}
+.pairs{display:grid;gap:0;border:1px solid var(--line);border-radius:14px;overflow:hidden}.pr{display:grid;grid-template-columns:90px 100px 1fr;gap:10px;align-items:center;padding:10px 14px;background:#080d16;border-bottom:1px solid var(--line);font-size:13px}.pr:last-child{border:0}.pr b{font-family:var(--mono)}.pr small{display:block;color:var(--faint);font-size:11px;line-height:1.4}
+.scanbar{margin-top:10px}
+.srcs{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin-top:16px}.src{display:block;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:#080d16;transition:.18s}.src:hover{border-color:var(--ai2)}.src small{display:block;font:500 10px var(--mono);color:var(--ai2)}.src span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:12.5px;color:#c9d6ea}
+.dxy-in{margin-top:12px;font:11.5px var(--mono);color:var(--faint)}
+.cta{padding:18px;border:1px dashed var(--line2);border-radius:14px;text-align:center}.cta p{margin:0 0 12px;color:var(--dim)}.event-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+/* history compare */
+.acc-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}.acc{display:flex;align-items:center;gap:14px;padding:16px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(150deg,var(--s2),var(--s1))}
+.ring{--p:0;width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--ai2) calc(var(--p)*1%),var(--s3) 0);flex:none}.ring b{display:grid;place-items:center;width:50px;height:50px;border-radius:50%;background:var(--s1);font:700 15px var(--mono)}
+.acc span{display:block;font:500 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}.acc em{font-style:normal;font-size:12.5px;color:var(--dim)}
+.vs{display:grid;grid-template-columns:1fr 34px 1fr;gap:0;margin-top:4px}.vs-mid{display:grid;place-items:center;font:700 10px var(--mono);color:var(--faint)}
+.side{padding:16px;border-radius:16px;border:1px solid var(--line);background:#080d16;min-width:0}.side.ai{border-color:rgba(139,156,255,.35)}.side.real{border-color:rgba(79,240,168,.25)}
+.side h4{margin-bottom:10px;font:600 10.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}.side.ai h4{color:var(--ai)}.side.real h4{color:var(--up)}
+.side .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}.side p{margin:6px 0;font-size:13px;color:#c9d6ea;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}.side .tag{font:500 10px var(--mono);color:var(--faint);text-transform:uppercase}
+.cmp{margin-top:12px;border:1px solid var(--line);border-radius:14px;overflow:hidden}.cmp div{display:grid;grid-template-columns:90px 1fr 1fr 34px;gap:8px;align-items:center;padding:9px 14px;background:#080d16;border-bottom:1px solid var(--line);font-size:12.5px}.cmp div:last-child{border:0}.cmp .h{font:500 10px var(--mono);text-transform:uppercase;color:var(--faint);background:var(--s1)}.cmp b{font-family:var(--mono)}.ok{color:var(--up);font-weight:800}.no{color:var(--dn);font-weight:800}
+details.more{margin-top:14px}details.more summary{cursor:pointer;color:var(--ai2);font-weight:700;font-size:13px;padding:6px 0}
+/* chat */
+.chat-transcript{display:grid;gap:12px;max-height:56vh;min-height:240px;overflow:auto;padding:2px 2px 14px}.chat-message{max-width:min(90%,760px);padding:12px 15px;border:1px solid var(--line);border-radius:16px;white-space:pre-wrap;line-height:1.65}.chat-message.user{justify-self:end;background:rgba(139,156,255,.14)}.chat-message.assistant{justify-self:start;background:var(--s1)}.chat-message a,.source-link{color:var(--ai2);text-decoration:underline}
+.chat-form{display:flex;gap:10px;align-items:flex-end;padding-top:12px;border-top:1px solid var(--line)}.chat-form textarea{resize:vertical;min-height:56px}.chat-form button{min-width:110px}.chat-note{margin:10px 0 0}
+/* nav + toast */
+.bottom-nav{position:fixed;left:50%;bottom:calc(10px + var(--sb));transform:translateX(-50%);z-index:40;display:flex;gap:4px;width:min(calc(100% - 20px),560px);padding:6px;border:1px solid var(--line2);border-radius:20px;background:rgba(10,15,24,.86);backdrop-filter:blur(24px) saturate(160%);box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.nav-btn{flex:1;display:grid;justify-items:center;gap:2px;padding:9px 2px;border-radius:14px;color:var(--faint);font:700 10.5px var(--sans)}.nav-glyph{font-size:17px;line-height:1}.nav-btn.active{background:rgba(139,156,255,.14);color:var(--ai2)}
+.toast{position:fixed;left:50%;bottom:calc(92px + var(--sb));transform:translate(-50%,20px);z-index:900;max-width:min(92%,460px);padding:12px 18px;border:1px solid var(--line2);border-radius:14px;background:#101a2b;box-shadow:0 18px 40px rgba(0,0,0,.5);font-weight:600;font-size:13px;opacity:0;pointer-events:none;transition:.25s}.toast.show{opacity:1;transform:translate(-50%,0)}
+/* account */
+.overlay{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:16px;overflow:auto;background:rgba(4,6,11,.88);backdrop-filter:blur(20px)}
+.account-layout{display:grid;grid-template-columns:1.05fr .95fr;width:min(100%,960px);border:1px solid var(--line2);border-radius:28px;overflow:hidden;background:var(--s1);box-shadow:0 40px 110px rgba(0,0,0,.6)}
+.account-story{padding:clamp(24px,4vw,48px);display:flex;flex-direction:column;justify-content:space-between;gap:30px;background:radial-gradient(circle at 85% 10%,rgba(93,224,255,.16),transparent 40%),radial-gradient(circle at 10% 90%,rgba(139,156,255,.2),transparent 45%),var(--s2)}
+.account-story h2{font-size:clamp(28px,4vw,44px);line-height:1.05;letter-spacing:-.045em;margin:14px 0 12px}.account-story p{color:var(--dim);margin:0}.account-points{display:grid;gap:10px;color:#c5d3ea;font-size:13px}
+.account-form{padding:clamp(24px,4vw,44px);align-self:center}.account-form h1{font-size:28px;margin:6px 0}.account-field{display:block;margin-bottom:14px}.account-field[hidden]{display:none}.account-field>span{display:block;margin-bottom:6px;font-size:11.5px;font-weight:700;color:#becde0}.account-input{height:48px}
+.account-message{margin:0 0 10px;color:#ff9aa9;font-size:12.5px}.account-message:empty{display:none}.account-availability{padding:10px 12px;margin-bottom:14px;border:1px solid rgba(255,198,107,.25);border-radius:12px;background:rgba(255,198,107,.06);color:#e3c58d;font-size:12px}.account-availability[hidden]{display:none}
+.account-submit{width:100%;margin-top:4px}.account-switch,.account-guest{display:block;width:100%;margin-top:12px;color:var(--dim);font-weight:700;font-size:12.5px;text-align:center}.account-switch:hover,.account-guest:hover{color:var(--ai2)}.account-footnote{margin:16px 0 0;color:var(--faint);font-size:11px;text-align:center}
+@media(max-width:760px){.account-layout{grid-template-columns:1fr}.account-points{display:none}.account-story{padding:22px}.metric-grid,.acc-row{grid-template-columns:1fr}.scen{grid-template-columns:1fr}.vs{grid-template-columns:1fr}.vs-mid{padding:6px}.pr{grid-template-columns:70px 86px 1fr;padding:9px 10px}.lv{grid-template-columns:1fr 1fr}.cmp div{grid-template-columns:64px 1fr 1fr 24px;padding:8px 10px}.chat-form{flex-direction:column;align-items:stretch}.page-head{flex-direction:column;align-items:flex-start}.verdict{flex-wrap:wrap}.v-bias{font-size:24px}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
 </style>
 </head>
 <body>
-<canvas id="bgCanvas"></canvas>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-<!-- ================= LANDING / LAUNCH PAGE ================= -->
 <div id="landing">
-  <nav class="land-nav">
-    <div class="land-brand">PipX <em>Ledger</em></div>
-    <button class="land-nav-cta" onclick="enterApp()">Launch Desk</button>
-  </nav>
-
-  <section class="land-hero">
-    <span class="land-kicker"><span class="dot"></span> ICT Structure · DXY Macro Bias · News Timing</span>
-    <h1 class="land-title reveal reveal-1">Data-driven signals,<br>plan attached.</h1>
-    <p class="land-sub reveal reveal-2">Precise entries, ATR-anchored stops, and staged targets based on verified market structure. No guesswork.</p>
-    <div class="land-cta-row reveal reveal-3">
-      <button class="btn btn-primary" onclick="enterApp()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2 3 14h7l-1 8 11-14h-7z"/></svg>
-        Launch Desk
-      </button>
-      <button class="btn btn-ghost" onclick="document.getElementById('landHow').scrollIntoView({behavior:'smooth'})">How it's scored</button>
+  <nav class="land-nav"><span class="brand">PipX<em>Ledger</em></span><button class="btn primary sm" onclick="enterApp()">Launch desk</button></nav>
+  <section class="hero">
+    <span class="kicker"><i></i>AI-READ MACRO · LIVE STRUCTURE · NEWS TIMING</span>
+    <h1>Every release, read by AI.<br>Every pair, scored.</h1>
+    <p>PipX Ledger briefs you before each U.S. data release, maps the call onto your pairs, then puts what the AI predicted next to what actually happened.</p>
+    <div><button class="btn btn-primary" onclick="enterApp()">Launch desk →</button></div>
+    <div class="trio">
+      <div><b>01 · PREDICT</b><h3>Pre-release AI brief</h3><p>Consensus, Fed context and DXY, turned into a USD call with confidence and scenarios.</p></div>
+      <div><b>02 · MAP</b><h3>Pair direction</h3><p>The USD call is oriented per pair and checked against live structure. Rescan any pair any time.</p></div>
+      <div><b>03 · VERIFY</b><h3>Prediction vs reality</h3><p>History shows the saved call beside the real print and the measured DXY reaction.</p></div>
     </div>
   </section>
-
-  <section class="land-section" id="landHow">
-    <div class="land-section-head">
-      <div class="land-eyebrow">Confluence Scored</div>
-      <h2 class="land-h2">Triple confirmation.</h2>
-      <p class="land-p">Structure, macro bias, and news timing must all align before we output a tradeable setup.</p>
-    </div>
-    <div class="trio-grid">
-      <div class="glass trio-card">
-        <div class="trio-icon" style="background:var(--violet-dim);">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--violet)" stroke-width="2.5"><path d="M3 17l5-6 4 4 8-9"/></svg>
-        </div>
-        <h3>Structure</h3>
-        <p>BOS/CHoCH, value gaps, and liquidity sweeps—read off live candles in real-time.</p>
-      </div>
-      <div class="glass trio-card">
-        <div class="trio-icon" style="background:var(--cyan-dim);">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2.5"><path d="M3 12a9 9 0 1 1 9 9"/><path d="M3 12h6l3-8 4 16 3-8h2"/></svg>
-        </div>
-        <h3>Dollar Macro</h3>
-        <p>DXY correlated bias. Signal conflicts will shave scoring or trigger a veto.</p>
-      </div>
-      <div class="glass trio-card">
-        <div class="trio-icon" style="background:var(--gold-dim);">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.5"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>
-        </div>
-        <h3>News Impact</h3>
-        <p>Complete blackout around high-impact events like FOMC or NFP. Signals are adjusted.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="land-section">
-    <div class="sample-wrap">
-      <div>
-        <div class="land-eyebrow">Precision Defined</div>
-        <h2 class="land-h2">Levels built on structure.</h2>
-        <p class="land-p">Exact execution based on actual data, not arbitrary round figures. Pure mechanics.</p>
-      </div>
-      <div class="glass-strong sample-card">
-        <div class="sample-top"><span class="sample-symbol">XAUUSD</span><span class="sample-badge">Sniper · 84</span></div>
-        <div class="sample-bar"></div>
-        <div class="sample-row"><span class="k">Entry</span><span class="v entry">2 486.20</span></div>
-        <div class="sample-row"><span class="k">Stop (ATR)</span><span class="v stop">2 478.90</span></div>
-        <div class="sample-row"><span class="k">TP1 (1R)</span><span class="v tp">2 493.50</span></div>
-        <div class="sample-row"><span class="k">TP2 (3R)</span><span class="v tp">2 511.75</span></div>
-        <p class="sample-note">Sample setup visualization</p>
-      </div>
-    </div>
-  </section>
-
-  <footer class="land-footer">
-    <button class="btn btn-primary" onclick="enterApp()">Enter Desk →</button>
-    <p class="land-disclaimer">Market risk is inherent. Use this as a plan, not financial advice.</p>
-  </footer>
+  <p class="land-disc">Market risk is inherent. This is research context, not financial advice.</p>
 </div>
 
 <div id="app" class="overlay-hidden">
-  <!-- ================= MASTHEAD ================= -->
-  <div class="masthead">
-    <div class="masthead-row">
-      <div class="masthead-brand">
-        <div class="masthead-title">PipX Ledger</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px"><span class="masthead-right" id="backend-status" role="status">Checking signal engine…</span><button class="small-btn" id="account-chip" onclick="showAccountPanel()" style="padding:10px 12px">Account</button></div>
-    </div>
-  </div>
-
-  <div class="shell">
-    <nav class="bottom-nav workspace-nav" aria-label="Main navigation">
-      <button class="nav-btn active" data-page="signals" onclick="showPage('signals')"><span class="nav-glyph">◇</span><span>Signals</span></button>
-      <button class="nav-btn" data-page="news" onclick="showPage('news')"><span class="nav-glyph">◷</span><span>News</span></button>
-      <button class="nav-btn" data-page="research" onclick="showPage('research')"><span class="nav-glyph">⌕</span><span>Research AI</span></button>
-      <button class="nav-btn" data-page="history" onclick="showPage('history')"><span class="nav-glyph">↺</span><span>History</span></button>
-      <button class="nav-btn" data-page="settings" onclick="showPage('settings')"><span class="nav-glyph">⌘</span><span>Settings</span></button>
-    </nav>
-    <main>
-      <section class="screen active" id="page-signals">
-        <div class="page-head"><div><h1 class="page-title">Signal Observatory</h1><p class="page-subtitle">Structure, DXY and event timing in one view.</p></div><span class="clock-chip" id="local-clock">LOCAL TIME</span></div>
-        <div class="metric-grid"><article class="metric"><div class="metric-label">Signal engine</div><div class="metric-value" id="signal-state">Checking</div></article><article class="metric"><div class="metric-label">Watchlist</div><div class="metric-value" id="watch-count">0 <small class="muted-copy">symbols</small></div></article><article class="metric"><div class="metric-label">Mode</div><div class="metric-value" style="color:var(--gold)">News + structure</div></article></div>
-        <div class="panel watchlist-panel"><h2>Your markets</h2><p class="page-subtitle">Add pairs such as EURUSD or USDJPY, or a currency like USD or EUR.</p><div class="watchlist-controls"><input class="settings-input" id="watchlist-input" aria-label="Currencies and pairs" placeholder="EURUSD, USD, EUR"><button class="small-btn primary" onclick="saveWatchlist()">Update markets</button></div><div id="watchlist-chips" class="watchlist-chips"></div></div>
-        <div class="panel" id="signal-content" aria-live="polite">
-          <div class="empty-state">
-            <div class="state-orb" aria-hidden="true"></div>
-            <h2>Connecting to the signal engine</h2>
-            <p>Checking whether the live analysis API is configured for this deployment.</p>
-          </div>
-        </div>
-      </section>
-      <section class="screen" id="page-news"><div class="page-head"><div><h1 class="page-title">News Radar</h1><p class="page-subtitle">Scheduled high-impact U.S. releases over the next five days. Event times are converted to this device’s timezone.</p></div></div><div class="toolbar-row"><span class="pill" id="auto-state">Pre-release monitor starting…</span><button class="small-btn" onclick="loadNews(true)">Refresh calendar</button></div><div id="news-content" class="news-list"><div class="panel muted-copy">Loading the five-day event window…</div></div><p class="muted-copy" style="margin-top:16px">T−10 research runs once per event while this desk is open. Keep the page open for automatic research. Your Groq and Tavily keys are stored only in this browser and sent only when research runs.</p></section>
-      <section class="screen" id="page-research"><div class="page-head"><div><h1 class="page-title">Research AI</h1><p class="page-subtitle">Ask a question in plain language. The assistant searches the web and cites its sources.</p></div></div><div class="panel chat-panel"><div id="research-chat" class="chat-transcript" aria-live="polite"><div class="chat-message assistant"><strong>PipX Research</strong><p>Ask about a news event, currency, central bank, or market context. I’ll research it and include source links.</p></div></div><form class="chat-form" onsubmit="sendResearchChat(event)"><textarea id="research-prompt" aria-label="Research question" placeholder="What could this week’s inflation data mean for USD?" rows="3" required></textarea><button class="small-btn primary" id="research-send" type="submit">Research</button></form><p class="muted-copy chat-note" id="research-chat-state">Uses your Groq and Tavily keys from Settings. Answers are based on live web search results.</p></div></section>
-      <section class="screen" id="page-history"><div class="page-head"><div><h1 class="page-title">News History</h1><p class="page-subtitle">Past releases and tracked DXY response. New event notes are saved in this browser.</p></div></div><div class="toolbar-row"><span class="pill">Observed price response</span><button class="small-btn" onclick="loadHistory()">Refresh history</button></div><div id="history-content" class="news-list"><div class="panel muted-copy">Loading recent releases…</div></div><p class="muted-copy" style="margin-top:16px">Response score uses the closest available 15-minute DXY close at least 15 minutes after release versus the pre-release snapshot. It is a descriptive check, not a backtest or trade result.</p></section>
-      <section class="screen" id="page-settings"><div class="page-head"><div><h1 class="page-title">Desk Settings</h1><p class="page-subtitle">Connect your research key and manage your account.</p></div></div><div class="panel"><h2>Research keys (free)</h2><p class="page-subtitle">Research uses two free keys: Groq for the AI and Tavily for live web search. Neither needs a card. They stay in this browser’s local storage and are sent only when research runs. For privacy, enter them once on each device.</p><label class="input-label" for="groq-key">Groq API key</label><input class="settings-input" id="groq-key" type="password" autocomplete="off" placeholder="gsk_…"><label class="input-label" for="tavily-key" style="margin-top:12px">Tavily API key</label><input class="settings-input" id="tavily-key" type="password" autocomplete="off" placeholder="tvly-…"><div class="event-actions"><button class="small-btn primary" onclick="saveAiKeys()">Save keys</button><button class="small-btn" onclick="clearAiKeys()">Remove keys</button><a class="small-btn" href="https://console.groq.com/keys" target="_blank" rel="noreferrer">Get Groq key ↗</a><a class="small-btn" href="https://app.tavily.com" target="_blank" rel="noreferrer">Get Tavily key ↗</a></div><p class="muted-copy" id="key-state" style="margin-top:12px">No keys saved on this device.</p><div class="notice" style="margin-top:18px">One research request per release is made at T−10 (three web searches plus one AI call), then cached for that event. Both free plans have usage limits, so a daily cap protects them. Automatic monitoring works only while the dashboard is open; Vercel Hobby’s daily cron limit cannot guarantee a ten-minute trigger.</div></div><div class="panel" style="margin-top:16px"><h2>Account</h2><p class="page-subtitle" id="account-summary">Not signed in. Sign in to sync your news history between devices.</p><div class="event-actions"><button class="small-btn" onclick="showAccount()" id="account-action">Sign in or create account</button><button class="small-btn" onclick="logout()" id="logout-action" hidden>Sign out</button></div><p class="muted-copy" id="account-setup">Checking persistent account storage…</p></div><div class="panel" style="margin-top:16px"><h2>Timezone &amp; API</h2><p class="page-subtitle">Detected timezone: <strong id="timezone-name">—</strong>. Shared signal API: <strong id="api-origin">—</strong>.</p><p class="muted-copy">Use the deployed portal URL on mobile; it connects to the same API. Data timestamps show the provider’s latest candle time.</p></div></section>
-    </main>
-  </div>
+  <header class="masthead"><div class="masthead-row">
+    <span class="masthead-title">PipX Ledger</span>
+    <div style="display:flex;align-items:center;gap:8px"><span class="masthead-right" id="backend-status" role="status">Checking engine…</span><button class="small-btn sm" id="account-chip" onclick="showAccountPanel()">Account</button></div>
+  </div></header>
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <button class="nav-btn active" data-page="signals" onclick="showPage('signals')"><span class="nav-glyph">◇</span><span>Signals</span></button>
+    <button class="nav-btn" data-page="news" onclick="showPage('news')"><span class="nav-glyph">◷</span><span>News</span></button>
+    <button class="nav-btn" data-page="research" onclick="showPage('research')"><span class="nav-glyph">✦</span><span>Ask AI</span></button>
+    <button class="nav-btn" data-page="history" onclick="showPage('history')"><span class="nav-glyph">↺</span><span>History</span></button>
+    <button class="nav-btn" data-page="settings" onclick="showPage('settings')"><span class="nav-glyph">⚙</span><span>Settings</span></button>
+  </nav>
+  <main>
+    <section class="screen active" id="page-signals">
+      <div class="page-head"><div><h1 class="page-title">Signal Observatory</h1><p class="page-subtitle">Structure, DXY and event timing, interpreted in plain language.</p></div><span class="clock-chip" id="local-clock">LOCAL TIME</span></div>
+      <div class="metric-grid"><div class="metric"><div class="metric-label">Signal engine</div><div class="metric-value" id="signal-state">Checking</div></div><div class="metric"><div class="metric-label">Watchlist</div><div class="metric-value" id="watch-count">0</div></div><div class="metric"><div class="metric-label">Mode</div><div class="metric-value" style="color:var(--amb)">News + structure</div></div></div>
+      <div class="panel"><h2>Your markets</h2><p class="muted-copy" style="margin:0 0 12px">Pairs (EURUSD, XAUUSD, GBPJPY) or currencies (USD, EUR). News briefs rescan these automatically.</p><div class="watchlist-controls"><input class="settings-input" id="watchlist-input" aria-label="Currencies and pairs" placeholder="EURUSD, XAUUSD, USD"><button class="small-btn primary" onclick="saveWatchlist()">Update markets</button></div><div id="watchlist-chips" class="watchlist-chips"></div></div>
+      <div id="signal-content" style="margin-top:14px" aria-live="polite"><div class="panel empty-state"><div class="state-orb"></div><h2>Connecting to the signal engine</h2><p>Checking the live analysis API.</p></div></div>
+    </section>
+    <section class="screen" id="page-news">
+      <div class="page-head"><div><h1 class="page-title">News Radar</h1><p class="page-subtitle">High-impact U.S. releases for the next five days, in your timezone. The AI briefs each one before it lands.</p></div></div>
+      <div class="toolbar-row"><span class="pill" id="auto-state">Monitor starting…</span><div style="display:flex;gap:8px"><button class="small-btn" onclick="rescanAll(true)">Rescan pairs</button><button class="small-btn" onclick="loadNews(true)">Refresh calendar</button></div></div>
+      <div id="news-content" class="news-list"><div class="skel"></div><div class="skel"></div></div>
+      <p class="muted-copy" style="margin-top:16px">A T−10 brief runs once per event while this desk is open. Your Groq and Tavily keys stay in this browser.</p>
+    </section>
+    <section class="screen" id="page-research">
+      <div class="page-head"><div><h1 class="page-title">Ask the AI</h1><p class="page-subtitle">Plain-language questions, answered from live web search with sources.</p></div></div>
+      <div class="panel"><div id="research-chat" class="chat-transcript" aria-live="polite"><div class="chat-message assistant"><strong>PipX Research</strong><br>Ask about a release, currency, central bank or market context. I will search and cite sources.</div></div>
+      <form class="chat-form" onsubmit="sendResearchChat(event)"><textarea id="research-prompt" aria-label="Research question" placeholder="What could this week's inflation data mean for gold?" rows="3" required></textarea><button class="small-btn primary" id="research-send" type="submit">Research</button></form>
+      <p class="muted-copy chat-note" id="research-chat-state">Uses your Groq and Tavily keys from Settings.</p></div>
+    </section>
+    <section class="screen" id="page-history">
+      <div class="page-head"><div><h1 class="page-title">Prediction vs Reality</h1><p class="page-subtitle">What the AI called before each release, next to the real print and the measured market reaction.</p></div></div>
+      <div class="toolbar-row"><span class="pill">Last 90 days</span><button class="small-btn" onclick="loadHistory()">Refresh</button></div>
+      <div id="history-content" class="news-list"><div class="skel"></div><div class="skel"></div></div>
+      <p class="muted-copy" style="margin-top:16px">Market reaction compares DXY at the pre-release snapshot with the first 15-minute close at least 15 minutes after release. It is a descriptive check, not a backtest. Briefs run after a release are retrospective and are not scored.</p>
+    </section>
+    <section class="screen" id="page-settings">
+      <div class="page-head"><div><h1 class="page-title">Desk Settings</h1><p class="page-subtitle">Research keys, account and device info.</p></div></div>
+      <div class="panel"><h2>Research keys (free)</h2><p class="muted-copy" style="margin:0">Groq powers the AI, Tavily provides live web search. Neither needs a card. Keys stay in this browser and are sent only when research runs.</p>
+        <label class="input-label" for="groq-key">Groq API key</label><input class="settings-input" id="groq-key" type="password" autocomplete="off" placeholder="gsk_…">
+        <label class="input-label" for="tavily-key">Tavily API key</label><input class="settings-input" id="tavily-key" type="password" autocomplete="off" placeholder="tvly-…">
+        <div class="event-actions"><button class="small-btn primary" onclick="saveAiKeys()">Save keys</button><button class="small-btn" onclick="clearAiKeys()">Remove keys</button><a class="small-btn" href="https://console.groq.com/keys" target="_blank" rel="noreferrer">Groq key ↗</a><a class="small-btn" href="https://app.tavily.com" target="_blank" rel="noreferrer">Tavily key ↗</a></div>
+        <p class="muted-copy" id="key-state" style="margin-top:12px">No keys saved on this device.</p>
+        <div class="notice" style="margin-top:14px">Each brief uses three searches and one AI call, then is cached. A daily cap protects your free quota.</div></div>
+      <div class="panel"><h2>Account</h2><p class="muted-copy" id="account-summary" style="margin:0 0 12px">Not signed in.</p><div class="event-actions" style="margin-top:0"><button class="small-btn" onclick="showAccount()" id="account-action">Sign in or create account</button><button class="small-btn" onclick="logout()" id="logout-action" hidden>Sign out</button></div><p class="muted-copy" id="account-setup" style="margin-top:10px">Checking account storage…</p></div>
+      <div class="panel"><h2>Timezone &amp; API</h2><p class="muted-copy" style="margin:0">Timezone: <strong id="timezone-name">—</strong> · API: <strong id="api-origin">—</strong></p></div>
+    </section>
+  </main>
 </div>
 
 <div id="account-gate" class="overlay overlay-hidden" role="dialog" aria-modal="true" aria-labelledby="account-title">
   <div class="account-layout">
-    <section class="account-story" aria-label="PipX account benefits">
-      <div class="account-brand"><span class="account-brand-mark">◇</span><span>PipX<small>MARKET INTELLIGENCE</small></span></div>
-      <div class="account-story-copy">
-        <span class="account-eyebrow">Your research, in sync</span>
-        <h2>Stay ahead of the next move.</h2>
-        <p>Keep your event briefs and market notes with you. Sign in from desktop or mobile and pick up where you left off.</p>
-        <div class="account-points">
-          <div class="account-point"><span class="account-point-icon">◷</span><span>Five-day U.S. news radar in your local time</span></div>
-          <div class="account-point"><span class="account-point-icon">↗</span><span>Grounded event research with source links</span></div>
-          <div class="account-point"><span class="account-point-icon">↺</span><span>Saved briefs and measured post-release history</span></div>
-        </div>
-      </div>
-      <div class="account-story-footer">Structure · Dollar bias · Event risk</div>
+    <section class="account-story">
+      <span class="brand">PipX<em>Ledger</em></span>
+      <div><span class="kicker"><i></i>YOUR DESK, IN SYNC</span><h2>Stay ahead of the next move.</h2><p>Keep AI briefs and measured outcomes across desktop and mobile.</p></div>
+      <div class="account-points"><span>◷ Five-day news radar, local time</span><span>✦ Sourced AI briefs per release</span><span>↺ Prediction vs reality history</span></div>
     </section>
-    <section class="account-form-column">
-      <div class="account-form">
-        <div class="account-form-icon" aria-hidden="true">✳</div>
-        <span class="account-kicker">PIPX LEDGER · PERSONAL DESK</span>
-        <h1 id="account-title">Welcome back</h1>
-        <p id="account-description" class="page-subtitle">Sign in to sync your saved news research across devices.</p>
-        <div id="account-availability" class="account-availability" role="status" hidden></div>
-        <label id="account-name-wrap" class="account-field" for="account-name" hidden><span>Your name</span><input class="account-input" id="account-name" autocomplete="name" placeholder="e.g. Alex Morgan"></label>
-        <label class="account-field" for="account-email"><span>Email address</span><input class="account-input" id="account-email" type="email" autocomplete="email" placeholder="you@example.com"></label>
-        <label class="account-field" for="account-password"><span>Password</span><input class="account-input" id="account-password" type="password" autocomplete="current-password" placeholder="At least 8 characters" minlength="8"></label>
-        <p id="account-message" class="account-message" role="status"></p>
-        <button class="btn btn-primary account-submit" id="account-submit" onclick="submitAccount()">Sign in</button>
-        <button class="account-switch" id="account-toggle" onclick="toggleAccountMode()">Create a new account</button>
-        <button class="account-guest" onclick="continueGuest()"><span>◇</span> Continue without an account</button>
-        <p class="account-footnote">Your Groq and Tavily keys stay on this device. Saved event research syncs through your account.</p>
-      </div>
+    <section class="account-form">
+      <span class="v-k">PIPX · PERSONAL DESK</span>
+      <h1 id="account-title">Welcome back</h1>
+      <p id="account-description" class="muted-copy" style="margin:0 0 20px">Sign in to sync your saved briefs.</p>
+      <div id="account-availability" class="account-availability" role="status" hidden></div>
+      <label id="account-name-wrap" class="account-field" for="account-name" hidden><span>Your name</span><input class="account-input" id="account-name" autocomplete="name" placeholder="Alex Morgan"></label>
+      <label class="account-field" for="account-email"><span>Email</span><input class="account-input" id="account-email" type="email" autocomplete="email" placeholder="you@example.com"></label>
+      <label class="account-field" for="account-password"><span>Password</span><input class="account-input" id="account-password" type="password" autocomplete="current-password" placeholder="At least 8 characters" minlength="8"></label>
+      <p id="account-message" class="account-message" role="status"></p>
+      <button class="btn btn-primary account-submit" id="account-submit" onclick="submitAccount()">Sign in</button>
+      <button class="account-switch" id="account-toggle" onclick="toggleAccountMode()">Create a new account</button>
+      <button class="account-guest" onclick="continueGuest()">Continue without an account</button>
+      <p class="account-footnote">Groq and Tavily keys never leave this device.</p>
     </section>
   </div>
 </div>
@@ -401,9 +241,7 @@ function aiUsage(){const today=new Date().toISOString().slice(0,10),data=getJson
 function takeAiSlot(){const usage=aiUsage();if(usage.count>=AI_DAILY_LIMIT)return false;usage.count++;putJson(AI_USAGE_STORE,usage);return true}
 let WATCHLIST=getWatchlist().join(',');
 function getWatchlist(){return [...new Set((localStorage.getItem(WATCHLIST_STORE)||'').split(/[ ,;]+/).map(x=>x.trim().toUpperCase()).filter(x=>/^[A-Z]{3,10}$/.test(x)))].slice(0,20)}
-function saveWatchlist(){const items=[...new Set(document.getElementById('watchlist-input').value.split(/[ ,;]+/).map(x=>x.trim().toUpperCase()).filter(x=>/^[A-Z]{3,10}$/.test(x)))].slice(0,20);localStorage.setItem(WATCHLIST_STORE,items.join(','));WATCHLIST=items.join(',');renderWatchlist();loadSignals()}
 function renderWatchlist(){const items=getWatchlist();document.getElementById('watchlist-input').value=items.join(', ');document.getElementById('watch-count').innerHTML=items.length+' <small class="muted-copy">'+(items.length===1?'market':'markets')+'</small>';document.getElementById('watchlist-chips').innerHTML=items.map(x=>'<span class="pill">'+safeText(x)+' <button aria-label="Remove '+safeText(x)+'" onclick="removeWatch(\''+safeText(x)+'\')">×</button></span>').join('')||'<span class="muted-copy">No markets selected yet.</span>'}
-function removeWatch(symbol){localStorage.setItem(WATCHLIST_STORE,getWatchlist().filter(x=>x!==symbol).join(','));renderWatchlist();loadSignals()}
 const LEGACY_KEY_STORE='pipx_gemini_api_key_v1', GROQ_KEY_STORE='pipx_groq_api_key_v1', TAVILY_KEY_STORE='pipx_tavily_api_key_v1', RESEARCH_STORE='pipx_event_research_v1', ARCHIVE_STORE='pipx_news_archive_v1';
 const TOKEN_STORE='pipx_account_token_v1', USER_STORE='pipx_account_user_v1';
 let newsEvents=[],historyEvents=[],liveSignals=[],calendarCheckedAt=0,autoResearchBusy=false,outcomeChecks={},fundamentalChecks={},accountHealth=null,appUser=getJson(USER_STORE,null),workspaceStarted=false,accountMode='login';
@@ -416,38 +254,16 @@ function aiKeys(){return{groq:localStorage.getItem(scopedKey(GROQ_KEY_STORE))||'
 function hasAiKeys(){const k=aiKeys();return !!(k.groq&&k.tavily);}
 function purgeLegacyKeys(){try{Object.keys(localStorage).filter(k=>k.startsWith(LEGACY_KEY_STORE)).forEach(k=>localStorage.removeItem(k));}catch{}}
 function researchRange(e){const days=-eventSeconds(e)/86400;return days<5?'week':days<25?'month':'year';}
-function researchQueries(e,pre){const l=e.label;return pre?[l+' consensus forecast previous reading',l+' preview USD DXY Fed expectations','US dollar DXY outlook this week']:[l+' actual result vs forecast revisions',l+' USD reaction DXY Fed','US dollar DXY reaction']}
 async function aiResearch({prompt,queries,format='text',maxTokens=1200,temperature=.2,timeRange='week',topic='news'}){const k=aiKeys();if(!k.groq||!k.tavily)throw new Error('Add both your Groq key and Tavily key in Settings first.');return api('/api/news/ai',{method:'POST',headers:{'x-groq-api-key':k.groq,'x-tavily-api-key':k.tavily},body:JSON.stringify({prompt,queries,format,max_tokens:maxTokens,temperature,time_range:timeRange,topic})});}
 function records(){return getJson(scopedKey(RESEARCH_STORE),{});}
 function archived(){return getJson(scopedKey(ARCHIVE_STORE),{});}
-function showPage(name){document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id==='page-'+name));document.querySelectorAll('.nav-btn').forEach(x=>x.classList.toggle('active',x.dataset.page===name));if(name==='news')loadNews();if(name==='history')loadHistory();window.scrollTo({top:0,behavior:'smooth'});}
+function showPage(name){document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id==='page-'+name));document.querySelectorAll('.nav-btn').forEach(x=>x.classList.toggle('active',x.dataset.page===name));if(name==='news'){loadNews();setTimeout(autoRescan,700)}if(name==='history')loadHistory();window.scrollTo({top:0,behavior:'smooth'});}
 function localDate(iso,opts){return new Intl.DateTimeFormat(undefined,opts||{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(iso));}
 function eventSeconds(e){return (Date.parse(e.utc)-Date.now())/1000;}
 function getEvent(id){return newsEvents.find(e=>e.id===id)||historyEvents.find(e=>e.id===id)||null;}
 async function api(path,options={}){const headers=new Headers(options.headers||{});if(accountToken())headers.set('Authorization','Bearer '+accountToken());if(options.body&&!headers.has('Content-Type'))headers.set('Content-Type','application/json');const r=await fetch(API_BASE+path,{...options,headers});if(!r.ok){let detail='API '+r.status;try{detail=(await r.json()).detail||detail}catch{}throw new Error(detail);}return r.json();}
 async function saveCloudRecord(id,rec){if(!accountToken()||!rec?.event)return;try{await api('/api/news/history',{method:'PUT',body:JSON.stringify({event_id:id,payload:{event:rec.event,research:rec,archive:archived()[id]||rec.archive||null}})});}catch(error){console.warn('Could not sync account news history:',error.message);}}
 async function syncAccountHistory(){if(!accountToken())return;try{const result=await api('/api/news/history'),local=records(),localArchive=archived();for(const row of result.records||[]){const rec=row.research||row;if(rec.event?.id){local[rec.event.id]=rec;if(row.archive)localArchive[rec.event.id]=row.archive;}}putJson(scopedKey(RESEARCH_STORE),local);putJson(scopedKey(ARCHIVE_STORE),localArchive);for(const [id,rec] of Object.entries(local))if(!(result.records||[]).some(row=>(row.research||row).event?.id===id))await saveCloudRecord(id,rec);}catch(error){console.warn('Could not load account news history:',error.message);}}
-function derivePairDirections(usdBias,signals){
-  const now=Date.now();
-  return getWatchlist().filter(symbol=>symbol.includes('USD')||symbol==='EUR').map(symbol=>{
-    if(symbol.length===3){const currencyBias=symbol==='USD'?usdBias:(usdBias==='bullish'?'bearish':usdBias==='bearish'?'bullish':'neutral');return {symbol,macro:currencyBias,conclusion:currencyBias==='bullish'?'Bullish':currencyBias==='bearish'?'Bearish':'Neutral',note:'Direction follows the researched USD news lean.'};}
-    const usdIsBase=symbol.startsWith('USD'),macro=usdBias==='neutral'?'neutral':(usdIsBase?usdBias:(usdBias==='bullish'?'bearish':'bullish'));
-    const signal=(signals||[]).find(s=>s.symbol===symbol),stamp=Date.parse(signal?.market_data?.as_of||''),fresh=Number.isFinite(stamp)&&now-stamp<=45*60*1000&&now>=stamp;
-    if(macro==='neutral')return {symbol,macro,conclusion:'Neutral',note:'Research did not establish a directional USD lean.'};
-    if(!signal||!fresh)return {symbol,macro,conclusion:'USD macro lean only',note:signal?'Market structure timestamp is stale; no live confirmation.':'No live structure result returned.'};
-    const structure=signal.direction;
-    if(!structure)return {symbol,macro,conclusion:'USD macro lean only',note:'Fresh market data has no clear structure direction.'};
-    if(structure===macro)return {symbol,macro,conclusion:macro==='bullish'?'Bullish · aligned':'Bearish · aligned',note:'Live structure agrees · '+signal.market_data.provider+' '+localDate(signal.market_data.as_of)};
-    return {symbol,macro,conclusion:'Mixed · conflict',note:'Live structure '+structure+' conflicts · '+signal.market_data.provider+' '+localDate(signal.market_data.as_of)};
-  });
-}
-function renderSignals(payload){
-  liveSignals=Array.isArray(payload?.signals)?payload.signals:[];
-  const content=document.getElementById('signal-content'),state=document.getElementById('signal-state');
-  if(state)state.textContent='ONLINE';
-  if(!liveSignals.length){content.innerHTML='<div class="empty-state"><div class="state-orb muted"></div><h2>Signal engine connected · no setups yet</h2><p>Live market data reached the API, but no valid confluence setups are forming for the current watchlist.</p></div>';return;}
-  content.innerHTML='<div class="signal-list">'+liveSignals.map(s=>'<article class="live-signal"><div><strong>'+safeText(s.symbol)+'</strong><span class="direction '+(s.direction==='bullish'?'up':'down')+'">'+safeText(s.direction||'unclear')+'</span></div><div class="signal-meta"><span>'+safeText(s.grade||'ungraded')+' · '+safeText(s.score??'—')+'/100</span><span>'+safeText((s.reasons||[]).slice(0,2).join(' '))+'</span></div><div class="signal-meta"><span>'+safeText(s.news_note||'News status unavailable')+'</span><span>'+(s.veto?'Setup vetoed':'No veto')+'</span></div><div class="signal-meta"><span>'+safeText(s.market_data?.provider||'Market source unavailable')+' · '+safeText(s.market_data?.symbol||'')+'</span><span>'+(s.market_data?.as_of?safeText(localDate(s.market_data.as_of)):'No timestamp')+'</span></div></article>').join('')+'</div><p class="muted-copy" style="margin-top:14px">Quotes from Yahoo Finance may be delayed; displayed timestamps are provider candle times, not broker execution quotes.</p>';
-}
 async function loadSignals(){
   const status=document.getElementById('backend-status'),content=document.getElementById('signal-content');
   const symbols=getWatchlist();if(!symbols.length){document.getElementById('signal-state').textContent='Add markets';content.innerHTML='<div class="empty-state"><h2>Choose your markets</h2><p>Add currency codes or pairs above to see news direction and live structure.</p></div>';return;}
@@ -455,35 +271,11 @@ async function loadSignals(){
   catch(error){status.textContent='Signal engine unavailable';status.classList.add('status-offline');const state=document.getElementById('signal-state');if(state)state.textContent='OFFLINE';content.innerHTML='<div class="empty-state"><div class="state-orb muted"></div><h2>Could not reach the signal engine</h2><p>Check the backend deployment and its <code>/api/health</code> endpoint. No live signal is being shown.</p><button class="btn btn-ghost" onclick="loadSignals()">Retry connection</button></div>';}
 }
 function pairConclusions(rec){return rec?.pair_directions||[];}
-function drawEvent(e){
-  const sec=eventSeconds(e),r=records()[e.id],a=archived()[e.id]||r?.archive,lead=sec>0?formatCountdown(sec):'Released '+localDate(e.utc,{hour:'numeric',minute:'2-digit'});
-  const status=sec<0?'<span class="pill done">Past event</span>':'<span class="pill high">'+safeText(e.impact||'high')+' impact</span>';
-  const directions=pairConclusions(r);
-  const pairTable=directions.length?'<div class="research-card"><h3>USD pair direction · event lean plus live structure</h3><div class="pair-grid"><div class="pair-head"><span>Pair</span><span>USD macro lean</span><span>Conclusion</span></div>'+directions.map(p=>'<div class="pair-row"><strong>'+safeText(p.symbol)+'</strong><span class="direction '+(p.macro==='bullish'?'up':p.macro==='bearish'?'down':'')+'">'+safeText(p.macro||'neutral')+'</span><span>'+safeText(p.conclusion||'Unconfirmed')+'<small>'+safeText(p.note||'')+'</small></span></div>').join('')+'</div><p class="muted-copy" style="margin-top:10px">Pair conclusions are deterministic: event USD bias is mapped to base/quote orientation, then compared with the timestamped market-structure scan. Conflicts are marked mixed; they are not forced into a direction.</p></div>':'';
-  const dxyData=r?.pre?'<div class="research-body" style="margin-top:8px"><strong>DXY input:</strong> '+safeText(r.pre.provider||'Unknown provider')+' · '+safeText(r.pre.source||'unknown source')+' · '+safeText(r.pre.interval||'')+' · '+safeText(r.pre.time?localDate(r.pre.time):'timestamp unavailable')+' · '+safeText(r.pre.note||'')+'</div>':'<div class="research-body" style="margin-top:8px"><strong>DXY input:</strong> unavailable; USD macro lean is not market-structure confirmed.</div>';
-  const brief=r?'<div class="research-card"><h3>Research brief · USD '+safeText(r.usd_bias||'scenario')+' · '+safeText(r.confidence||'uncertainty')+' confidence</h3><div class="research-body">'+safeText(r.summary||'')+'</div><div class="research-body" style="margin-top:9px"><strong>Consensus:</strong> '+safeText(r.consensus||'Not verified')+' · <strong>Previous:</strong> '+safeText(r.previous||'Not verified')+'</div>'+(r.context?'<div class="research-body" style="margin-top:9px"><strong>Macro context:</strong> '+safeText(r.context)+'</div>':'')+(r.cases?'<div class="research-body" style="margin-top:9px"><strong>Bull / base / bear:</strong> '+safeText(r.cases)+'</div>':'')+(r.factors?'<div class="research-body" style="margin-top:9px"><strong>Confluences:</strong> '+safeText(r.factors)+'</div>':'')+(r.invalidation?'<div class="research-body" style="margin-top:9px"><strong>What changes the read:</strong> '+safeText(r.invalidation)+'</div>':'')+(r.sources?.length?'<div class="source-links">'+r.sources.map(s=>'<a href="'+safeText(s.url)+'" target="_blank" rel="noreferrer">'+safeText(s.title||'Source')+' ↗</a>').join('')+'</div>':'<p class="muted-copy">No grounded web citations were returned. Treat this brief as unverified.</p>')+dxyData+pairTable+'<p class="muted-copy">Researched '+safeText(localDate(r.researched_at))+' · '+safeText(r.lead_label||'T−10 monitor')+'</p></div>':'';
-  const fundamentalResult=r?.actual_usd_bias?'<div class="research-card"><h3>'+safeText(r.was_pre_release?'Actual release vs. AI pre-release call':'Historical AI read')+' · '+safeText(r.was_pre_release?(r.actual_usd_bias===r.usd_bias?'RIGHT':r.actual_usd_bias==='neutral'?'MIXED':'WRONG'):'RETROSPECTIVE')+'</h3><div class="research-body"><strong>'+safeText(r.was_pre_release?'AI expected':'Historical USD read')+':</strong> '+safeText(r.usd_bias)+' USD · <strong>Actual data read:</strong> '+safeText(r.actual_usd_bias)+' USD · <strong>Surprise:</strong> '+safeText(r.actual_surprise||'Not verified')+'</div>'+(r.actual_summary?'<div class="research-body" style="margin-top:8px">'+safeText(r.actual_summary)+'</div>':'')+(r.actual_sources?.length?'<div class="source-links">'+r.actual_sources.map(s=>'<a href="'+safeText(s.url)+'" target="_blank" rel="noreferrer">'+safeText(s.title||'Source')+' ↗</a>').join('')+'</div>':'')+'</div>':r&&sec<0?'<div class="research-card"><h3>Actual release read</h3><div class="research-body">Waiting for a verified actual result and consensus comparison.</div></div>':'';
-  const actualDirection=a?.move_pct==null?'unavailable':Number(a.move_pct)>0.0005?'Bullish USD':Number(a.move_pct)<-0.0005?'Bearish USD':'Neutral USD';
-  const outcome=a?.outcome?'<div class="research-card"><h3>AI call vs. observed result · '+safeText(a.outcome==='aligned'?'RIGHT':a.outcome==='against'?'WRONG':'MIXED')+'</h3><div class="research-body"><strong>AI expected:</strong> '+safeText(r?.usd_bias||'Not captured')+' USD · <strong>DXY actually moved:</strong> '+safeText(actualDirection)+' · '+safeText(a.move_pct)+'% ('+safeText(a.pre?.price)+' → '+safeText(a.post?.price)+') · '+safeText(a.basis||'15-minute observation')+' · '+safeText(a.result_time?localDate(a.result_time):'')+'</div></div>':'';
-  const button=r?'<span class="pill">Brief saved on this device</span>':sec>0?'<button class="small-btn primary" onclick="researchEvent(\''+safeText(e.id)+'\',true)">Run pre-release brief</button>':'<button class="small-btn" onclick="researchEvent(\''+safeText(e.id)+'\',true)">Research this event</button>';
-  return '<article class="event-card"><div class="event-top"><div><div class="event-title">'+safeText(e.label)+'</div><div class="event-time">'+safeText(localDate(e.utc))+' · '+safeText(Intl.DateTimeFormat().resolvedOptions().timeZone||'local timezone')+'</div></div>'+status+'</div><div class="event-meta" style="margin-top:12px">'+safeText(e.category)+' · '+safeText(lead)+' · Calendar: '+safeText(e.source||'scheduled')+'</div><div class="event-actions">'+button+(e.source_url?'<a class="small-btn" href="'+safeText(e.source_url)+'" target="_blank" rel="noreferrer">Official calendar ↗</a>':'')+'</div>'+brief+fundamentalResult+outcome+'</article>';
-}
 function formatCountdown(sec){let s=Math.max(0,Math.floor(sec));const h=Math.floor(s/3600);s%=3600;const m=Math.floor(s/60);s%=60;return 'in '+(h?h+'h ':'')+m+'m '+s+'s';}
 async function loadNews(force=false){if(!force&&Date.now()-calendarCheckedAt<30000)return;calendarCheckedAt=Date.now();const box=document.getElementById('news-content');try{const d=await api('/api/news/upcoming?within_hours=120&enrich=false');newsEvents=d.events||[];box.innerHTML=newsEvents.length?newsEvents.map(drawEvent).join(''):'<div class="panel empty-state"><h2>No scheduled releases in the next five days</h2><p>The calendar has no listed event within this rolling 120-hour window.</p></div>';checkReleaseClock();}catch{box.innerHTML='<div class="panel empty-state"><h2>Calendar unavailable</h2><p>Could not load scheduled releases from the signal API.</p><button class="small-btn" onclick="loadNews(true)">Retry</button></div>';}}
-async function loadHistory(){const box=document.getElementById('history-content');try{const d=await api('/api/news/recent?within_days=90'),past=d.events||[];const local=records();const ids=new Set(past.map(e=>e.id));Object.keys(local).forEach(id=>{if(!ids.has(id)&&Date.now()-Date.parse(local[id].event.utc)<=90*86400000)past.push(local[id].event)});past.sort((a,b)=>Date.parse(b.utc)-Date.parse(a.utc));historyEvents=past;const scored=past.map(e=>local[e.id]).filter(r=>r?.was_pre_release!==false&&['bullish','bearish'].includes(r?.usd_bias)&&['bullish','bearish'].includes(r?.actual_usd_bias)),wins=scored.filter(r=>r.usd_bias===r.actual_usd_bias).length;box.innerHTML='<div class="panel accuracy-panel"><span class="metric-label">AI fundamental accuracy · 90 days</span><strong>'+(scored.length?Math.round(wins/scored.length*100)+'%':'—')+'</strong><span class="muted-copy">'+wins+' right of '+scored.length+' verified releases</span></div>'+(past.length?past.map(e=>drawEvent(e)).join(''):'<div class="panel empty-state"><h2>No releases in the last three months</h2><p>Tracked briefs and measured outcomes will appear here after a release.</p></div>');if(!scored.length)box.insertAdjacentHTML('afterbegin','<div class="notice">Accuracy compares a saved pre-release USD call with a grounded read of actual release data versus consensus. Neutral calls and unverified data are excluded.</div>');}catch{box.innerHTML='<div class="panel muted-copy">90-day history is temporarily unavailable.</div>';}}
-function researchPrompt(e,snapshot,signals,lead){const pre=eventSeconds(e)>0;return `You are a careful macroeconomic news analyst preparing a ${pre?'pre-release':'post-release historical'} brief. Search the web now and use citations. Scheduled event: ${e.label} (${e.category}), UTC ${e.utc}, device-local ${localDate(e.utc)}. Brief generated ${new Date().toISOString()} (${lead}). Current DXY snapshot: ${snapshot?.available?JSON.stringify(snapshot):'unavailable'}. Live market structure/confluence signals: ${JSON.stringify((signals||[]).map(s=>({symbol:s.symbol,direction:s.direction,score:s.score,grade:s.grade,htf_bias:s.htf_bias,mtf_bias:s.mtf_bias,fundamental:s.fundamental,has_liquidity_sweep:s.has_liquidity_sweep,has_choch:s.has_choch,has_fvg:s.has_fvg,reasons:s.reasons,veto:s.veto,market_data:s.market_data}))).slice(0,7500)}. Research consensus expectations from reliable sources, official release details and prior reading/revisions if published, current relevant Fed/rates/yields context, recent USD/DXY context, and any wage/unemployment/subcomponents relevant to this release. Include links in citations. Do not invent consensus or prior values; say unknown if no reliable source verifies them. ${pre?'This is before release: do not state an actual or claim the result is known.':'This event is past: verify and report the actual print and revisions from an official source if available, then explain the observed result; do not fill gaps by guessing.'} Explain bull/base/bear surprise scenarios and reconcile confluences: price structure, DXY trend, USD pair alignment, rates/Fed context, event consensus/surprise setup, revisions/components and event timing/volatility. Flag conflicts and uncertainty; if evidence is mixed, output neutral. This is research context, not a guaranteed trade signal. Reply ONLY as JSON with fields: summary (2-4 sentences), usd_bias (bullish|bearish|neutral), confidence (low|medium|high), consensus, previous, context, cases (bull/base/bear scenarios in one concise string), factors (named factor-by-factor evidence and conflicts), invalidation, sources (array of {title,url}).`}
-async function researchEvent(id,manual=false){
-  const e=getEvent(id)||records()[id]?.event;if(!e)return;const saved=records();if(saved[id]){showPage('news');return;}if(!hasAiKeys()){showPage('settings');document.getElementById('key-state').textContent='Save your Groq and Tavily keys before running research.';return;}
-  if(!takeAiSlot()){alert('Daily AI research cap reached ('+AI_DAILY_LIMIT+' calls). This limit protects your API quota; try again tomorrow.');return;}
-  if(autoResearchBusy)return;autoResearchBusy=true;const btns=[...document.querySelectorAll('button')].filter(b=>b.getAttribute('onclick')?.includes(id));btns.forEach(b=>{b.disabled=true;b.textContent='Researching sources…'});
-  try{const lead=eventSeconds(e),snapshot=await api('/api/dxy/snapshot').catch(()=>({available:false}));const signals=(await api('/api/signals?symbols='+encodeURIComponent(WATCHLIST)).catch(()=>({signals:[]}))).signals||[];liveSignals=signals;const result=await aiResearch({prompt:researchPrompt(e,snapshot,signals,lead>0?`T−${Math.round(lead/60)} minutes`:'manual post-release review'),queries:researchQueries(e,lead>0),format:'json',maxTokens:1600,temperature:.2,timeRange:researchRange(e)});const data=result.data||{};const sources=(result.sources||[]).filter((x,i,arr)=>x?.url&&arr.findIndex(y=>y.url===x.url)===i).slice(0,8);if(!sources.length)throw new Error('No web sources were found. No directional brief was saved.');const rec={event:e,summary:data.summary||'Research completed without a summary.',usd_bias:['bullish','bearish','neutral'].includes(String(data.usd_bias).toLowerCase())?String(data.usd_bias).toLowerCase():'neutral',confidence:data.confidence||'low',consensus:data.consensus||'Not verified',previous:data.previous||'Not verified',context:data.context||'',cases:data.cases||'',factors:data.factors||'',invalidation:data.invalidation||'',sources,pre:snapshot?.available?snapshot:null,researched_at:new Date().toISOString(),lead_label:lead>0?'T−'+Math.round(lead/60)+' minutes':(manual?'Manual review':'Scheduled monitor')};rec.pair_directions=derivePairDirections(rec.usd_bias,signals);rec.market_data=signals.map(s=>({symbol:s.symbol,...s.market_data}));rec.was_pre_release=lead>0;if(lead<=0){rec.actual_usd_bias=rec.usd_bias;rec.actual_surprise=rec.consensus;rec.actual_summary=rec.summary;rec.actual_sources=sources;}saved[id]=rec;if(!putJson(scopedKey(RESEARCH_STORE),saved))throw new Error('Could not save research in this browser. Check storage availability.');await saveCloudRecord(id,rec);drawCurrentEvent(id);loadHistory();}
-  catch(error){alert('Research could not be completed: '+error.message);}
-  finally{autoResearchBusy=false;loadNews(true);}
-}
-function drawCurrentEvent(id){const e=getEvent(id);if(e)document.getElementById('news-content').innerHTML=newsEvents.map(drawEvent).join('');}
-async function researchActualRelease(id){const rec=records()[id];if(!rec?.event||!hasAiKeys()||rec.actual_usd_bias||(fundamentalChecks[id]&&Date.now()-fundamentalChecks[id]<60000))return;fundamentalChecks[id]=Date.now();if(!takeAiSlot())return;try{const result=await aiResearch({prompt:`Research the completed ${rec.event.label} released ${rec.event.utc}. Verify actual versus consensus, revisions and important components from official sources. The AI's saved pre-release USD call was ${rec.usd_bias}. Infer actual fundamental USD direction from the surprise and likely Fed implications, not the subsequent price move. Do not guess. If evidence is mixed or unavailable return neutral and explain why. Return only JSON: {"actual_usd_bias":"bullish|bearish|neutral","actual_surprise":"actual vs consensus values or unverified","actual_summary":"evidence-based explanation","sources":[{"title":"...","url":"https://..."}]}`,queries:[rec.event.label+' actual result vs forecast',rec.event.label+' release revisions USD reaction'],format:'json',maxTokens:700,temperature:.1,timeRange:researchRange(rec.event)});const actual=result.data||{};if(!['bullish','bearish','neutral'].includes(actual.actual_usd_bias))throw new Error('Invalid direction');const sources=(result.sources||[]).filter((x,i,arr)=>x?.url&&arr.findIndex(y=>y.url===x.url)===i).slice(0,5);if(!sources.length)throw new Error('No web sources');rec.actual_usd_bias=actual.actual_usd_bias;rec.actual_surprise=actual.actual_surprise||'Not verified';rec.actual_summary=actual.actual_summary||'';rec.actual_sources=sources;rec.actual_researched_at=new Date().toISOString();const all=records();all[id]=rec;putJson(scopedKey(RESEARCH_STORE),all);await saveCloudRecord(id,rec);if(document.getElementById('page-history').classList.contains('active'))loadHistory();if(document.getElementById('page-news').classList.contains('active'))loadNews(true)}catch(error){console.warn('Post-release research unavailable:',error.message)}}
+async function researchActualRelease(id){const rec=records()[id];if(!rec?.event||rec.actual_usd_bias)return;if(!hasAiKeys()){toast('Add your Groq and Tavily keys in Settings to check outcomes.');return}if(fundamentalChecks[id]&&Date.now()-fundamentalChecks[id]<60000)return;fundamentalChecks[id]=Date.now();if(!takeAiSlot())return;try{const result=await aiResearch({prompt:`Research the completed ${rec.event.label} released ${rec.event.utc}. Verify actual versus consensus, revisions and important components from official sources. The AI's saved pre-release USD call was ${rec.usd_bias}. Infer actual fundamental USD direction from the surprise and likely Fed implications, not the subsequent price move. Do not guess. If evidence is mixed or unavailable return neutral and explain why. Return only JSON: {"actual_usd_bias":"bullish|bearish|neutral","actual_surprise":"actual vs consensus values or unverified","actual_summary":"evidence-based explanation","sources":[{"title":"...","url":"https://..."}]}`,queries:[rec.event.label+' '+monthTag(rec.event)+' actual result vs forecast',rec.event.label+' '+monthTag(rec.event)+' release revisions USD reaction'],format:'json',maxTokens:700,temperature:.1,timeRange:researchRange(rec.event)});const actual=result.data||{};if(!['bullish','bearish','neutral'].includes(actual.actual_usd_bias))throw new Error('Invalid direction');const sources=(result.sources||[]).filter((x,i,arr)=>x?.url&&arr.findIndex(y=>y.url===x.url)===i).slice(0,5);if(!sources.length)throw new Error('No web sources');rec.actual_usd_bias=actual.actual_usd_bias;rec.actual_surprise=actual.actual_surprise||'Not verified';rec.actual_summary=actual.actual_summary||'';rec.actual_sources=sources;rec.actual_researched_at=new Date().toISOString();const all=records();all[id]=rec;putJson(scopedKey(RESEARCH_STORE),all);await saveCloudRecord(id,rec);if(document.getElementById('page-history').classList.contains('active'))loadHistory();if(document.getElementById('page-news').classList.contains('active'))loadNews(true)}catch(error){console.warn('Post-release research unavailable:',error.message);toast('Outcome check failed: '+error.message)}}
 async function checkReleaseClock(){const now=new Date();document.getElementById('local-clock').textContent=now.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' · '+(Intl.DateTimeFormat().resolvedOptions().timeZone||'LOCAL');const badge=document.getElementById('auto-state');const upcoming=newsEvents.filter(e=>eventSeconds(e)>0).sort((a,b)=>Date.parse(a.utc)-Date.parse(b.utc));const next=upcoming[0];if(next){const remaining=eventSeconds(next);badge.textContent='Auto monitor · '+formatCountdown(remaining);if(remaining<=600&&remaining>0&&!records()[next.id]&&!autoResearchBusy){if(hasAiKeys())researchEvent(next.id,false);else badge.textContent='T−10 ready · add Groq + Tavily keys in Settings';}}
-  const data=records(),archive=archived();for(const [id,r] of Object.entries(data)){const release=Date.parse(r.event.utc);if(r.usd_bias&&Date.now()>=release+2*60*1000&&!r.actual_usd_bias&&hasAiKeys())researchActualRelease(id);if(!archive[id]&&Date.now()>=release+16*60*1000&&r.pre?.available&&(outcomeChecks[id]||0)<Date.now()-60000){outcomeChecks[id]=Date.now();const post=await api('/api/dxy/snapshot').catch(()=>null);if(post?.available&&Date.parse(post.time)>=release){const move=(post.price-r.pre.price)/r.pre.price*100;const bias=r.usd_bias;const sign=move>0.0005?'bullish':move< -0.0005?'bearish':'neutral';const outcome=bias==='neutral'||sign==='neutral'?'mixed':bias===sign?'aligned':'against';archive[id]={pre:r.pre,post,move_pct:move.toFixed(4),outcome,result_time:new Date().toISOString(),basis:'DXY 15m close'};putJson(scopedKey(ARCHIVE_STORE),archive);r.archive=archive[id];const current=records();current[id]=r;putJson(scopedKey(RESEARCH_STORE),current);await saveCloudRecord(id,r);if(document.getElementById('page-history').classList.contains('active'))loadHistory();}}
+  const data=records(),archive=archived();for(const [id,r] of Object.entries(data)){const release=Date.parse(r.event.utc);if(r.usd_bias&&Date.now()>=release+2*60*1000&&!r.actual_usd_bias&&hasAiKeys())researchActualRelease(id);if(!archive[id]&&Date.now()>=release+16*60*1000&&r.pre?.available&&r.was_pre_release!==false&&(outcomeChecks[id]||0)<Date.now()-60000){outcomeChecks[id]=Date.now();const post=await api('/api/dxy/snapshot').catch(()=>null);if(post?.available&&Date.parse(post.time)>=release){const move=(post.price-r.pre.price)/r.pre.price*100;const bias=r.usd_bias;const sign=move>0.0005?'bullish':move< -0.0005?'bearish':'neutral';const outcome=bias==='neutral'||sign==='neutral'?'mixed':bias===sign?'aligned':'against';archive[id]={pre:r.pre,post,move_pct:move.toFixed(4),outcome,result_time:new Date().toISOString(),basis:'DXY 15m close'};putJson(scopedKey(ARCHIVE_STORE),archive);r.archive=archive[id];const current=records();current[id]=r;putJson(scopedKey(RESEARCH_STORE),current);await saveCloudRecord(id,r);if(document.getElementById('page-history').classList.contains('active'))loadHistory();}}
   }
 }
 function saveAiKeys(){const g=document.getElementById('groq-key').value.trim(),t=document.getElementById('tavily-key').value.trim(),state=document.getElementById('key-state');const have=aiKeys();const groq=g||have.groq,tavily=t||have.tavily;if(!groq||!tavily){state.textContent='Paste both your Groq key and your Tavily key.';return;}localStorage.setItem(scopedKey(GROQ_KEY_STORE),groq);localStorage.setItem(scopedKey(TAVILY_KEY_STORE),tavily);purgeLegacyKeys();document.getElementById('groq-key').value='';document.getElementById('tavily-key').value='';state.textContent='Keys saved on this device only. They are hidden after saving.';}
@@ -499,7 +291,155 @@ function logout(){localStorage.removeItem(TOKEN_STORE);setAccount(null);showAcco
 async function openDesk(){document.getElementById('landing').classList.add('hidden');document.getElementById('app').classList.remove('overlay-hidden');document.getElementById('timezone-name').textContent=Intl.DateTimeFormat().resolvedOptions().timeZone||'Local time';document.getElementById('api-origin').textContent=API_BASE;if(!accountToken())setAccount(null);purgeLegacyKeys();document.getElementById('key-state').textContent=hasAiKeys()?'Groq and Tavily keys are saved on this device.':'No keys saved on this device.';try{const health=await api('/api/health');accountHealth=health;const setup=document.getElementById('account-setup');if(setup)setup.textContent=health.accounts?.ready?(health.accounts.persistent?'Persistent account storage ready · '+health.accounts.storage:'Local account storage only · not shared across devices'):('Account sync unavailable: '+(health.accounts?.storage==='Postgres unavailable'?'database connection failed. ':'configure persistent Postgres and AUTH_SECRET_KEY. ')+'Guest mode remains available.');const availability=document.getElementById('account-availability'),submit=document.getElementById('account-submit'),ready=health.accounts?.ready!==false;if(availability){availability.hidden=ready;availability.textContent='Account sync is not enabled yet. Configure persistent Postgres and AUTH_SECRET_KEY in Vercel; you can still continue as a guest.';}if(submit){submit.disabled=!ready;if(!ready)submit.textContent='Account setup required';}if(accountToken()){try{const current=await api('/api/auth/me');setAccount(current.user);startWorkspace();await syncAccountHistory();return;}catch{localStorage.removeItem(TOKEN_STORE);setAccount(null);}}showAccount();}catch(error){document.getElementById('account-message').textContent='API unavailable at '+API_BASE+' · '+error.message;showAccount();}}
 async function enterApp(){await openDesk();}
 function startWorkspace(){if(workspaceStarted)return;workspaceStarted=true;renderWatchlist();loadSignals();loadNews(true);checkReleaseClock();setInterval(checkReleaseClock,1000);setInterval(()=>loadNews(true),60000);}
+/* ===== v2 additions ===== */
+const $=id=>document.getElementById(id);
+const LEAN={bullish:'up',bearish:'dn',neutral:'nu',mixed:'mx',up:'up',dn:'dn',down:'dn',nu:'nu',mx:'mx'};
+const cap=s=>{s=String(s||'');return s.charAt(0).toUpperCase()+s.slice(1)};
+const leanClass=v=>LEAN[String(v||'').toLowerCase().trim()]||'';
+const badge=(t,c)=>'<span class="badge '+(c||'')+'">'+safeText(t)+'</span>';
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),4500)}
+/* Turns ANY AI value (string, array, nested object) into readable text. This is the "[object Object]" fix. */
+function fmt(v){if(v==null)return'';if(typeof v==='string')return v.trim();if(typeof v==='number'||typeof v==='boolean')return String(v);
+  if(Array.isArray(v))return v.map(fmt).filter(Boolean).join('; ');
+  if(typeof v==='object')return Object.entries(v).map(([k,x])=>{const t=fmt(x);return t?k.replace(/_/g,' ')+': '+t:''}).filter(Boolean).join('; ');return''}
+function normCases(v){const o={bull:'',base:'',bear:''},key=k=>/bull/i.test(k)?'bull':/bear/i.test(k)?'bear':'base';
+  if(v&&typeof v==='object'&&!Array.isArray(v)){for(const[k,x]of Object.entries(v))o[key(k)]=fmt(x)}
+  else{const s=fmt(v),p=s.split(/(bull(?:ish)?|base|bear(?:ish)?)(?:\s*case)?\s*[:\-–]\s*/i);
+    if(p.length>2){for(let i=1;i<p.length;i+=2)o[key(p[i])]=(p[i+1]||'').replace(/[;\s]+$/,'')}else if(s)o.base=s}
+  return o}
+function normFactors(v){if(!v)return[];
+  const arr=Array.isArray(v)?v:(typeof v==='object'?Object.entries(v).map(([k,x])=>({name:k,text:x})):String(v).split(/;|\n/));
+  return arr.map(x=>{if(x&&typeof x==='object'&&!Array.isArray(x)){const rest=Object.fromEntries(Object.entries(x).filter(([k])=>!['name','factor','title','label','lean','direction','bias'].includes(k)));
+      return{name:fmt(x.name||x.factor||x.title||x.label),text:fmt(x.text??x.reading??x.evidence??x.detail??x.summary)||fmt(rest),lean:leanClass(x.lean||x.direction||x.bias)}}
+    const s=fmt(x),m=s.match(/^([^:]{2,42}):\s*(.+)$/);return{name:m?m[1]:'',text:m?m[2]:s,lean:''}}).filter(f=>f.text||f.name)}
+const monthTag=e=>localDate(e.utc,{month:'long',year:'numeric'});
+function orient(sym,usd){if(usd==='neutral')return'neutral';if(!['bullish','bearish'].includes(usd))return null;const inv=usd==='bullish'?'bearish':'bullish';
+  if(sym==='USD'||sym.startsWith('USD'))return usd;if(sym.endsWith('USD')||sym.length===3)return inv;return null}
+const usdFromMove=a=>{if(a?.move_pct==null)return null;const m=Number(a.move_pct);return m>0.0005?'bullish':m<-0.0005?'bearish':'neutral'};
+const verdict=(p,a)=>!a?'pending':(!['bullish','bearish'].includes(p)||a==='neutral')?'mixed':p===a?'right':'wrong';
+function refreshViews(){const on=n=>$('page-'+n).classList.contains('active');if(on('news'))drawCurrentEvent();if(on('history'))loadHistory()}
+function drawCurrentEvent(){$('news-content').innerHTML=newsEvents.length?newsEvents.map(drawEvent).join(''):$('news-content').innerHTML}
+function researchQueries(e,pre){const l=e.label,m=monthTag(e);return pre?[l+' '+m+' consensus forecast previous',l+' '+m+' preview USD Fed expectations','US dollar DXY outlook this week']:[l+' '+m+' actual result vs forecast',l+' '+m+' USD reaction Fed yields','US dollar DXY reaction '+m]}
+
+/* ---- watchlist (also rescans news briefs) ---- */
+function addWatch(list){const cur=getWatchlist(),next=[...new Set(cur.concat(list))].slice(0,20);localStorage.setItem(WATCHLIST_STORE,next.join(','));WATCHLIST=next.join(',');renderWatchlist();loadSignals();return next}
+function saveWatchlist(){const items=[...new Set($('watchlist-input').value.split(/[ ,;]+/).map(x=>x.trim().toUpperCase()).filter(x=>/^[A-Z]{3,10}$/.test(x)))].slice(0,20);localStorage.setItem(WATCHLIST_STORE,items.join(','));WATCHLIST=items.join(',');renderWatchlist();loadSignals();rescanAll(false)}
+function removeWatch(symbol){localStorage.setItem(WATCHLIST_STORE,getWatchlist().filter(x=>x!==symbol).join(','));WATCHLIST=getWatchlist().join(',');renderWatchlist();loadSignals();rescanAll(false)}
+
+/* ---- pair direction + rescan ---- */
+function derivePairDirections(usd,signals,e){
+  const now=Date.now(),over=e&&now-Date.parse(e.utc)>6*3600*1000;
+  return getWatchlist().map(symbol=>{
+    const macro=orient(symbol,usd);
+    if(macro===null)return{symbol,macro:'neutral',conclusion:'Not USD-driven',note:'USD is not in this pair, so the USD call gives no direction.'};
+    if(macro==='neutral')return{symbol,macro,conclusion:'Neutral',note:'Research found no directional USD lean.'};
+    if(symbol.length===3)return{symbol,macro,conclusion:cap(macro),note:'Inverse of the USD call (currency-level proxy).'};
+    if(over)return{symbol,macro,conclusion:cap(macro)+' · event call',note:'Event is over, so today\'s structure is not compared with it.'};
+    const s=(signals||[]).find(x=>x.symbol===symbol),st=Date.parse(s?.market_data?.as_of||''),fresh=Number.isFinite(st)&&now>=st&&now-st<=45*60000;
+    if(!s)return{symbol,macro,conclusion:cap(macro)+' · unconfirmed',note:'No live structure returned for this pair (unsupported symbol or feed down).'};
+    if(!fresh||!s.direction)return{symbol,macro,conclusion:cap(macro)+' · unconfirmed',note:!fresh?'Structure data is older than 45 minutes.':'No clear structure direction right now.'};
+    const ok=s.direction===macro;return{symbol,macro,conclusion:ok?cap(macro)+' · aligned':'Mixed · conflict',note:'Live structure '+(ok?'agrees':s.direction+' conflicts')+' · '+s.market_data.provider+' '+localDate(s.market_data.as_of)};
+  })}
+async function rescanAll(manual){
+  const all=records(),ids=Object.keys(all).filter(id=>all[id].usd_bias);
+  if(!ids.length){if(manual)toast('Run an AI brief first, then pairs can be rescanned.');return}
+  let sig;try{sig=(await api('/api/signals?symbols='+encodeURIComponent(getWatchlist().join(',')))).signals||[]}catch{if(manual)toast('Signal engine unreachable. Pairs not rescanned.');return}
+  liveSignals=sig;const at=new Date().toISOString();
+  ids.forEach(id=>{all[id].pair_directions=derivePairDirections(all[id].usd_bias,sig,all[id].event);all[id].pairs_scanned_at=at});
+  putJson(scopedKey(RESEARCH_STORE),all);ids.forEach(id=>saveCloudRecord(id,all[id]));refreshViews();
+  if(manual)toast('Rescanned '+getWatchlist().length+' pairs across '+ids.length+' brief'+(ids.length>1?'s':'')+'.')}
+function scanPairs(ev){ev.preventDefault();const v=ev.target.elements.p.value.split(/[ ,;]+/).map(x=>x.trim().toUpperCase()).filter(x=>/^[A-Z]{3,10}$/.test(x));
+  if(!v.length){rescanAll(true);return}addWatch(v);setTimeout(()=>rescanAll(true),400)}
+
+/* ---- AI brief rendering ---- */
+function srcHTML(list){const s=(list||[]).filter(x=>x?.url&&/^https?:\/\//i.test(x.url));
+  if(!s.length)return'<p class="muted-copy" style="margin-top:14px">No grounded web citations were returned. Treat this brief as unverified.</p>';
+  return'<div class="srcs">'+s.map(x=>{let h='';try{h=new URL(x.url).hostname.replace(/^www\./,'')}catch{}return'<a class="src" href="'+safeText(x.url)+'" target="_blank" rel="noreferrer"><small>'+safeText(h)+' ↗</small><span>'+safeText(fmt(x.title)||'Source')+'</span></a>'}).join('')+'</div>'}
+function dxyLine(r){return'<div class="dxy-in">DXY input · '+(r.pre?safeText([r.pre.provider,r.pre.source,r.pre.interval,r.pre.time?localDate(r.pre.time):''].filter(Boolean).join(' · '))+' · quotes may be delayed':'unavailable; the USD call is not market-confirmed')+'</div>'}
+function briefHTML(r){
+  const bias=r.usd_bias||'neutral',cl={low:1,medium:2,high:3}[String(fmt(r.confidence)).toLowerCase()]||1,sc=normCases(r.cases),fa=normFactors(r.factors);
+  return'<div class="verdict '+leanClass(bias)+'"><div><span class="v-k">AI read · US dollar</span><span class="v-bias">'+safeText(cap(bias))+'</span></div><div class="v-conf"><span class="v-k">Confidence · '+safeText(String(fmt(r.confidence)||'low').toLowerCase())+'</span><span class="meter">'+[1,2,3].map(i=>'<i class="'+(i<=cl?'on':'')+'"></i>').join('')+'</span></div></div>'
+  +'<p class="ai-sum">'+safeText(fmt(r.summary))+'</p>'
+  +'<div class="kv"><div><span>Consensus</span><b>'+safeText(fmt(r.consensus)||'Not verified')+'</b></div><div><span>Previous</span><b>'+safeText(fmt(r.previous)||'Not verified')+'</b></div></div>'
+  +(r.context?'<div class="blk"><h4>Macro context</h4><p>'+safeText(fmt(r.context))+'</p></div>':'')
+  +((sc.bull||sc.base||sc.bear)?'<div class="scen">'+[['bull','Bull case · USD up','up'],['base','Base case','nu'],['bear','Bear case · USD down','dn']].map(([k,t,c])=>sc[k]?'<div class="sc '+c+'"><h5>'+t+'</h5><p>'+safeText(sc[k])+'</p></div>':'').join('')+'</div>':'')
+  +(fa.length?'<div class="blk"><h4>Confluences</h4><div class="facs">'+fa.map(f=>'<div class="fac '+f.lean+'">'+(f.name?'<b>'+safeText(f.name)+'</b>':'')+'<span>'+safeText(f.text)+'</span></div>').join('')+'</div></div>':'')
+  +(r.invalidation?'<div class="blk warn"><h4>What changes the read</h4><p>'+safeText(fmt(r.invalidation))+'</p></div>':'')
+  +srcHTML(r.sources)+dxyLine(r)+'<p class="muted-copy" style="margin:8px 0 0">Researched '+safeText(localDate(r.researched_at))+' · '+safeText(r.lead_label||'')+'</p>'}
+function pairsHTML(r){const p=r.pair_directions||[];
+  return'<div class="blk"><div class="blk-h"><h4>Pair directions</h4><span class="muted-copy">'+(r.pairs_scanned_at?'Scanned '+safeText(localDate(r.pairs_scanned_at,{hour:'numeric',minute:'2-digit'})):'')+'</span></div>'
+  +(p.length?'<div class="pairs">'+p.map(x=>'<div class="pr"><b>'+safeText(x.symbol)+'</b>'+badge(cap(x.macro||'neutral'),leanClass(x.macro))+'<span>'+safeText(x.conclusion||'Unconfirmed')+'<small>'+safeText(x.note||'')+'</small></span></div>').join('')+'</div>':'<p class="muted-copy">No pairs scanned yet.</p>')
+  +'<form class="scanbar" onsubmit="scanPairs(event)"><input class="settings-input" name="p" aria-label="Pairs to scan" placeholder="Scan more pairs: GBPJPY, XAUUSD, EUR…"><button class="small-btn primary" type="submit">Scan</button></form>'
+  +'<p class="muted-copy" style="margin:8px 0 0">Direction = the USD call oriented per pair, then checked against fresh live structure. Conflicts stay marked mixed.</p></div>'}
+function evHead(e,tail){const sec=eventSeconds(e);return'<div class="ev-top"><div><div class="ev-cat">'+safeText(e.category)+' · '+safeText(e.impact||'high').toUpperCase()+'</div><h3 class="event-title">'+safeText(e.label)+'</h3><div class="event-time">'+safeText(localDate(e.utc))+' · '+safeText(Intl.DateTimeFormat().resolvedOptions().timeZone||'local')+'</div></div><div class="ev-side">'+(tail||(sec>0?'<span class="pill high">Upcoming</span><span class="count">'+safeText(formatCountdown(sec))+'</span>':'<span class="pill done">Released</span>'))+'</div></div>'}
+function drawEvent(e){const sec=eventSeconds(e),r=records()[e.id];
+  const body=r?briefHTML(r)+pairsHTML(r):'<div class="cta"><p>No AI brief yet. The AI will read consensus, Fed and yield context plus DXY, then map the call onto your pairs.</p><button class="small-btn primary" onclick="researchEvent(\''+safeText(e.id)+'\',true)">'+(sec>0?'Run AI brief now':'Research this event')+'</button></div>';
+  return'<article class="event-card">'+evHead(e)+body+(e.source_url?'<div class="event-actions"><a class="small-btn" href="'+safeText(e.source_url)+'" target="_blank" rel="noreferrer">Official calendar ↗</a></div>':'')+'</article>'}
+
+/* ---- History: prediction next to reality ---- */
+function drawHistory(e){const r=records()[e.id],a=archived()[e.id]||r?.archive,sec=eventSeconds(e);
+  if(!r)return'<article class="event-card">'+evHead(e,badge('No brief','pending'))+'<div class="cta"><p>No AI call was saved for this release, so there is nothing to compare.</p>'+(sec<0?'<button class="small-btn" onclick="researchEvent(\''+safeText(e.id)+'\',true)">Run retrospective brief</button>':'')+'</div></article>';
+  const pre=r.was_pre_release!==false,pred=pre?r.usd_bias:null,data=r.actual_usd_bias||null,mkt=usdFromMove(a),v=!pre?'retro':sec>0?'pending':verdict(pred,data||mkt);
+  const left=pre?'<div class="row">'+badge('USD '+cap(pred),leanClass(pred))+'<span class="tag">'+safeText(fmt(r.confidence)||'low')+' confidence</span></div><p>'+safeText(fmt(r.summary))+'</p><div class="tag">Consensus '+safeText(fmt(r.consensus)||'n/a')+' · Previous '+safeText(fmt(r.previous)||'n/a')+'</div><div class="tag" style="margin-top:6px">Called '+safeText(localDate(r.researched_at))+'</div>'
+    :'<p>No pre-release call was saved (the brief was run after the release), so this one is not scored.</p>';
+  const dataBlk=sec>0?'<p>Waiting for the release.</p>':data?'<div class="row">'+badge('Data: USD '+cap(data),leanClass(data))+'</div><div class="tag">Actual vs consensus</div><p>'+safeText(fmt(r.actual_surprise)||'Not verified')+'</p>'+(r.actual_summary&&pre?'<p>'+safeText(fmt(r.actual_summary))+'</p>':''):'<p>Actual result not verified yet.</p><button class="small-btn sm" onclick="researchActualRelease(\''+safeText(e.id)+'\',true)">Check outcome</button>';
+  const mktBlk=a?'<div class="row">'+badge('Market: USD '+cap(mkt),leanClass(mkt))+'</div><div class="tag">DXY '+safeText(a.pre?.price)+' → '+safeText(a.post?.price)+' ('+(Number(a.move_pct)>0?'+':'')+safeText(a.move_pct)+'%)</div>':sec>0?'':'<p class="muted-copy">DXY reaction not measured'+(pre?' yet (needs 16+ minutes after release).':' (no pre-release snapshot).')+'</p>';
+  const ref=(mkt&&mkt!=='neutral'?mkt:data)||null,refTag=mkt&&mkt!=='neutral'?'DXY':'data';
+  const rows=(r.pair_directions||[]).filter(p=>orient(p.symbol,'bullish')!==null).map(p=>{const want=pre?p.macro:null,got=ref?orient(p.symbol,ref):null,hit=want&&got&&['bullish','bearish'].includes(want)&&got!=='neutral'?(want===got?'<span class="ok">✓</span>':'<span class="no">✗</span>'):'—';
+    return'<div><b>'+safeText(p.symbol)+'</b><span>'+(want?badge(cap(want),leanClass(want)):'—')+'</span><span>'+(got?badge(cap(got),leanClass(got))+' <small class="tag">'+refTag+'</small>':'—')+'</span>'+hit+'</div>'}).join('');
+  return'<article class="event-card">'+evHead(e,badge(v==='retro'?'Retrospective':v,v))+'<div class="vs"><section class="side ai"><h4>AI predicted</h4>'+left+'</section><div class="vs-mid">VS</div><section class="side real"><h4>What happened</h4>'+dataBlk+mktBlk+'</section></div>'
+  +(rows?'<div class="cmp"><div class="h"><span>Pair</span><span>AI called</span><span>Happened</span><span></span></div>'+rows+'</div>':'')
+  +'<details class="more"><summary>Full AI brief and sources</summary>'+briefHTML(r)+'</details></article>'}
+async function loadHistory(){const box=$('history-content');
+  try{const d=await api('/api/news/recent?within_days=90'),past=d.events||[],L=records(),A=archived(),ids=new Set(past.map(e=>e.id));
+    Object.keys(L).forEach(id=>{if(!ids.has(id)&&L[id].event&&Date.now()-Date.parse(L[id].event.utc)<=90*864e5)past.push(L[id].event)});
+    past.sort((a,b)=>Date.parse(b.utc)-Date.parse(a.utc));historyEvents=past;
+    const rows=past.map(e=>L[e.id]).filter(r=>r&&r.was_pre_release!==false&&['bullish','bearish'].includes(r.usd_bias));
+    const ds=rows.filter(r=>['bullish','bearish'].includes(r.actual_usd_bias)),dw=ds.filter(r=>r.usd_bias===r.actual_usd_bias).length;
+    const ms=rows.filter(r=>{const m=usdFromMove(A[r.event.id]||r.archive);return m&&m!=='neutral'}),mw=ms.filter(r=>r.usd_bias===usdFromMove(A[r.event.id]||r.archive)).length;
+    const ring=(n,t,l)=>'<div class="acc"><div class="ring" style="--p:'+(t?Math.round(n/t*100):0)+'"><b>'+(t?Math.round(n/t*100)+'%':'—')+'</b></div><div><span>'+l+'</span><em>'+n+' right of '+t+' scored</em></div></div>';
+    box.innerHTML='<div class="acc-row">'+ring(dw,ds.length,'Data accuracy')+ring(mw,ms.length,'Market accuracy')+'<div class="acc"><div class="ring" style="--p:100"><b>'+rows.length+'</b></div><div><span>Pre-release calls</span><em>saved in the last 90 days</em></div></div></div>'
+      +(past.length?past.map(drawHistory).join(''):'<div class="panel empty-state"><h2>No releases in the last 90 days</h2><p>Calls and outcomes appear here after a release.</p></div>');
+  }catch{box.innerHTML='<div class="panel empty-state"><h2>History unavailable</h2><p>Could not reach the API.</p><button class="small-btn" onclick="loadHistory()">Retry</button></div>'}}
+
+/* ---- Signals ---- */
+function renderSignals(p){liveSignals=Array.isArray(p?.signals)?p.signals:[];const c=$('signal-content');$('signal-state').textContent='ONLINE';
+  if(!liveSignals.length){c.innerHTML='<div class="panel empty-state"><div class="state-orb muted"></div><h2>Connected · no setups forming</h2><p>Live data reached the API but no valid confluence setup exists for this watchlist right now.</p></div>';return}
+  const up=liveSignals.filter(s=>s.direction==='bullish'&&!s.veto),dn=liveSignals.filter(s=>s.direction==='bearish'&&!s.veto),top=liveSignals.find(s=>!s.veto);
+  const lv=l=>l?'<div class="lv"><div><span>Entry</span><b>'+safeText(l.entry)+'</b></div><div class="s"><span>Stop</span><b>'+safeText(l.stop)+'</b></div>'+(l.targets||[]).slice(0,2).map((t,i)=>'<div class="t"><span>TP'+(i+1)+'</span><b>'+safeText(t)+'</b></div>').join('')+'</div>':'';
+  c.innerHTML='<div class="ai-top"><b>AI SUMMARY</b>'+up.length+' bullish and '+dn.length+' bearish setup'+(liveSignals.length>1?'s':'')+' on your watchlist'+(top?'. Strongest: '+safeText(top.symbol)+' '+safeText(top.direction||'')+' ('+safeText(top.grade)+', '+safeText(top.score)+'/100).':'.')+'</div><div class="signal-list">'
+  +liveSignals.map(s=>'<article class="live-signal"><div class="sg-head"><span>'+safeText(s.symbol)+'</span>'+badge(s.direction||'unclear',leanClass(s.direction))+'</div><div class="bar"><i style="width:'+Math.max(0,Math.min(100,Number(s.score)||0))+'%"></i></div><div class="signal-meta"><span>'+safeText(cap(s.grade||'ungraded'))+' · '+safeText(s.score??'—')+'/100</span><span>'+(s.veto?badge('Vetoed','mx'):badge('No veto','nu'))+'</span></div>'+lv(s.levels)
+    +'<ul class="why">'+(s.reasons||[]).slice(0,3).map(x=>'<li>'+safeText(fmt(x))+'</li>').join('')+'</ul><div class="signal-meta"><span>'+safeText(s.news_note||'News status unavailable')+'</span><span>'+safeText(s.market_data?.provider||'')+' · '+(s.market_data?.as_of?safeText(localDate(s.market_data.as_of)):'no timestamp')+'</span></div></article>').join('')
+  +'</div><p class="muted-copy" style="margin-top:12px">Quotes may be delayed; timestamps are provider candle times, not broker prices.</p>'}
+
+/* ---- AI research ---- */
+function researchPrompt(e,snap,signals,lead){const pre=eventSeconds(e)>0;
+  return`You are a careful macro news analyst writing a ${pre?'PRE-release':'POST-release retrospective'} brief. Event: ${e.label} (${e.category}), scheduled ${e.utc} UTC, ${monthTag(e)}. Brief generated ${new Date().toISOString()} (${lead}). DXY snapshot: ${snap?.available?JSON.stringify(snap):'unavailable'}. Live structure: ${JSON.stringify((signals||[]).map(s=>({symbol:s.symbol,direction:s.direction,score:s.score,grade:s.grade,reasons:s.reasons,veto:s.veto}))).slice(0,3500)}.
+Use ONLY the web results provided. Find consensus, previous reading and revisions, Fed/rates/yield context and recent USD context. Never invent numbers; write "unknown" if unverified. ${pre?'It has NOT been released: do not state an actual.':'It HAS been released: report the actual print and revisions if the sources show them, and say if they do not.'} If evidence is mixed answer neutral.
+Reply with ONE JSON object. Every value MUST be a plain string except where noted, never a nested object: {"summary":"2-4 sentences","usd_bias":"bullish|bearish|neutral","confidence":"low|medium|high","consensus":"string","previous":"string","context":"string","cases":{"bull":"string","base":"string","bear":"string"},"factors":[{"name":"short factor name","lean":"bullish|bearish|neutral|mixed","text":"one sentence of evidence"}],"invalidation":"string","actual_vs_consensus":"${pre?'':'actual vs consensus, or unverified'}","sources":[]}`}
+async function researchEvent(id,manual=false){
+  const e=getEvent(id)||records()[id]?.event;if(!e)return;const saved=records();if(saved[id]){showPage('news');return}
+  if(!hasAiKeys()){showPage('settings');$('key-state').textContent='Save your Groq and Tavily keys before running research.';toast('Add your Groq and Tavily keys first.');return}
+  if(!takeAiSlot()){toast('Daily AI cap reached ('+AI_DAILY_LIMIT+'). Try again tomorrow.');return}
+  if(autoResearchBusy)return;autoResearchBusy=true;
+  document.querySelectorAll('button').forEach(b=>{if(b.getAttribute('onclick')?.includes(id)){b.disabled=true;b.textContent='AI researching…'}});
+  try{const lead=eventSeconds(e),pre=lead>0,snap=await api('/api/dxy/snapshot').catch(()=>({available:false})),signals=(await api('/api/signals?symbols='+encodeURIComponent(getWatchlist().join(','))).catch(()=>({signals:[]}))).signals||[];liveSignals=signals;
+    const res=await aiResearch({prompt:researchPrompt(e,snap,signals,pre?'T−'+Math.round(lead/60)+' minutes':'manual post-release review'),queries:researchQueries(e,pre),format:'json',maxTokens:1900,temperature:.2,timeRange:researchRange(e)});
+    const d=res.data||{},sources=(res.sources||[]).filter((x,i,a)=>x?.url&&a.findIndex(y=>y.url===x.url)===i).slice(0,8);
+    if(!sources.length)throw new Error('No web sources were found, so no brief was saved.');
+    const b=String(fmt(d.usd_bias)).toLowerCase(),rec={event:e,summary:fmt(d.summary)||'Research completed without a summary.',usd_bias:['bullish','bearish','neutral'].includes(b)?b:'neutral',confidence:String(fmt(d.confidence)||'low').toLowerCase(),consensus:fmt(d.consensus)||'Not verified',previous:fmt(d.previous)||'Not verified',context:fmt(d.context),cases:normCases(d.cases),factors:normFactors(d.factors),invalidation:fmt(d.invalidation),sources,pre:snap?.available?snap:null,researched_at:new Date().toISOString(),lead_label:pre?'T−'+Math.round(lead/60)+' minutes':(manual?'Manual review':'Scheduled monitor'),was_pre_release:pre};
+    rec.pair_directions=derivePairDirections(rec.usd_bias,signals,e);rec.pairs_scanned_at=rec.researched_at;rec.market_data=signals.map(s=>({symbol:s.symbol,...s.market_data}));
+    if(!pre){rec.retrospective=true;rec.actual_usd_bias=rec.usd_bias;rec.actual_surprise=fmt(d.actual_vs_consensus)||rec.consensus;rec.actual_summary=rec.summary;rec.actual_sources=sources}
+    saved[id]=rec;if(!putJson(scopedKey(RESEARCH_STORE),saved))throw new Error('Could not save in this browser. Check storage availability.');
+    await saveCloudRecord(id,rec);toast('AI brief saved.');refreshViews()}
+  catch(error){toast('Research failed: '+error.message)}
+  finally{autoResearchBusy=false;loadNews(true)}}
+/* ===== end v2 ===== */
+
+function autoRescan(){const all=records();if(Object.values(all).some(r=>r.usd_bias&&r.event&&eventSeconds(r.event)>-6*3600&&Date.now()-Date.parse(r.pairs_scanned_at||r.researched_at)>10*60000))rescanAll(false)}
+
 document.getElementById('account-password').addEventListener('keydown',e=>{if(e.key==='Enter')submitAccount();});
+
 </script>
 </body>
 </html>
