@@ -76,6 +76,11 @@ _YF_TICKERS = {
     "USDCAD": "USDCAD=X", "XAUUSD": "GC=F", "XAGUSD": "SI=F",
     "BTCUSD": "BTC-USD", "ETHUSD": "ETH-USD",
     "USOIL": "CL=F", "UKOIL": "BZ=F",
+    # Broad equity indices (Yahoo symbols; kept distinct from USD FX pairs).
+    "US500": "^GSPC", "SPX500": "^GSPC", "NAS100": "^NDX",
+    "US100": "^NDX", "DJ30": "^DJI", "US30": "^DJI",
+    "UK100": "^FTSE", "GER40": "^GDAXI", "DE40": "^GDAXI",
+    "JP225": "^N225",
 }
 
 DXY_TICKER = "DX-Y.NYB"

@@ -44,7 +44,7 @@ from typing import Optional
 
 from . import cache
 
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash-lite")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash-lite")
 
 # How long a cached result is served before we call Gemini again.
 # Calendar events rarely need re-phrasing more than a few times a day;
