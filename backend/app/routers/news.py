@@ -35,7 +35,7 @@ def upcoming(within_hours: float = Query(120.0, ge=1, le=720, description="Looka
 
 
 @router.get("/recent")
-def recent(within_days: int = Query(5, ge=1, le=30, description="Past calendar window in days")):
+def recent(within_days: int = Query(5, ge=1, le=90, description="Past calendar window in days")):
     """Return recently scheduled releases; this is not an observed market outcome."""
     now = datetime.now(timezone.utc)
     start = now - timedelta(days=within_days)
