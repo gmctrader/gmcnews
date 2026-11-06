@@ -1,0 +1,11 @@
+{
+  "remoteName": "origin",
+  "projects": [
+    {
+      "id": "prj_6w7jcT1JQCulJPP5A9teMK5PCI3G",
+      "name": "pipx-gmc",
+      "directory": ".",
+      "orgId": "team_Hb3aV0buBtW7gDVYJTLdFUVO"
+    }
+  ]
+}
