@@ -136,6 +136,53 @@ details.more{margin-top:14px}details.more summary{cursor:pointer;color:var(--ai2
 .account-submit{width:100%;margin-top:4px}.account-switch,.account-guest{display:block;width:100%;margin-top:12px;color:var(--dim);font-weight:700;font-size:12.5px;text-align:center}.account-switch:hover,.account-guest:hover{color:var(--ai2)}.account-footnote{margin:16px 0 0;color:var(--faint);font-size:11px;text-align:center}
 @media(max-width:760px){.account-layout{grid-template-columns:1fr}.account-points{display:none}.account-story{padding:22px}.metric-grid,.acc-row{grid-template-columns:1fr}.scen{grid-template-columns:1fr}.vs{grid-template-columns:1fr}.vs-mid{padding:6px}.pr{grid-template-columns:70px 86px 1fr;padding:9px 10px}.lv{grid-template-columns:1fr 1fr}.cmp div{grid-template-columns:64px 1fr 1fr 24px;padding:8px 10px}.chat-form{flex-direction:column;align-items:stretch}.page-head{flex-direction:column;align-items:flex-start}.verdict{flex-wrap:wrap}.v-bias{font-size:24px}}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+/* setups:css:start */
+/* ---- Setup Scanner ---- */
+#page-setups .sx-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.sx-chip{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 13px;border:1px solid var(--line2);border-radius:99px;background:var(--s1);color:var(--dim);font:700 12px var(--sans);transition:.18s}
+.sx-chip:hover{background:var(--s2);color:var(--tx)}
+.sx-chip.on{background:rgba(139,156,255,.14);border-color:rgba(139,156,255,.5);color:var(--ai2)}
+.sx-sub{margin:18px 0 0;font:700 11px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.sx-strats{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin-top:10px}
+.sx-strat{display:block;width:100%;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--s1);transition:.18s}
+.sx-strat b{display:block;font:700 13px var(--sans);color:var(--dim)}.sx-strat span{display:block;margin-top:2px;font-size:11px;line-height:1.45;color:var(--faint)}
+.sx-strat.on{border-color:rgba(139,156,255,.45);background:rgba(139,156,255,.08)}.sx-strat.on b{color:var(--tx)}
+.sx-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:6px}
+.sx-opts select{width:100%;min-height:42px;padding:0 12px;background:#080d16;border:1px solid var(--line2);border-radius:12px;color:var(--tx);font:600 13px var(--sans)}
+.sx-run{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:18px}
+.sx-bar{flex:1;min-width:140px;height:4px;border-radius:4px;background:var(--s3);overflow:hidden}.sx-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ai),var(--ai2));transition:width .3s}
+.sx-ctx{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+.sx-ctx>div{padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--s1)}
+.sx-ctx small{display:block;font:700 10px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}.sx-ctx b{display:block;margin-top:3px;font:700 14px var(--disp)}
+.sx-sum{margin:18px 2px 10px;color:var(--dim);font-size:12.5px}
+.sx-card{margin-top:14px;padding:clamp(16px,2.4vw,24px);border:1px solid var(--line);border-left:3px solid var(--faint);border-radius:20px;background:linear-gradient(150deg,var(--s2),var(--s1));box-shadow:0 18px 50px rgba(0,0,0,.28),inset 0 1px rgba(255,255,255,.04);animation:up .4s both}
+.sx-card.up{border-left-color:var(--up)}.sx-card.dn{border-left-color:var(--dn)}
+.sx-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+.sx-sym{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.sx-sym h3{font-size:24px;letter-spacing:-.03em}
+.sx-strat-name{margin-top:4px;color:var(--dim);font-size:12.5px}.sx-strat-name em{font-style:normal;color:var(--faint);margin-left:6px}
+.sx-ring{--p:50;--c:var(--amb);position:relative;flex:none;display:grid;place-items:center;width:60px;height:60px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1%),var(--s3) 0)}
+.sx-ring::before{content:"";position:absolute;inset:5px;border-radius:50%;background:var(--s1)}
+.sx-ring b,.sx-ring small{position:relative;line-height:1}.sx-ring b{font:700 17px var(--mono)}.sx-ring small{margin-top:-14px;font:700 8px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.sx-status{margin:12px 0 4px;font-size:12.5px;color:var(--dim)}.sx-status b{color:var(--tx)}
+.sx-ruler{display:block;width:100%;max-width:560px;height:auto;margin:6px 0 2px}
+.sx-ruler text{font:500 9px var(--mono);fill:var(--faint);text-anchor:middle}.sx-ruler .px{fill:var(--dim)}
+.sx-levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:8px;margin-top:10px}
+.sx-lvl{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:rgba(8,13,22,.55)}
+.sx-lvl small{display:block;font:700 10px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.sx-lvl b{display:block;margin-top:2px;font:600 14px var(--mono)}.sx-lvl i{display:block;font:500 11px var(--mono);font-style:normal;color:var(--dim)}
+.sx-lvl.sl b{color:var(--dn)}.sx-lvl.tp b{color:var(--up)}
+.sx-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.sx-list{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:5px;font-size:12.5px;color:#c5d3ea}
+.sx-list li{position:relative;padding-left:18px}.sx-list li::before{content:"✓";position:absolute;left:0;color:var(--up);font-weight:700}
+.sx-list.warn li{color:var(--amb)}.sx-list.warn li::before{content:"!";color:var(--amb)}
+.sx-stat{margin-top:12px;padding:10px 12px;border:1px dashed var(--line2);border-radius:12px;font:500 12px var(--mono);color:var(--dim)}
+.sx-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.sx-size,.sx-ai{margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:14px;background:rgba(8,13,22,.55);font-size:13px}
+.sx-size .sx-opts{margin-top:0}.sx-size input{width:100%;min-height:40px;padding:0 12px;background:#080d16;border:1px solid var(--line2);border-radius:10px;color:var(--tx);font:600 13px var(--mono)}
+.sx-ai pre{margin:0;white-space:pre-wrap;font:500 13px/1.6 var(--sans);color:#d6e0f3}.sx-ai a{display:inline-block;margin:8px 10px 0 0;color:var(--ai2);font-size:12px}
+.sx-empty{padding:34px 20px;text-align:center;color:var(--dim)}
+@media(max-width:560px){.sx-head{gap:10px}.sx-ring{width:52px;height:52px}.sx-sym h3{font-size:21px}}
+/* setups:css:end */
 </style>
 </head>
 <body>
@@ -164,6 +211,7 @@ details.more{margin-top:14px}details.more summary{cursor:pointer;color:var(--ai2
   </div></header>
   <nav class="bottom-nav" aria-label="Main navigation">
     <button class="nav-btn active" data-page="signals" onclick="showPage('signals')"><span class="nav-glyph">◇</span><span>Signals</span></button>
+    <button class="nav-btn" data-page="setups" onclick="showPage('setups')"><span class="nav-glyph">◎</span><span>Setups</span></button>
     <button class="nav-btn" data-page="news" onclick="showPage('news')"><span class="nav-glyph">◷</span><span>News</span></button>
     <button class="nav-btn" data-page="research" onclick="showPage('research')"><span class="nav-glyph">✦</span><span>Ask AI</span></button>
     <button class="nav-btn" data-page="history" onclick="showPage('history')"><span class="nav-glyph">↺</span><span>History</span></button>
@@ -176,7 +224,28 @@ details.more{margin-top:14px}details.more summary{cursor:pointer;color:var(--ai2
       <div class="panel"><h2>Your markets</h2><p class="muted-copy" style="margin:0 0 12px">Pairs (EURUSD, XAUUSD, GBPJPY) or currencies (USD, EUR). News briefs rescan these automatically.</p><div class="watchlist-controls"><input class="settings-input" id="watchlist-input" aria-label="Currencies and pairs" placeholder="EURUSD, XAUUSD, USD"><button class="small-btn primary" onclick="saveWatchlist()">Update markets</button></div><div id="watchlist-chips" class="watchlist-chips"></div></div>
       <div id="signal-content" style="margin-top:14px" aria-live="polite"><div class="panel empty-state"><div class="state-orb"></div><h2>Connecting to the signal engine</h2><p>Checking the live analysis API.</p></div></div>
     </section>
-    <section class="screen" id="page-news">
+    <!-- setups:section:start -->
+    <section class="screen" id="page-setups">
+      <div class="page-head"><div><h1 class="page-title">Setup Scanner</h1><p class="page-subtitle">Eight strategies across SMC/ICT, session, trend and volatility, run on every market you pick. Each setup carries a structural intraday stop, staged targets and walk-forward stats.</p></div><span class="clock-chip" id="sx-session">SCANNER</span></div>
+      <div class="panel">
+        <h2>Markets</h2>
+        <p class="muted-copy" style="margin:0">Tap to select the pairs to scan.</p>
+        <div class="sx-row" id="sx-presets"></div>
+        <div class="sx-row" id="sx-pairs"></div>
+        <div class="watchlist-controls" style="margin-top:12px"><input class="settings-input" id="sx-add" aria-label="Add a market" placeholder="Add a market, e.g. EURJPY" onkeydown="if(event.key==='Enter')sxAddPair()"><button class="small-btn" onclick="sxAddPair()">Add</button></div>
+        <div class="sx-sub">Strategies</div>
+        <div class="sx-strats" id="sx-strats"></div>
+        <div class="sx-sub">Filters</div>
+        <div class="sx-opts" id="sx-opts"></div>
+        <div class="sx-run"><button class="btn primary" id="sx-run" onclick="runSetupScan()">Scan intraday setups</button><div class="sx-bar"><i id="sx-progress"></i></div></div>
+        <p class="muted-copy" id="sx-status" style="margin:10px 0 0" aria-live="polite"></p>
+      </div>
+      <div class="sx-ctx" id="sx-ctx" hidden></div>
+      <div id="sx-results" aria-live="polite"></div>
+      <p class="muted-copy" style="margin-top:18px">Setups are shown only when they are live on the last closed 15m candle. Stops sit beyond the structure the idea depends on, plus an ATR buffer. Walk-forward statistics replay each strategy on the candles we hold with a conservative fill model (stop wins ties); they describe recent behaviour, not future results. Candles may be delayed and are not broker execution prices. This is analysis, not financial advice.</p>
+    </section>
+<!-- setups:section:end -->
+<section class="screen" id="page-news">
       <div class="page-head"><div><h1 class="page-title">News Radar</h1><p class="page-subtitle">High-impact U.S. releases for the next five days, in your timezone. The AI briefs each one before it lands.</p></div></div>
       <div class="toolbar-row"><span class="pill" id="auto-state">Monitor starting…</span><div style="display:flex;gap:8px"><button class="small-btn" onclick="rescanAll(true)">Rescan pairs</button><button class="small-btn" onclick="loadNews(true)">Refresh calendar</button></div></div>
       <div id="news-content" class="news-list"><div class="skel"></div><div class="skel"></div></div>
@@ -441,5 +510,259 @@ function autoRescan(){const all=records();if(Object.values(all).some(r=>r.usd_bi
 document.getElementById('account-password').addEventListener('keydown',e=>{if(e.key==='Enter')submitAccount();});
 
 </script>
+<!-- setups:js:start -->
+<script>
+/* ---- Setup Scanner (loads after the main desk script; reuses its helpers) ---- */
+(function(){
+const PREF_KEY='pipx_setups_prefs_v1';
+const RANK={low:0,moderate:1,high:2,sniper:3};
+const RING={sniper:'var(--gold)',high:'var(--up)',moderate:'var(--amb)',low:'var(--faint)'};
+const DEFAULT_PAIRS=['EURUSD','GBPUSD','USDJPY','XAUUSD'];
+const FALLBACK={strategies:[],universe:{Majors:['EURUSD','GBPUSD','USDJPY','USDCHF','USDCAD','AUDUSD','NZDUSD'],'Metals & crypto':['XAUUSD','BTCUSD']}};
+let catalog=null,prefs=null,results={},ctxData=null,running=false,openSize={},aiOut={};
+
+const esc=v=>safeText(v);
+function load(){
+  const p=getJson(PREF_KEY,{})||{};
+  const wl=(typeof getWatchlist==='function'?getWatchlist():[]).filter(x=>/^[A-Z0-9]{6,8}$/.test(x));
+  prefs={pairs:Array.isArray(p.pairs)&&p.pairs.length?p.pairs:(wl.length?wl.slice(0,8):DEFAULT_PAIRS.slice()),
+    strats:Array.isArray(p.strats)?p.strats:null,grade:p.grade||'low',dir:p.dir||'both',stop:p.stop||'standard',
+    bt:p.bt!==false,bal:p.bal||'',risk:p.risk||'1'};
+}
+const save=()=>putJson(PREF_KEY,prefs);
+const dec=s=>/JPY$/.test(s)?3:/^(US500|SPX500|NAS100|US100|DJ30|US30|UK100|GER40|DE40|JP225)$/.test(s)?1:/^XAG/.test(s)?3:/^BTC/.test(s)?1:/^(XAU|XPT|XPD|ETH|USOIL|UKOIL)/.test(s)?2:5;
+const fmt=(s,p)=>Number(p).toFixed(dec(s));
+const tm=iso=>{try{return localDate(iso,{weekday:'short',hour:'numeric',minute:'2-digit'})}catch{return iso}};
+
+window.initSetupsPage=async function(){
+  if(!prefs)load();
+  if(!catalog){try{catalog=await api('/api/setups/catalog')}catch{catalog=FALLBACK}}
+  if(!prefs.strats)prefs.strats=catalog.strategies.map(s=>s.key);
+  renderPairs();renderStrats();renderOpts();renderResults();
+};
+
+function renderPairs(){
+  const groups=catalog.universe||{};
+  const wl=(typeof getWatchlist==='function'?getWatchlist():[]).filter(x=>/^[A-Z0-9]{6,8}$/.test(x));
+  const presets=[];
+  if(wl.length)presets.push(['My watchlist',wl]);
+  Object.keys(groups).forEach(k=>presets.push([k,groups[k]]));
+  $('sx-presets').innerHTML=presets.map((p,i)=>'<button class="sx-chip" data-p="'+i+'">'+esc(p[0])+'</button>').join('')+'<button class="sx-chip" data-p="clear">Clear</button>';
+  $('sx-presets').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+    if(b.dataset.p==='clear')prefs.pairs=[];else prefs.pairs=[...new Set(prefs.pairs.concat(presets[+b.dataset.p][1]))].slice(0,12);
+    save();renderPairs()};
+  $('sx-pairs').innerHTML=prefs.pairs.length?prefs.pairs.map(s=>'<button class="sx-chip on" data-s="'+esc(s)+'" title="Tap to remove">'+esc(s)+' ✕</button>').join(''):'<span class="muted-copy">No markets selected.</span>';
+  $('sx-pairs').onclick=e=>{const b=e.target.closest('button');if(!b)return;prefs.pairs=prefs.pairs.filter(x=>x!==b.dataset.s);save();renderPairs()};
+}
+window.sxAddPair=function(){
+  const input=$('sx-add');const items=input.value.toUpperCase().split(/[ ,;\/]+/).filter(x=>/^[A-Z0-9]{3,10}$/.test(x));
+  if(!items.length)return;prefs.pairs=[...new Set(prefs.pairs.concat(items))].slice(0,12);input.value='';save();renderPairs();
+};
+function renderStrats(){
+  const el=$('sx-strats');
+  el.innerHTML=catalog.strategies.map(s=>'<button class="sx-strat'+(prefs.strats.includes(s.key)?' on':'')+'" data-k="'+esc(s.key)+'"><b>'+esc(s.name)+'</b><span>'+esc(s.family)+' · '+esc(s.desc)+'</span></button>').join('');
+  el.onclick=e=>{const b=e.target.closest('button');if(!b)return;const k=b.dataset.k;
+    prefs.strats=prefs.strats.includes(k)?prefs.strats.filter(x=>x!==k):prefs.strats.concat(k);save();renderStrats()};
+}
+function sel(id,label,opts,val){return '<div><label class="input-label" style="margin-top:0" for="'+id+'">'+label+'</label><select id="'+id+'">'+opts.map(o=>'<option value="'+o[0]+'"'+(o[0]===val?' selected':'')+'>'+o[1]+'</option>').join('')+'</select></div>'}
+function renderOpts(){
+  $('sx-opts').innerHTML=
+    sel('sx-grade','Minimum grade',[['low','Everything'],['moderate','Moderate and up'],['high','High and up'],['sniper','Sniper only']],prefs.grade)+
+    sel('sx-dir','Direction',[['both','Long and short'],['bullish','Long only'],['bearish','Short only']],prefs.dir)+
+    sel('sx-stop','Stop profile',[['tight','Tight (aggressive)'],['standard','Standard'],['wide','Wide (safer)']],prefs.stop)+
+    sel('sx-bt','Walk-forward stats',[['1','Include'],['0','Skip (faster)']],prefs.bt?'1':'0');
+  ['sx-grade','sx-dir','sx-stop'].forEach(id=>$(id).onchange=e=>{prefs[id.slice(3)]=e.target.value;save();renderResults()});
+  $('sx-bt').onchange=e=>{prefs.bt=e.target.value==='1';save()};
+}
+const status=t=>{$('sx-status').textContent=t};
+const bar=f=>{$('sx-progress').style.width=Math.round(f*100)+'%'};
+
+function renderCtx(){
+  const el=$('sx-ctx');if(!ctxData){el.hidden=true;return}
+  const d=ctxData.dxy||{},n=ctxData.news||{};
+  const dxy=d.bias?(d.bias[0].toUpperCase()+d.bias.slice(1)+' · '+d.confidence):'Unavailable';
+  const news=n.blackout?'Blackout: stand aside':n.news_soon?n.news_soon.split(':')[0]:'Clear';
+  const col=n.blackout?'var(--dn)':n.news_soon?'var(--amb)':'var(--up)';
+  el.hidden=false;
+  el.innerHTML='<div><small>Dollar (DXY) bias</small><b style="color:'+(d.bias==='bullish'?'var(--up)':d.bias==='bearish'?'var(--dn)':'var(--dim)')+'">'+esc(dxy)+'</b></div>'+
+    '<div><small>Session</small><b>'+esc(ctxData.session)+(ctxData.killzone?' ★':'')+'</b></div>'+
+    '<div><small>News risk</small><b style="color:'+col+'">'+esc(news)+'</b></div>';
+  $('sx-session').textContent=String(ctxData.session||'SCANNER').toUpperCase();
+}
+
+window.runSetupScan=async function(){
+  if(running)return;
+  if(!prefs.pairs.length){status('Select at least one market first.');return}
+  if(!prefs.strats.length){status('Turn on at least one strategy.');return}
+  running=true;results={};openSize={};aiOut={};
+  const btn=$('sx-run');btn.disabled=true;btn.textContent='Scanning…';bar(.04);renderResults();
+  try{ctxData=await api('/api/setups/context');renderCtx()}catch{ctxData=null;renderCtx()}
+  const total=prefs.pairs.length,queue=prefs.pairs.slice();let done=0;
+  const all=catalog.strategies.length&&prefs.strats.length===catalog.strategies.length;
+  const q='?backtest='+(prefs.bt?'true':'false')+(all?'':'&strategies='+encodeURIComponent(prefs.strats.join(',')));
+  async function worker(){
+    while(queue.length){
+      const sym=queue.shift();status('Scanning '+sym+' · '+(done+1)+' of '+total+'…');
+      try{results[sym]=await api('/api/setups/scan/'+encodeURIComponent(sym)+q)}
+      catch(e){results[sym]={symbol:sym,setups:[],error:e.message}}
+      done++;bar(.04+.96*done/total);renderResults();
+    }
+  }
+  await Promise.all([worker(),worker()]);
+  const count=flat().length;
+  status('Done: '+total+' market'+(total>1?'s':'')+' scanned, '+count+' setup'+(count===1?'':'s')+' match your filters.');
+  btn.disabled=false;btn.textContent='Rescan';running=false;
+};
+
+function flat(){
+  const out=[];
+  Object.values(results).forEach(r=>(r.setups||[]).forEach(x=>{
+    if(RANK[x.grade]<RANK[prefs.grade])return;
+    if(prefs.dir!=='both'&&x.direction!==prefs.dir)return;
+    out.push(x);
+  }));
+  return out.sort((a,b)=>b.score-a.score);
+}
+const stopOf=x=>x.stops[prefs.stop]||x.stops.standard;
+const rrOf=(x,price)=>{const r=Math.abs(x.entry-stopOf(x).price);return r?Math.abs(price-x.entry)/r:0};
+
+function ruler(x){
+  const s=stopOf(x).price,e=x.entry,sign=x.direction==='bullish'?1:-1;
+  const unit=Math.abs(e-s)||1;
+  const pts=[['SL',s,'sl'],['E',e,'e']].concat(x.targets.map((t,i)=>['TP'+(i+1),t.price,'tp']));
+  const pos=p=>(p-e)*sign/unit;                         // R multiples: stop at -1, entry 0
+  const lo=-1,hi=Math.max(pos(x.targets[2].price),2);
+  const W=340,L=28,R=312,X=v=>L+(v-lo)/(hi-lo)*(R-L);
+  let g='<line x1="'+X(lo)+'" x2="'+X(hi)+'" y1="30" y2="30" stroke="rgba(160,185,230,.28)" stroke-width="2" stroke-linecap="round"/>';
+  g+='<line x1="'+X(-1)+'" x2="'+X(0)+'" y1="30" y2="30" stroke="var(--dn)" stroke-opacity=".55" stroke-width="2" stroke-linecap="round"/>';
+  pts.forEach(p=>{const cx=X(pos(p[1])),col=p[2]==='sl'?'var(--dn)':p[2]==='tp'?'var(--up)':'var(--tx)';
+    g+='<circle cx="'+cx+'" cy="30" r="4" fill="'+col+'"/><text x="'+cx+'" y="16">'+p[0]+'</text><text class="px" x="'+cx+'" y="52">'+esc(fmt(x.symbol,p[1]))+'</text>'});
+  return '<svg class="sx-ruler" viewBox="0 0 '+W+' 58" role="img" aria-label="Trade ruler from stop to third target">'+g+'</svg>';
+}
+
+function card(x){
+  const up=x.direction==='bullish',st=stopOf(x),sym=x.symbol;
+  const status=x.entry_type==='market'
+    ?'<b>Enter now</b> at about '+esc(fmt(sym,x.entry))+' · zone '+esc(fmt(sym,x.zone[0]))+' – '+esc(fmt(sym,x.zone[1]))
+    :'<b>'+(up?'Buy':'Sell')+' limit</b> at '+esc(fmt(sym,x.entry))+' · valid until '+esc(tm(x.valid_until));
+  const lv=(cls,name,price,sub)=>'<div class="sx-lvl '+cls+'"><small>'+name+'</small><b>'+esc(fmt(sym,price))+'</b><i>'+sub+'</i></div>';
+  const lvls=lv('','Entry',x.entry,x.entry_type)+lv('sl','Stop · '+prefs.stop,st.price,st.pips+' pips · '+st.atr+' ATR')+
+    x.targets.map((t,i)=>lv('tp','TP'+(i+1),t.price,rrOf(x,t.price).toFixed(2)+'R · '+t.pips+' pips')).join('');
+  const chips='<span class="badge '+(x.htf.h4===x.direction?'up':x.htf.h4==='neutral'?'nu':'dn')+'">4h '+esc(x.htf.h4)+'</span>'+
+    '<span class="badge '+(x.htf.h1===x.direction?'up':x.htf.h1==='neutral'?'nu':'dn')+'">1h '+esc(x.htf.h1)+'</span>'+
+    '<span class="badge nu">'+esc(x.session)+'</span><span class="badge nu">'+esc(x.zone_pd)+'</span><span class="badge nu">ATR '+x.atr_pips+'</span>'+
+    (x.adr_used_pct!=null?'<span class="badge nu">ADR '+x.adr_used_pct+'%</span>':'');
+  const stat=x.stats&&x.stats.n?'Walk-forward ('+esc(x.stats.scope)+'): '+x.stats.n+' trades · '+x.stats.win_rate+'% win · '+(x.stats.avg_r>=0?'+':'')+x.stats.avg_r+'R avg'+(x.stats.profit_factor?' · PF '+x.stats.profit_factor:''):(prefs.bt?'Walk-forward: no comparable trades in the candles we hold.':'');
+  return '<article class="sx-card '+(up?'up':'dn')+'" data-id="'+esc(x.id)+'">'+
+    '<div class="sx-head"><div><div class="sx-sym"><h3>'+esc(sym)+'</h3><span class="badge '+(up?'up':'dn')+'">'+esc(x.side)+'</span></div>'+
+    '<div class="sx-strat-name">'+esc(x.strategy_name)+'<em>'+esc(x.family)+'</em></div></div>'+
+    '<div class="sx-ring" style="--p:'+x.score+';--c:'+(RING[x.grade]||RING.low)+'"><b>'+Math.round(x.score)+'</b><small>'+esc(x.grade)+'</small></div></div>'+
+    '<p class="sx-status">'+status+'</p>'+ruler(x)+'<div class="sx-levels">'+lvls+'</div>'+
+    '<div class="sx-meta">'+chips+'</div>'+
+    '<ul class="sx-list">'+x.confluence.map(c=>'<li>'+esc(c)+'</li>').join('')+'</ul>'+
+    (x.warnings.length?'<ul class="sx-list warn">'+x.warnings.map(c=>'<li>'+esc(c)+'</li>').join('')+'</ul>':'')+
+    (stat?'<div class="sx-stat">'+stat+'</div>':'')+
+    '<div class="sx-actions"><button class="small-btn" data-a="copy">Copy plan</button><button class="small-btn" data-a="size">Position size</button><button class="small-btn primary" data-a="ai">Deep research</button></div>'+
+    '<div class="sx-size" data-box="size" '+(openSize[x.id]?'':'hidden')+'>'+sizeBox(x)+'</div>'+
+    '<div class="sx-ai" data-box="ai" '+(aiOut[x.id]?'':'hidden')+'>'+(aiOut[x.id]||'')+'</div></article>';
+}
+
+function pipValue(sym,price){
+  if(/^(EUR|GBP|AUD|NZD)USD$/.test(sym))return 10;
+  if(sym==='USDJPY')return 1000/price;
+  if(sym==='USDCHF'||sym==='USDCAD')return 10/price;
+  if(sym==='XAUUSD')return 1;
+  if(sym==='BTCUSD')return 1;
+  return null;
+}
+function sizeBox(x){
+  const st=stopOf(x),pv=pipValue(x.symbol,x.entry);
+  return '<div class="sx-opts"><div><label class="input-label" style="margin-top:0">Account (USD)</label><input inputmode="decimal" data-f="bal" value="'+esc(prefs.bal)+'" placeholder="10000"></div>'+
+    '<div><label class="input-label" style="margin-top:0">Risk per trade (%)</label><input inputmode="decimal" data-f="risk" value="'+esc(prefs.risk)+'"></div></div>'+
+    '<p class="muted-copy" style="margin:10px 0 0" data-out>'+sizeText(x,st,pv)+'</p>';
+}
+function sizeText(x,st,pv){
+  const bal=parseFloat(prefs.bal),risk=parseFloat(prefs.risk);
+  if(!(bal>0)||!(risk>0))return 'Enter your balance and risk % to size this '+esc(prefs.stop)+' stop ('+st.pips+' pips).';
+  const usd=bal*risk/100;
+  if(!pv)return 'Risk $'+usd.toFixed(2)+' over a '+st.pips+'-pip stop. Lot size for this market depends on your broker contract, so convert with your own pip value.';
+  const lots=Math.floor(usd/(st.pips*pv)*100)/100;
+  return 'Risk <b style="color:var(--tx)">$'+usd.toFixed(2)+'</b> over '+st.pips+' pips ≈ <b style="color:var(--tx)">'+lots.toFixed(2)+' lots</b>. Approximate: confirm the contract size and pip value with your broker.';
+}
+
+function plan(x){
+  const st=stopOf(x),s=x.symbol,f=p=>fmt(s,p);
+  return [x.symbol+' '+x.side+' · '+x.strategy_name+' (score '+Math.round(x.score)+', '+x.grade+')',
+    (x.entry_type==='market'?'Entry: market ~'+f(x.entry):'Entry: '+(x.direction==='bullish'?'buy':'sell')+' limit '+f(x.entry))+' (zone '+f(x.zone[0])+' – '+f(x.zone[1])+')',
+    'Stop ('+prefs.stop+'): '+f(st.price)+' ('+st.pips+' pips)',
+    x.targets.map((t,i)=>'TP'+(i+1)+': '+f(t.price)+' ('+rrOf(x,t.price).toFixed(2)+'R)').join(' | '),
+    'Break-even trigger: '+f(x.breakeven)+' (1R)',
+    'Valid until '+tm(x.valid_until)+' · close by '+tm(x.close_by),
+    'Management: '+x.trail,
+    'Why: '+x.confluence.join('; '),
+    x.warnings.length?'Watch: '+x.warnings.join('; '):'' ,
+    'Analysis, not financial advice.'].filter(Boolean).join('\n');
+}
+async function copy(text,btn){
+  try{await navigator.clipboard.writeText(text)}catch{const t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();try{document.execCommand('copy')}catch{}t.remove()}
+  const old=btn.textContent;btn.textContent='Copied';setTimeout(()=>{btn.textContent=old},1400);
+}
+
+const NAMES={EUR:'euro',USD:'US dollar',GBP:'British pound',JPY:'Japanese yen',CHF:'Swiss franc',CAD:'Canadian dollar',AUD:'Australian dollar',NZD:'New Zealand dollar'};
+function queries(sym,dirWord){
+  if(/^XAU/.test(sym))return['gold price outlook today','gold Federal Reserve dollar yields news this week','XAUUSD intraday analysis today'];
+  if(/^XAG/.test(sym))return['silver price outlook today','silver dollar yields news this week','XAGUSD intraday analysis today'];
+  if(/^(BTC|ETH)/.test(sym))return[sym.slice(0,3)+' price outlook today',sym.slice(0,3)+' market news this week',sym+' intraday analysis today'];
+  if(/^[A-Z]{6}$/.test(sym)&&NAMES[sym.slice(0,3)]&&NAMES[sym.slice(3)]){
+    const b=NAMES[sym.slice(0,3)],q=NAMES[sym.slice(3)];
+    return[sym+' outlook today',b+' '+q+' central bank news this week',sym+' intraday technical analysis today'];
+  }
+  return[sym+' outlook today',sym+' market news this week',sym+' intraday analysis today'];
+}
+async function deepResearch(x,box){
+  if(typeof hasAiKeys!=='function'||!hasAiKeys()){box.hidden=false;box.innerHTML='<pre>Add your Groq and Tavily keys in Settings to run deep research (both are free).</pre>';return}
+  if(!takeAiSlot()){box.hidden=false;box.innerHTML='<pre>Daily AI research cap reached to protect your free quota. Try again tomorrow.</pre>';return}
+  box.hidden=false;box.innerHTML='<pre>Researching the macro and news backdrop for '+esc(x.symbol)+'…</pre>';
+  const dxy=ctxData&&ctxData.dxy&&ctxData.dxy.bias?('DXY bias is '+ctxData.dxy.bias+' ('+ctxData.dxy.confidence+').'):'';
+  const prompt='An intraday scanner flagged: '+x.symbol+' '+x.side+' via '+x.strategy_name+'. Entry '+fmt(x.symbol,x.entry)+', stop '+fmt(x.symbol,stopOf(x).price)+', first target '+fmt(x.symbol,x.targets[0].price)+'. 4h structure '+x.htf.h4+', 1h '+x.htf.h1+'. Session: '+x.session+'. '+dxy+
+    '\nUsing ONLY the search results, answer in under 200 words: (1) the macro and central-bank drivers that matter for '+x.symbol+' in the next 24 hours; (2) scheduled releases or events that could hit this trade and when; (3) whether the fundamental backdrop supports a '+(x.direction==='bullish'?'long':'short')+'; (4) finish with one line: PROCEED, REDUCE SIZE or SKIP, with the reason. Cite sources as [n]. If the sources are thin, say so instead of guessing.';
+  try{
+    const r=await aiResearch({prompt,queries:queries(x.symbol),format:'text',maxTokens:800,temperature:.2,timeRange:'week',topic:'news'});
+    const links=(r.sources||[]).map((s,i)=>'<a href="'+esc(s.url)+'" target="_blank" rel="noreferrer">['+(i+1)+'] '+esc(s.title||'Source')+'</a>').join('');
+    aiOut[x.id]='<pre>'+esc((r.text||'').trim()||'No answer returned.')+'</pre>'+links;
+  }catch(e){aiOut[x.id]='<pre>Research failed: '+esc(e.message)+'</pre>'}
+  box.innerHTML=aiOut[x.id];
+}
+
+function renderResults(){
+  const el=$('sx-results');if(!el)return;
+  const rows=flat(),markets=Object.values(results);
+  if(!markets.length){el.innerHTML=running?'<div class="skel"></div><div class="skel"></div>':'<div class="panel sx-empty">Pick your markets and strategies, then run a scan.</div>';return}
+  const notes=markets.filter(m=>m.error||m.note).map(m=>'<span class="badge mx">'+esc(m.symbol)+': '+esc(m.error||m.note)+'</span>').join(' ');
+  const hi=rows.filter(r=>RANK[r.grade]>=2).length;
+  const head='<p class="sx-sum">'+rows.length+' setup'+(rows.length===1?'':'s')+' across '+markets.length+' market'+(markets.length===1?'':'s')+' · '+hi+' graded high or better'+(notes?'<br>'+notes:'')+'</p>';
+  el.innerHTML=head+(rows.length?rows.slice(0,60).map(card).join(''):(running?'':'<div class="panel sx-empty"><h2>Nothing actionable right now</h2><p>No strategy has a live setup on the last closed 15m candle for these markets under your filters. Loosen the grade filter or rescan after the next candle.</p></div>'));
+}
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('#sx-results [data-a]');if(!b)return;
+  const cardEl=b.closest('.sx-card'),x=flat().find(r=>r.id===cardEl.dataset.id);if(!x)return;
+  if(b.dataset.a==='copy')copy(plan(x),b);
+  if(b.dataset.a==='size'){openSize[x.id]=!openSize[x.id];cardEl.querySelector('[data-box="size"]').hidden=!openSize[x.id]}
+  if(b.dataset.a==='ai'){b.disabled=true;deepResearch(x,cardEl.querySelector('[data-box="ai"]')).finally(()=>{b.disabled=false})}
+});
+document.addEventListener('input',e=>{
+  const f=e.target.closest('#sx-results [data-f]');if(!f)return;
+  prefs[f.dataset.f]=f.value;save();
+  const cardEl=f.closest('.sx-card'),x=flat().find(r=>r.id===cardEl.dataset.id);if(!x)return;
+  cardEl.querySelector('[data-out]').innerHTML=sizeText(x,stopOf(x),pipValue(x.symbol,x.entry));
+});
+
+/* hook the existing tab router without editing it */
+const baseShow=window.showPage;
+window.showPage=function(name){baseShow(name);if(name==='setups')window.initSetupsPage()};
+})();
+</script>
+<!-- setups:js:end -->
 </body>
 </html>

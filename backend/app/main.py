@@ -10,7 +10,7 @@ from . import profiles as profile_db
 from . import users as user_db
 from . import security
 from .news import user_history
-from .routers import auth, profile, news, dxy, signals
+from .routers import auth, profile, news, dxy, signals, setups
 
 app = FastAPI(title="DXY News Signals", version="0.1.0")
 _database_init_error: str | None = None
@@ -41,6 +41,7 @@ app.include_router(profile.router)
 app.include_router(news.router)
 app.include_router(dxy.router)
 app.include_router(signals.router)
+app.include_router(setups.router)
 
 
 @app.get("/api/health")

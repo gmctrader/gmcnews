@@ -121,3 +121,25 @@ The hosted app at `https://pipx-six.vercel.app/` uses the same `/api` service on
 Before production signup is enabled, connect persistent PostgreSQL storage to the Vercel project and set `AUTH_SECRET_KEY` in Vercel Environment Variables. The app reports account readiness from `/api/health` and disables signup when production storage or a secure signing key is missing. Vercel's Marketplace supports external Postgres integrations such as Neon and Supabase: https://vercel.com/docs/marketplace-storage.
 
 The calendar links each scheduled release to its official BLS/Federal Reserve schedule. Market structure uses Yahoo Finance ticker feeds with provider candle timestamps; quotes may be delayed and are not broker execution prices. DXY fallback data is explicitly labeled synthetic. News briefs require web-search source citations (Tavily), and pair directions are derived from the sourced USD lean plus fresh live structure; disagreements are marked mixed.
+
+<!-- setups:readme:start -->
+## Setup Scanner (intraday)
+
+A **Setups** tab scans the markets a trader selects with eight strategies and returns only what is live on the last closed 15m candle:
+
+| Family | Strategies |
+| --- | --- |
+| SMC / ICT | Sweep + CHoCH, Order Block retest, FVG retest, OTE pullback |
+| Session | Asian range sweep, prior-day high/low raid |
+| Trend | EMA 21/50/200 pullback |
+| Volatility | Bollinger/Keltner squeeze breakout |
+
+Every setup has an entry (market or limit), three stop tiers (tight / standard / wide, anchored to structure plus an ATR buffer), staged targets snapped to real liquidity, a 0-100 confluence score (HTF structure, premium/discount, killzone, DXY alignment, news risk, stacking), and walk-forward statistics for that strategy on that market. Detectors are causal (no look-ahead) and run once for longs over a mirrored view for shorts.
+
+- `GET /api/setups/catalog`: strategies and market presets
+- `GET /api/setups/context`: DXY bias, session, news risk
+- `GET /api/setups/scan/{symbol}?strategies=a,b&backtest=true`: one market
+- `GET /api/setups?symbols=EURUSD,XAUUSD&min_score=60`: up to 6 markets in one call
+
+Code: `backend/app/analysis/setups.py`, `backend/app/routers/setups.py`; UI is the `setups:` blocks in `frontend/index.html`. Re-running the installer updates those blocks in place.
+<!-- setups:readme:end -->
