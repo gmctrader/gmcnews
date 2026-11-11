@@ -655,7 +655,7 @@ function load(){
   const wl=(typeof getWatchlist==='function'?getWatchlist():[]).filter(x=>/^[A-Z0-9]{6,8}$/.test(x));
   prefs={pairs:Array.isArray(p.pairs)&&p.pairs.length?p.pairs:(wl.length?wl.slice(0,8):DEFAULT_PAIRS.slice()),
     strats:Array.isArray(p.strats)?p.strats:null,grade:p.grade||'low',dir:p.dir||'both',stop:p.stop||'standard',
-    bt:p.bt!==false,bal:p.bal||'',risk:p.risk||'1'};
+    bt:p.bt!==false,strict:p.strict!==false,bal:p.bal||'',risk:p.risk||'1'};
 }
 const save=()=>putJson(PREF_KEY,prefs);
 const dec=s=>/JPY$/.test(s)?3:/^(US500|SPX500|NAS100|US100|DJ30|US30|UK100|GER40|DE40|JP225)$/.test(s)?1:/^XAG/.test(s)?3:/^BTC/.test(s)?1:/^(XAU|XPT|XPD|ETH|USOIL|UKOIL)/.test(s)?2:5;
@@ -698,9 +698,11 @@ function renderOpts(){
     sel('sx-grade','Minimum grade',[['low','Everything'],['moderate','Moderate and up'],['high','High and up'],['sniper','Sniper only']],prefs.grade)+
     sel('sx-dir','Direction',[['both','Long and short'],['bullish','Long only'],['bearish','Short only']],prefs.dir)+
     sel('sx-stop','Stop profile',[['tight','Tight (aggressive)'],['standard','Standard'],['wide','Wide (safer)']],prefs.stop)+
-    sel('sx-bt','Walk-forward stats',[['1','Include'],['0','Skip (faster)']],prefs.bt?'1':'0');
+    sel('sx-bt','Walk-forward stats',[['1','Include'],['0','Skip (faster)']],prefs.bt?'1':'0')+
+    sel('sx-strict','Direction filter',[['1','Strict (trend-aligned)'],['0','Off (raw signals)']],prefs.strict?'1':'0');
   ['sx-grade','sx-dir','sx-stop'].forEach(id=>$(id).onchange=e=>{prefs[id.slice(3)]=e.target.value;save();renderResults()});
   $('sx-bt').onchange=e=>{prefs.bt=e.target.value==='1';save()};
+  $('sx-strict').onchange=e=>{prefs.strict=e.target.value==='1';save();status('Direction filter changed: rescan to apply.')};
 }
 const status=t=>{$('sx-status').textContent=t};
 const bar=f=>{$('sx-progress').style.width=Math.round(f*100)+'%'};
@@ -727,7 +729,7 @@ window.runSetupScan=async function(){
   try{ctxData=await api('/api/setups/context');renderCtx()}catch{ctxData=null;renderCtx()}
   const total=prefs.pairs.length,queue=prefs.pairs.slice();let done=0;
   const all=catalog.strategies.length&&prefs.strats.length===catalog.strategies.length;
-  const q='?backtest='+(prefs.bt?'true':'false')+(all?'':'&strategies='+encodeURIComponent(prefs.strats.join(',')));
+  const q='?backtest='+(prefs.bt?'true':'false')+'&strict='+(prefs.strict?'true':'false')+(all?'':'&strategies='+encodeURIComponent(prefs.strats.join(',')));
   async function worker(){
     while(queue.length){
       const sym=queue.shift();status('Scanning '+sym+' · '+(done+1)+' of '+total+'…');
@@ -778,6 +780,7 @@ function card(x){
     x.targets.map((t,i)=>lv('tp','TP'+(i+1),t.price,rrOf(x,t.price).toFixed(2)+'R · '+t.pips+' pips')).join('');
   const chips='<span class="badge '+(x.htf.h4===x.direction?'up':x.htf.h4==='neutral'?'nu':'dn')+'">4h '+esc(x.htf.h4)+'</span>'+
     '<span class="badge '+(x.htf.h1===x.direction?'up':x.htf.h1==='neutral'?'nu':'dn')+'">1h '+esc(x.htf.h1)+'</span>'+
+    (x.trend?'<span class="badge '+(x.trend.label==='with trend'?'up':x.trend.label==='mixed'?'nu':'dn')+'">'+esc(x.trend.label)+'</span>':'')+
     '<span class="badge nu">'+esc(x.session)+'</span><span class="badge nu">'+esc(x.zone_pd)+'</span><span class="badge nu">ATR '+x.atr_pips+'</span>'+
     (x.adr_used_pct!=null?'<span class="badge nu">ADR '+x.adr_used_pct+'%</span>':'');
   const stat=x.stats&&x.stats.n?'Walk-forward ('+esc(x.stats.scope)+'): '+x.stats.n+' trades · '+x.stats.win_rate+'% win · '+(x.stats.avg_r>=0?'+':'')+x.stats.avg_r+'R avg'+(x.stats.profit_factor?' · PF '+x.stats.profit_factor:''):(prefs.bt?'Walk-forward: no comparable trades in the candles we hold.':'');
@@ -868,7 +871,8 @@ function renderResults(){
   if(!markets.length){el.innerHTML=running?'<div class="skel"></div><div class="skel"></div>':'<div class="panel sx-empty">Pick your markets and strategies, then run a scan.</div>';return}
   const notes=markets.filter(m=>m.error||m.note).map(m=>'<span class="badge mx">'+esc(m.symbol)+': '+esc(m.error||m.note)+'</span>').join(' ');
   const hi=rows.filter(r=>RANK[r.grade]>=2).length;
-  const head='<p class="sx-sum">'+rows.length+' setup'+(rows.length===1?'':'s')+' across '+markets.length+' market'+(markets.length===1?'':'s')+' · '+hi+' graded high or better'+(notes?'<br>'+notes:'')+'</p>';
+  const cut=markets.reduce((a,m)=>a+((m.filter&&m.filter.strict)?m.filter.count:0),0);
+  const head='<p class="sx-sum">'+rows.length+' setup'+(rows.length===1?'':'s')+' across '+markets.length+' market'+(markets.length===1?'':'s')+' · '+hi+' graded high or better'+(cut?' · '+cut+' counter-trend or conflicting signal'+(cut===1?'':'s')+' filtered out':'')+(notes?'<br>'+notes:'')+'</p>';
   el.innerHTML=head+(rows.length?rows.slice(0,60).map(card).join(''):(running?'':'<div class="panel sx-empty"><h2>Nothing actionable right now</h2><p>No strategy has a live setup on the last closed 15m candle for these markets under your filters. Loosen the grade filter or rescan after the next candle.</p></div>'));
 }
 

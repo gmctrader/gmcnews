@@ -44,6 +44,13 @@ MAX_HOLD_BARS = 64           # 16h
 EPOCH = pd.Timestamp("1970-01-01", tz="UTC")
 GRADES = ((80, "sniper"), (60, "high"), (40, "moderate"), (0, "low"))
 
+# Direction filter ("strict" mode): suppresses the setups that keep printing against the real move.
+REVERSAL_KEYS = {"sweep_choch", "asia_sweep", "pdhl_raid"}   # counter-structure by design
+STRICT_MIN_SCORE = 40        # hide "low" grade noise while the filter is on
+ALIGN_OK = -0.2              # trend alignment (-1..+1, trade direction) needed with no further proof
+ALIGN_FLOOR = -0.6           # a reversal may never fight a trend worse than this
+CONFLICT_GAP = 10            # side-strength gap needed to keep one side when both directions are live
+
 NAN = float("nan")
 
 
@@ -305,6 +312,40 @@ class View:
                 break
             out.append((int(idx[j]), float(px[j])))
         return out
+
+
+# --------------------------------------------------------------------------- #
+# Direction filter. Causal (reads bar i and earlier only), so the live scan and the
+# walk-forward statistics apply exactly the same rule.
+# --------------------------------------------------------------------------- #
+
+def trend_alignment(v: View, i: int) -> tuple[float, int, int]:
+    """(-1..+1, 4h vote, 1h vote) in view space: +1 means the trend is with this side."""
+    b4, b1, b15 = (int(x[i]) for x in v.bias)
+    stack = 1 if v.e21[i] > v.e50[i] > v.e200[i] else -1 if v.e21[i] < v.e50[i] < v.e200[i] else 0
+    ema = stack if stack else (0.5 if v.C[i] > v.e200[i] else -0.5)
+    return (2 * b4 + 2 * b1 + b15 + ema) / 6.0, b4, b1
+
+
+def direction_gate(v: View, i: int, key: str) -> tuple[bool, Optional[str], float]:
+    """Is this side allowed to trade here? Returns (ok, reason_if_not, alignment)."""
+    al, b4, b1 = trend_alignment(v, i)
+    b15 = int(v.bias[2][i])
+    if b4 < 0 and b1 < 0:
+        return False, "Fights both the 4h and 1h structure", al
+    if al >= ALIGN_OK:
+        return True, None, al
+    if key in REVERSAL_KEYS:
+        if al > ALIGN_FLOOR and v.C[i] < v.eq[i] and b15 > 0:
+            return True, None, al        # counter-trend reversal: only from the extreme, with 15m already flipped
+        return False, "Counter-trend reversal without an extreme entry and a 15m flip", al
+    return False, "Continuation setup against the higher-timeframe trend", al
+
+
+def _rejection(v: View, i: int) -> bool:
+    """Signal candle closed with this side in control (green, upper half of its range)."""
+    rng = v.H[i] - v.L[i]
+    return bool(rng > 0 and v.C[i] > v.O[i] and (v.C[i] - v.L[i]) / rng >= 0.5)
 
 
 # --------------------------------------------------------------------------- #
@@ -616,7 +657,7 @@ def _simulate(ctx: Ctx, i: int, s: int, etype: str, entry: float, stop: float, t
     return realised + sum(weights) * ((c[end - 1] - entry) * s / risk)
 
 
-def backtest(ctx: Ctx, keys: list[str], start: int = WARMUP, cooldown: int = 6) -> dict:
+def backtest(ctx: Ctx, keys: list[str], start: int = WARMUP, cooldown: int = 6, strict: bool = True) -> dict:
     """Walk-forward stats per strategy and side over the candles we hold."""
     out = {}
     last = ctx.n - 2
@@ -628,6 +669,8 @@ def backtest(ctx: Ctx, keys: list[str], start: int = WARMUP, cooldown: int = 6) 
             i = start
             while i < last:
                 cand = fn(v, i)
+                if cand and strict and not direction_gate(v, i, key)[0]:
+                    cand = None
                 fin = _finalize(v, i, cand) if cand else None
                 if fin:
                     tps = [s * t[0] for t in fin["targets"]]
@@ -679,7 +722,7 @@ def _iso(epoch: float) -> str:
     return datetime.fromtimestamp(epoch, tz=timezone.utc).isoformat()
 
 
-def _build(ctx: Ctx, key: str, s: int, i: int, cand: dict, fin: dict, external: dict) -> dict:
+def _build(ctx: Ctx, key: str, s: int, i: int, cand: dict, fin: dict, external: dict, strict: bool = True) -> dict:
     v = ctx.views[s]
     sym = ctx.symbol
     a = float(ctx.atr[i])
@@ -730,6 +773,24 @@ def _build(ctx: Ctx, key: str, s: int, i: int, cand: dict, fin: dict, external: 
     if risk_atr > 2.4:
         warns.append(f"Stop is {risk_atr:.1f} ATR: wide for intraday, size down")
 
+    al = trend_alignment(v, i)[0]
+    label = "with trend" if al >= 0.34 else "mixed" if al > ALIGN_OK else "counter-trend"
+    if strict:
+        who = "buyers" if s > 0 else "sellers"
+        if al >= 0.5:
+            score += 6
+            reasons.append("Trading with the higher-timeframe trend")
+        elif label == "counter-trend":
+            score -= 6
+            warns.append("Counter-trend reversal from an extreme: size down and take TP1 early")
+        if cand["etype"] == "market":
+            if _rejection(v, i):
+                score += 4
+                reasons.append(f"Signal candle closed with {who} in control")
+            else:
+                score -= 8
+                warns.append(f"No rejection candle yet: wait for a 15m close with {who} in control before entering")
+
     bonus, note, agrees = external["align"](direction)
     score += bonus
     if agrees is True:
@@ -776,13 +837,14 @@ def _build(ctx: Ctx, key: str, s: int, i: int, cand: dict, fin: dict, external: 
         "htf": {"h4": _name(s * b4), "h1": _name(s * b1), "m15": _name(s * b15)},
         "session": session, "killzone": kz, "zone_pd": "discount" if ctx.c[i] < ctx.eq[i] else "premium",
         "adr_used_pct": used, "live_price": rd(live),
+        "trend": {"alignment": round(al, 2), "label": label},
         "bar_time": _iso(float(ctx.ep[i])), "age_bars": int(ctx.n - 1 - i),
         "_score": score,
     }
 
 
 def scan_symbol(symbol: str, candles: dict, external: dict, strategies: Optional[list[str]] = None,
-                with_backtest: bool = True) -> dict:
+                with_backtest: bool = True, strict: bool = True) -> dict:
     """Run every selected strategy on one symbol. `external` carries the DXY and news context."""
     keys = [k for k in (strategies or list(STRATEGIES)) if k in STRATEGIES]
     if candles.get("15m") is None or len(candles["15m"]) < WARMUP + 40:
@@ -791,22 +853,36 @@ def scan_symbol(symbol: str, candles: dict, external: dict, strategies: Optional
     if ctx.n < WARMUP + 40:
         return {"symbol": symbol.upper(), "setups": [], "note": "Not enough closed 15m bars to scan this market yet."}
     i = ctx.n - 1
-    stats = backtest(ctx, keys) if with_backtest else {}
+    stats = backtest(ctx, keys, strict=strict) if with_backtest else {}
     setups = []
+    suppressed = []
+
+    def _drop(key, s, reason):
+        suppressed.append({"strategy": key, "strategy_name": STRATEGIES[key]["name"],
+                           "direction": "bullish" if s > 0 else "bearish", "reason": reason})
+
     for key in keys:
         for s in (1, -1):
             v = ctx.views[s]
             cand = STRATEGIES[key]["fn"](v, i)
+            if cand and strict:
+                ok, why, _ = direction_gate(v, i, key)
+                if not ok:
+                    _drop(key, s, why)
+                    continue
             fin = _finalize(v, i, cand) if cand else None
             if not fin:
                 continue
-            setup = _build(ctx, key, s, i, cand, fin, external)
+            setup = _build(ctx, key, s, i, cand, fin, external, strict)
             st = stats.get((key, s))
             if st and st.get("n", 0) >= 1:
                 both = stats.get((key, -s)) or {"n": 0}
                 pooled = _pool(st, both)
                 use = st if st["n"] >= 6 else pooled
                 setup["stats"] = {**use, "scope": "this side" if use is st else "both sides"}
+                if strict and use["n"] >= 10 and use["avg_r"] < -0.15:
+                    _drop(key, s, f"Strategy has been losing on this market ({use['avg_r']:+.2f}R over {use['n']} trades)")
+                    continue
                 if use["n"] >= 8:
                     if use["avg_r"] >= 0.25:
                         setup["_score"] += 8
@@ -830,12 +906,40 @@ def scan_symbol(symbol: str, candles: dict, external: dict, strategies: Optional
             for x in group:
                 x["_score"] += bump
                 x["confluence"].append(f"{len(group)} independent strategies agree on {side} here")
+
+    # Both directions live on one market is the classic "it went the other way" trap: keep the side the
+    # trend and the scoring clearly favour, and stand aside when neither is clearly stronger.
+    if strict:
+        bull = [x for x in setups if x["direction"] == "bullish"]
+        bear = [x for x in setups if x["direction"] == "bearish"]
+        if bull and bear:
+            def strength(g):
+                return max(x["_score"] + 15 * x["trend"]["alignment"] for x in g)
+            sb, ss = strength(bull), strength(bear)
+            if abs(sb - ss) >= CONFLICT_GAP:
+                loser, reason = (bear, f"Bullish side is stronger here ({sb:.0f} vs {ss:.0f})") if sb > ss \
+                    else (bull, f"Bearish side is stronger here ({ss:.0f} vs {sb:.0f})")
+            else:
+                loser, reason = bull + bear, "Both directions are live with no clear edge: standing aside"
+            for x in loser:
+                suppressed.append({"strategy": x["strategy"], "strategy_name": x["strategy_name"],
+                                   "direction": x["direction"], "reason": reason})
+            setups = [x for x in setups if x not in loser]
+
+    kept = []
     for x in setups:
         x["score"] = round(max(0.0, min(100.0, x.pop("_score"))), 1)
         x["grade"] = grade_for(x["score"])
+        if strict and x["score"] < STRICT_MIN_SCORE:
+            suppressed.append({"strategy": x["strategy"], "strategy_name": x["strategy_name"],
+                               "direction": x["direction"], "reason": "Below the minimum quality score"})
+            continue
+        kept.append(x)
+    setups = kept
     setups.sort(key=lambda x: x["score"], reverse=True)
     return {"symbol": ctx.symbol, "setups": setups, "bars": ctx.n,
-            "last_bar": _iso(float(ctx.ep[-1])), "live_price": round_price(ctx.symbol, ctx.live_price)}
+            "last_bar": _iso(float(ctx.ep[-1])), "live_price": round_price(ctx.symbol, ctx.live_price),
+            "filter": {"strict": strict, "count": len(suppressed), "suppressed": suppressed[:12]}}
 
 
 def _pool(a: dict, b: dict) -> dict:

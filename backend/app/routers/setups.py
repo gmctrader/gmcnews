@@ -85,8 +85,8 @@ def _strategies(raw: str | None) -> list[str] | None:
     return keys or None
 
 
-def _scan_one(symbol: str, keys: list[str] | None, backtest: bool) -> dict:
-    cache_key = (symbol, tuple(keys or ()), backtest)
+def _scan_one(symbol: str, keys: list[str] | None, backtest: bool, strict: bool = True) -> dict:
+    cache_key = (symbol, tuple(keys or ()), backtest, strict)
     hit = _scan_cache.get(cache_key)
     if hit and time.time() - hit[0] < _SCAN_TTL:
         return hit[1]
@@ -94,7 +94,7 @@ def _scan_one(symbol: str, keys: list[str] | None, backtest: bool) -> dict:
     if not candles:
         result = {"symbol": symbol, "setups": [], "note": "No market data is available for this symbol right now."}
     else:
-        result = engine.scan_symbol(symbol, candles, _external(symbol), keys, with_backtest=backtest)
+        result = engine.scan_symbol(symbol, candles, _external(symbol), keys, with_backtest=backtest, strict=strict)
         provider = provider_name(symbol)
         result["provider"] = provider
         result["provider_note"] = f"{provider} candles; quotes may be delayed and are not broker execution prices."
@@ -128,19 +128,20 @@ def context():
 @router.get("/scan/{symbol}")
 def scan_symbol(symbol: str,
                 strategies: str | None = Query(None, description="Comma-separated strategy keys; default all"),
-                backtest: bool = Query(True, description="Include walk-forward statistics")):
-    return _scan_one(_parse_symbol(symbol), _strategies(strategies), backtest)
+                backtest: bool = Query(True, description="Include walk-forward statistics"),
+                strict: bool = Query(True, description="Direction filter: suppress counter-trend and conflicting setups")):
+    return _scan_one(_parse_symbol(symbol), _strategies(strategies), backtest, strict)
 
 
 @router.get("")
 def scan_many(symbols: str = Query(..., description=f"Comma-separated symbols, max {MAX_BATCH}"),
               strategies: str | None = Query(None), backtest: bool = Query(True),
-              min_score: float = Query(0, ge=0, le=100)):
+              min_score: float = Query(0, ge=0, le=100), strict: bool = Query(True)):
     syms = [_parse_symbol(s) for s in symbols.split(",") if s.strip()][:MAX_BATCH]
     if not syms:
         raise HTTPException(400, "Provide at least one symbol")
     keys = _strategies(strategies)
-    results = [_scan_one(s, keys, backtest) for s in syms]
+    results = [_scan_one(s, keys, backtest, strict) for s in syms]
     flat = [x for r in results for x in r.get("setups", []) if x["score"] >= min_score]
     flat.sort(key=lambda x: x["score"], reverse=True)
     return {"setups": flat, "markets": [{k: v for k, v in r.items() if k != "setups"} for r in results]}
