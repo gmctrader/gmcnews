@@ -10,6 +10,7 @@ from . import profiles as profile_db
 from . import users as user_db
 from . import security
 from .news import user_history
+from .news import shared_briefs
 from .routers import auth, profile, news, dxy, signals, setups
 
 app = FastAPI(title="DXY News Signals", version="0.1.0")
@@ -30,6 +31,7 @@ def _startup():
         profile_db.init_db()
         user_db.init_db()
         user_history.init_db()
+        shared_briefs.init_db()
         _database_init_error = None
     except Exception as exc:  # database failure should not take live market reads offline
         _database_init_error = type(exc).__name__

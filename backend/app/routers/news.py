@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from ..news import news_calendar as nc
 from ..news import ai_news
 from ..news import user_history
+from ..news import shared_briefs
 from ..users import User
 from .auth import get_current_user
 
@@ -17,6 +18,10 @@ router = APIRouter(prefix="/api/news", tags=["news"])
 
 class NewsHistoryIn(BaseModel):
     event_id: str = Field(min_length=1, max_length=120)
+    payload: dict[str, Any]
+
+
+class SharedBriefIn(BaseModel):
     payload: dict[str, Any]
 
 
@@ -65,6 +70,30 @@ def save_history(body: NewsHistoryIn, current_user: User = Depends(get_current_u
         raise HTTPException(400, "event_id must match payload.event.id")
     user_history.put(current_user.id, body.event_id, body.payload)
     return {"saved": True, "event_id": body.event_id}
+
+
+@router.get("/shared")
+def shared_list(within_days: int = Query(90, ge=1, le=120)):
+    """Canonical pre-release calls and scored outcomes, identical on every device."""
+    try:
+        return {"records": shared_briefs.list_recent(within_days), "available": True}
+    except Exception:
+        return {"records": [], "available": False}
+
+
+@router.put("/shared/{event_id}")
+def shared_put(event_id: str, body: SharedBriefIn):
+    """
+    Publish a pre-release call (first valid call wins) or add its scored outcome.
+    Returns the canonical record so the caller can adopt it.
+    """
+    try:
+        record = shared_briefs.put(event_id, body.payload)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(503, "Shared brief storage is unavailable.") from exc
+    return {"saved": True, "record": record}
 
 
 @router.get("/blackout")
