@@ -46,6 +46,8 @@ UTC = timezone.utc
 # though CPI has overtaken NFP in some regimes -- tune to taste.
 IMPACT = {
     "FOMC": "critical",
+    "FOMC_MINUTES": "high",
+    "FED_SPEAK": "medium",
     "NFP": "high",
     "CPI": "high",
     "PPI": "medium",
@@ -53,6 +55,8 @@ IMPACT = {
 
 CATEGORY_LABEL = {
     "FOMC": "FOMC Rate Decision",
+    "FOMC_MINUTES": "FOMC Minutes",
+    "FED_SPEAK": "Federal Reserve Speaker",
     "NFP": "Employment Situation (NFP)",
     "CPI": "Consumer Price Index (CPI)",
     "PPI": "Producer Price Index (PPI)",
@@ -60,6 +64,8 @@ CATEGORY_LABEL = {
 
 CATEGORY_SOURCE_URL = {
     "FOMC": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+    "FOMC_MINUTES": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+    "FED_SPEAK": "https://www.federalreserve.gov/",
     "NFP": "https://www.bls.gov/schedule/news_release/empsit.htm",
     "CPI": "https://www.bls.gov/schedule/news_release/cpi.htm",
     "PPI": "https://www.bls.gov/schedule/news_release/ppi.htm",
@@ -72,7 +78,7 @@ def _et(y: int, m: int, d: int, hh: int, mm: int) -> datetime:
 
 @dataclass(frozen=True)
 class NewsEvent:
-    category: str          # "FOMC" | "NFP" | "CPI" | "PPI"
+    category: str          # FOMC, FOMC_MINUTES, FED_SPEAK, NFP, CPI, or PPI
     dt_utc: datetime
     label: str = ""
     impact: str = "high"
@@ -80,7 +86,11 @@ class NewsEvent:
 
     @property
     def id(self) -> str:
-        return f"{self.category}-{self.dt_utc.date().isoformat()}"
+        day = self.dt_utc.astimezone(ET).date().isoformat()
+        if self.category == "FED_SPEAK":
+            # Several officials can speak on the same day.
+            return f"{self.category}-{day}-{self.dt_utc.astimezone(ET):%H%M}"
+        return f"{self.category}-{day}"
 
     def to_dict(self, now: datetime | None = None) -> dict:
         now = now or datetime.now(UTC)
@@ -168,6 +178,21 @@ _RAW_2026 = [
     ("PPI", 2026, 12, 15, 8, 30),
 ]
 
+# Scheduled Federal Reserve Board appearances currently published for
+# November 16-20, 2026. Times are Eastern; the homepage calendar is updated
+# as officials add or change appearances.
+_RAW_FED_2026 = [
+    ("FED_SPEAK", 2026, 11, 16, 5, 0, "Fed Speech - Governor Michael S. Barr"),
+    ("FED_SPEAK", 2026, 11, 16, 12, 0, "Fed Speech - Chairman Kevin Warsh"),
+    ("FED_SPEAK", 2026, 11, 17, 9, 10, "Fed Speech - Governor Christopher J. Waller"),
+    ("FED_SPEAK", 2026, 11, 18, 13, 35, "Fed Speech - Governor Michael S. Barr"),
+    ("FED_SPEAK", 2026, 11, 19, 9, 25, "Fed Discussion - Vice Chair Philip N. Jefferson"),
+    ("FED_SPEAK", 2026, 11, 19, 14, 15, "Fed Discussion - Governor Michael S. Barr"),
+    ("FED_SPEAK", 2026, 11, 20, 8, 25, "Fed Speech - Governor Christopher J. Waller"),
+    ("FED_SPEAK", 2026, 11, 20, 12, 15, "Fed Speech - Governor Lisa D. Cook"),
+    ("FOMC_MINUTES", 2026, 11, 18, 14, 0, "FOMC Minutes - September 15-16 meeting"),
+]
+
 _HARDCODED: list[NewsEvent] = [
     NewsEvent(
         category=cat,
@@ -176,6 +201,15 @@ _HARDCODED: list[NewsEvent] = [
         source="official",
     )
     for (cat, y, m, d, hh, mm) in _RAW_2026
+] + [
+    NewsEvent(
+        category=cat,
+        dt_utc=_et(y, m, d, hh, mm).astimezone(UTC),
+        label=label,
+        impact=IMPACT.get(cat, "medium"),
+        source="official",
+    )
+    for (cat, y, m, d, hh, mm, label) in _RAW_FED_2026
 ]
 
 _OVERRIDES_FILE = os.path.join(
@@ -271,7 +305,7 @@ class BlackoutStatus:
 
 def blackout_status(now: datetime | None = None, pre_minutes: float = 15.0,
                      post_minutes: float = 30.0,
-                     categories: tuple[str, ...] = ("FOMC", "NFP", "CPI", "PPI")) -> BlackoutStatus:
+                     categories: tuple[str, ...] = ("FOMC", "FOMC_MINUTES", "FED_SPEAK", "NFP", "CPI", "PPI")) -> BlackoutStatus:
     """
     Is `now` inside the no-new-signals window around a watched release?
 
@@ -296,7 +330,7 @@ def blackout_status(now: datetime | None = None, pre_minutes: float = 15.0,
 
 
 def is_post_news_window(now: datetime | None = None, post_minutes: float = 30.0,
-                         categories: tuple[str, ...] = ("FOMC", "NFP", "CPI", "PPI")) -> NewsEvent | None:
+                         categories: tuple[str, ...] = ("FOMC", "FOMC_MINUTES", "FED_SPEAK", "NFP", "CPI", "PPI")) -> NewsEvent | None:
     """The narrower, *tradeable* window right after a release -- the one
     ICT setups actually want (liquidity was just swept by the number
     itself; a clean CHoCH back the other way is often the highest-

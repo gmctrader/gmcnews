@@ -40,7 +40,7 @@ def _dxy():
 
 
 def _news_state() -> dict:
-    blackout = nc.blackout_status(categories=("FOMC", "NFP", "CPI", "PPI"))
+    blackout = nc.blackout_status(categories=("FOMC", "FOMC_MINUTES", "FED_SPEAK", "NFP", "CPI", "PPI"))
     soon = None
     try:
         upcoming = nc.upcoming(within_hours=3)
